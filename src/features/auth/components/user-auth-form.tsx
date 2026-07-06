@@ -50,13 +50,16 @@ export function UserAuthForm({
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
     login(data, {
-      onSuccess: () => {
+      onSuccess: (_profile) => {
         // Show success message
         toast.success(`Welcome back, ${data.username}!`)
 
-        // Redirect to the stored location or default to dashboard
-        const targetPath = redirectTo || '/'
-        navigate({ to: targetPath, replace: true })
+        // Wait for next tick to ensure auth state is updated before navigation
+        setTimeout(() => {
+          // Redirect to the stored location or default to dashboard
+          const targetPath = redirectTo || '/'
+          navigate({ to: targetPath, replace: true })
+        }, 100)
       },
 
       onError: (error) => {

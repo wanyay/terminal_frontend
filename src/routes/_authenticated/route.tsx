@@ -10,17 +10,28 @@ export const Route = createFileRoute('/_authenticated')({
 function RouteComponent() {
   const navigate = useNavigate()
   const { auth } = useAuthStore()
-  
+
   useEffect(() => {
-    if (!auth.user || !auth.token) {
+    if (!auth.user || !auth.accessToken) {
       navigate({
         to: '/sign-in',
       })
+      return
+    }
+    if (auth.user.mustChangePassword) {
+      navigate({
+        to: '/change-password',
+      })
+      return
     }
   }, [auth, navigate])
 
-  if (!auth.user || !auth.token) {
-    return null;
+  if (!auth.user || !auth.accessToken) {
+    return null
+  }
+
+  if (auth.user.mustChangePassword) {
+    return null
   }
 
   return <AuthenticatedLayout />

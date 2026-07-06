@@ -12,7 +12,7 @@ export const Route = createFileRoute('/(auth)/sign-in')({
   validateSearch: searchSchema,
   beforeLoad: () => {
     const { auth } = useAuthStore.getState()
-    if (auth.user && auth.token) {
+    if (auth.user && auth.accessToken) {
       throw redirect({
         to: '/',
         replace: true,

@@ -90,16 +90,6 @@
   /* Define Pyidaungsu font family */
   --font-pyidaungsu: 'Pyidaungsu', sans-serif;
 
-  /* Make Pyidaungsu the default sans font */
-  --font-sans: 'Pyidaungsu', sans-serif;
-}
-
-/* Ensure Pyidaungsu is applied to all elements */
-body {
-  font-family: var(--font-pyidaungsu);
-}
-
-/* Optional: Force Pyidaungsu on all elements for consistency */
-* {
-  font-family: var(--font-pyidaungsu) !important;
+  /* Use Inter as default sans font (like shadcn-admin) */
+  --font-sans: 'Inter', 'sans-serif';
 }

@@ -25,7 +25,7 @@ export function ProfileDropdown() {
           <Button variant='ghost' className='relative h-8 w-8 rounded-full'>
             <Avatar className='h-8 w-8'>
               <AvatarImage src='/avatars/01.png' alt='@shadcn' />
-              <AvatarFallback>{auth.user?.name.split(' ').map(word => word[0]).join('')}</AvatarFallback>
+              <AvatarFallback>{[auth.user?.firstName, auth.user?.lastName].filter(Boolean).map(word => word![0]).join('')}</AvatarFallback>
             </Avatar>
           </Button>
         </DropdownMenuTrigger>
@@ -33,7 +33,7 @@ export function ProfileDropdown() {
           <DropdownMenuLabel className='font-normal'>
             <div className='flex flex-col gap-1.5'>
               <p className='text-sm leading-none font-medium'>
-                {auth.user?.name}
+                {[auth.user?.firstName, auth.user?.lastName].filter(Boolean).join(' ')}
               </p>
             </div>
           </DropdownMenuLabel>
