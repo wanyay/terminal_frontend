@@ -64,21 +64,21 @@ export function UserAuthForm({
 
       onError: (error) => {
         if (error instanceof AxiosError) {
-          form.setError(
-            'username',
-            {
-              type: 'server',
-            },
-            { shouldFocus: false }
-          )
-
+          const errorMessage = error?.response?.data?.message || 'Login failed. Please check your credentials.'
+          
+          // Only show toast for 500 errors
+          if (error.response?.status === 500) {
+            toast.error(errorMessage)
+          }
+          
+          // Always show form error
           form.setError(
             'password',
             {
               type: 'server',
-              message: error?.response?.data?.message,
+              message: errorMessage,
             },
-            { shouldFocus: false }
+            { shouldFocus: true }
           )
         }
       },

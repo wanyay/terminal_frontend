@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import * as z from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import {
   Form,
@@ -11,7 +12,6 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
-import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
   Select,
@@ -20,22 +20,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Textarea } from '@/components/ui/textarea'
 import { useAuthStore } from '@/features/auth/stores/auth-store'
-import { useCreateContainerTruckEntry } from '../api/queries'
+import { useCreateVisitingVehicleEntry } from '../api/queries'
 
 const formSchema = z.object({
   licensePlate: z.string().min(1, 'Car No is required'),
-  driverName: z.string().optional(),
+  driverName: z.string().min(1, 'Visitor Name is required'),
   driverNrc: z.string().optional(),
-  entryGateId: z.string().min(1, 'Entry gate is required'),
-  remarks: z.string().optional(),
+  vehicleType: z.string().optional(),
+  vehicleModel: z.string().optional(),
+  companyName: z.string().optional(),
+  purposeOfVisit: z.string().optional(),
+  entryGateId: z.string().optional(),
 })
 
 type FormValues = z.infer<typeof formSchema>
 
-export function TrucksEntryPage() {
-  const createContainerTruckEntry = useCreateContainerTruckEntry()
+export function VisitingVehicleEntryPage() {
+  const createVisitingVehicleEntry = useCreateVisitingVehicleEntry()
   const { auth } = useAuthStore()
   const entryGates = auth.assignedGates.filter((g) => g.type === 'ENTRY')
 
@@ -48,42 +50,51 @@ export function TrucksEntryPage() {
       licensePlate: '',
       driverName: '',
       driverNrc: '',
+      vehicleType: '',
+      vehicleModel: '',
+      companyName: '',
+      purposeOfVisit: '',
       entryGateId: entryGates.length > 0 ? String(entryGates[0].id) : '',
-      remarks: '',
     },
   })
 
   useEffect(() => {
-    if (createContainerTruckEntry.isSuccess && !hasReset.current) {
+    if (createVisitingVehicleEntry.isSuccess && !hasReset.current) {
       form.reset({
         licensePlate: '',
         driverName: '',
         driverNrc: '',
+        vehicleType: '',
+        vehicleModel: '',
+        companyName: '',
+        purposeOfVisit: '',
         entryGateId: entryGates.length > 0 ? String(entryGates[0].id) : '',
-        remarks: '',
       })
       hasReset.current = true
     }
     // Reset the flag when isSuccess becomes false (e.g., when starting a new mutation)
-    if (!createContainerTruckEntry.isSuccess) {
+    if (!createVisitingVehicleEntry.isSuccess) {
       hasReset.current = false
     }
-  }, [createContainerTruckEntry.isSuccess, entryGates, form])
+  }, [createVisitingVehicleEntry.isSuccess, entryGates, form])
 
   function onSubmit(values: FormValues) {
-    createContainerTruckEntry.mutate({
-      ...values,
-      driverName: values.driverName || undefined,
-      driverNrc: values.driverNrc || undefined,
-      remarks: values.remarks || undefined,
-      entryGateId: values.entryGateId,
+    createVisitingVehicleEntry.mutate({
+      plateNumber: values.licensePlate,
+      visitorName: values.driverName,
+      nrcOrLicense: values.driverNrc || undefined,
+      vehicleType: values.vehicleType || undefined,
+      vehicleModel: values.vehicleModel || undefined,
+      companyName: values.companyName || undefined,
+      purposeOfVisit: values.purposeOfVisit || undefined,
+      entryGateId: values.entryGateId || undefined,
     })
   }
 
   return (
-    <div className='-mt-4 flex min-h-[500px] flex-col items-center gap-8 p-6 xl:flex-row xl:items-stretch'>
+    <div className='-mt-4 flex min-h-125 flex-col items-center gap-8 p-6 xl:flex-row xl:items-stretch'>
       {/* 1. Form Section */}
-      <Card className='flex w-full shrink-0 flex-col shadow-sm xl:w-[450px]'>
+      <Card className='flex w-full shrink-0 flex-col shadow-sm xl:w-112.5'>
         <CardContent className='flex-1 pt-6'>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
@@ -105,7 +116,7 @@ export function TrucksEntryPage() {
                 name='driverName'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Driver Name</FormLabel>
+                    <FormLabel>Visitor Name</FormLabel>
                     <FormControl>
                       <Input placeholder='John Doe' {...field} />
                     </FormControl>
@@ -118,9 +129,63 @@ export function TrucksEntryPage() {
                 name='driverNrc'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Driver NRC</FormLabel>
+                    <FormLabel>NRC / License</FormLabel>
                     <FormControl>
                       <Input placeholder='12/ABC(N)123456' {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <div className='grid grid-cols-2 gap-4'>
+                <FormField
+                  control={form.control}
+                  name='vehicleType'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Vehicle Type</FormLabel>
+                      <FormControl>
+                        <Input placeholder='Sedan, SUV, etc.' {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name='vehicleModel'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Vehicle Model</FormLabel>
+                      <FormControl>
+                        <Input placeholder='Toyota Camry, etc.' {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <FormField
+                control={form.control}
+                name='companyName'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Company Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder='ABC Company' {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name='purposeOfVisit'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Purpose of Visit</FormLabel>
+                    <FormControl>
+                      <Input placeholder='Meeting, Delivery, etc.' {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -132,10 +197,7 @@ export function TrucksEntryPage() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Entry Gate</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      value={field.value}
-                    >
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder='Select entry gate' />
@@ -144,7 +206,7 @@ export function TrucksEntryPage() {
                       <SelectContent>
                         {entryGates.map((gate) => (
                           <SelectItem key={gate.id} value={String(gate.id)}>
-                            {gate.code} — {gate.name}
+                            {gate.name}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -153,30 +215,14 @@ export function TrucksEntryPage() {
                   </FormItem>
                 )}
               />
-              <FormField
-                control={form.control}
-                name='remarks'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Remarks</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        rows={4}
-                        placeholder='Any remarks...'
-                        className='resize-none'
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
               <Button
                 type='submit'
                 className='w-full'
-                disabled={createContainerTruckEntry.isPending}
+                disabled={createVisitingVehicleEntry.isPending}
               >
-                {createContainerTruckEntry.isPending ? 'Submitting...' : 'Submit Entry'}
+                {createVisitingVehicleEntry.isPending
+                  ? 'Submitting...'
+                  : 'Submit Entry'}
               </Button>
             </form>
           </Form>
@@ -185,7 +231,7 @@ export function TrucksEntryPage() {
 
       {/* 2 & 3. Controls and Visualization Grouped Together */}
       {/* Changed to `items-end` so the bottoms of the buttons and animation align perfectly */}
-      <div className='flex w-full flex-1 flex-col items-end justify-center gap-12 pb-10 sm:flex-row'>
+      <div className='flex w-full flex-1 flex-col items-center justify-center gap-12 pb-10 sm:flex-row'>
         {/* Gate Control Buttons */}
         <div className='flex shrink-0 flex-col gap-5'>
           <button
@@ -210,18 +256,16 @@ export function TrucksEntryPage() {
           {/* Traffic Light */}
           <div className='z-10 flex h-32 w-16 flex-col items-center justify-center gap-4 rounded-full border-2 border-slate-700 bg-slate-800 shadow-xl'>
             <div
-              className={`h-10 w-10 rounded-full shadow-inner transition-all duration-300 ${
-                gateStatus === 'open'
-                  ? 'bg-green-500 shadow-[0_0_15px_rgba(34,197,94,0.7)]'
-                  : 'bg-slate-700'
-              }`}
+              className={`h-10 w-10 rounded-full shadow-inner transition-all duration-300 ${gateStatus === 'open'
+                ? 'bg-green-500 shadow-[0_0_15px_rgba(34,197,94,0.7)]'
+                : 'bg-slate-700'
+                }`}
             ></div>
             <div
-              className={`h-10 w-10 rounded-full shadow-inner transition-all duration-300 ${
-                gateStatus === 'closed'
-                  ? 'animate-pulse bg-red-500 shadow-[0_0_15px_rgba(239,68,68,0.7)]'
-                  : 'bg-slate-700'
-              }`}
+              className={`h-10 w-10 rounded-full shadow-inner transition-all duration-300 ${gateStatus === 'closed'
+                ? 'animate-pulse bg-red-500 shadow-[0_0_15px_rgba(239,68,68,0.7)]'
+                : 'bg-slate-700'
+                }`}
             ></div>
           </div>
 

@@ -11,22 +11,29 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
-import { Route as AuthenticatedEntryRegistrationRouteImport } from './routes/_authenticated/entry-registration'
+import { Route as AuthenticatedLiveMonitoringRouteImport } from './routes/_authenticated/live-monitoring'
 import { Route as authSignInRouteImport } from './routes/(auth)/sign-in'
 import { Route as authChangePasswordRouteImport } from './routes/(auth)/change-password'
 import { Route as AuthenticatedVisitorsRouteRouteImport } from './routes/_authenticated/visitors/route'
 import { Route as AuthenticatedVehiclesRouteRouteImport } from './routes/_authenticated/vehicles/route'
 import { Route as AuthenticatedUsersRouteRouteImport } from './routes/_authenticated/users/route'
 import { Route as AuthenticatedTrucksRouteRouteImport } from './routes/_authenticated/trucks/route'
-import { Route as AuthenticatedSettingsRouteRouteImport } from './routes/_authenticated/settings/route'
 import { Route as AuthenticatedGatesRouteRouteImport } from './routes/_authenticated/gates/route'
 import { Route as AuthenticatedContainerTuckRouteRouteImport } from './routes/_authenticated/container-tuck/route'
-import { Route as AuthenticatedSettingsIndexRouteImport } from './routes/_authenticated/settings/index'
 import { Route as AuthenticatedContainerTuckIndexRouteImport } from './routes/_authenticated/container-tuck/index'
 import { Route as AuthenticatedTrucksExitRouteImport } from './routes/_authenticated/trucks/exit'
 import { Route as AuthenticatedTrucksEntryRouteImport } from './routes/_authenticated/trucks/entry'
+import { Route as AuthenticatedExitRegistrationVisitorRouteImport } from './routes/_authenticated/exit-registration/visitor'
+import { Route as AuthenticatedExitRegistrationVisitingVehicleRouteImport } from './routes/_authenticated/exit-registration/visiting-vehicle'
+import { Route as AuthenticatedExitRegistrationContainerTruckRouteImport } from './routes/_authenticated/exit-registration/container-truck'
+import { Route as AuthenticatedEntryRegistrationVisitorRouteImport } from './routes/_authenticated/entry-registration/visitor'
+import { Route as AuthenticatedEntryRegistrationVisitingVehicleRouteImport } from './routes/_authenticated/entry-registration/visiting-vehicle'
+import { Route as AuthenticatedEntryRegistrationContainerTruckRouteImport } from './routes/_authenticated/entry-registration/container-truck'
 import { Route as AuthenticatedContainerTuckExsitRouteImport } from './routes/_authenticated/container-tuck/exsit'
 import { Route as AuthenticatedContainerTuckEntryRouteImport } from './routes/_authenticated/container-tuck/entry'
+import { Route as AuthenticatedExitRegistrationVisitorVisitorIdRouteImport } from './routes/_authenticated/exit-registration/visitor/$visitorId'
+import { Route as AuthenticatedExitRegistrationVisitingVehicleVehicleIdRouteImport } from './routes/_authenticated/exit-registration/visiting-vehicle/$vehicleId'
+import { Route as AuthenticatedExitRegistrationContainerTruckTruckIdRouteImport } from './routes/_authenticated/exit-registration/container-truck/$truckId'
 
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
@@ -37,10 +44,10 @@ const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedEntryRegistrationRoute =
-  AuthenticatedEntryRegistrationRouteImport.update({
-    id: '/entry-registration',
-    path: '/entry-registration',
+const AuthenticatedLiveMonitoringRoute =
+  AuthenticatedLiveMonitoringRouteImport.update({
+    id: '/live-monitoring',
+    path: '/live-monitoring',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const authSignInRoute = authSignInRouteImport.update({
@@ -76,12 +83,6 @@ const AuthenticatedTrucksRouteRoute =
     path: '/trucks',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedSettingsRouteRoute =
-  AuthenticatedSettingsRouteRouteImport.update({
-    id: '/settings',
-    path: '/settings',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
 const AuthenticatedGatesRouteRoute = AuthenticatedGatesRouteRouteImport.update({
   id: '/gates',
   path: '/gates',
@@ -92,12 +93,6 @@ const AuthenticatedContainerTuckRouteRoute =
     id: '/container-tuck',
     path: '/container-tuck',
     getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedSettingsIndexRoute =
-  AuthenticatedSettingsIndexRouteImport.update({
-    id: '/',
-    path: '/',
-    getParentRoute: () => AuthenticatedSettingsRouteRoute,
   } as any)
 const AuthenticatedContainerTuckIndexRoute =
   AuthenticatedContainerTuckIndexRouteImport.update({
@@ -116,6 +111,42 @@ const AuthenticatedTrucksEntryRoute =
     path: '/entry',
     getParentRoute: () => AuthenticatedTrucksRouteRoute,
   } as any)
+const AuthenticatedExitRegistrationVisitorRoute =
+  AuthenticatedExitRegistrationVisitorRouteImport.update({
+    id: '/exit-registration/visitor',
+    path: '/exit-registration/visitor',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedExitRegistrationVisitingVehicleRoute =
+  AuthenticatedExitRegistrationVisitingVehicleRouteImport.update({
+    id: '/exit-registration/visiting-vehicle',
+    path: '/exit-registration/visiting-vehicle',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedExitRegistrationContainerTruckRoute =
+  AuthenticatedExitRegistrationContainerTruckRouteImport.update({
+    id: '/exit-registration/container-truck',
+    path: '/exit-registration/container-truck',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedEntryRegistrationVisitorRoute =
+  AuthenticatedEntryRegistrationVisitorRouteImport.update({
+    id: '/entry-registration/visitor',
+    path: '/entry-registration/visitor',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedEntryRegistrationVisitingVehicleRoute =
+  AuthenticatedEntryRegistrationVisitingVehicleRouteImport.update({
+    id: '/entry-registration/visiting-vehicle',
+    path: '/entry-registration/visiting-vehicle',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedEntryRegistrationContainerTruckRoute =
+  AuthenticatedEntryRegistrationContainerTruckRouteImport.update({
+    id: '/entry-registration/container-truck',
+    path: '/entry-registration/container-truck',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedContainerTuckExsitRoute =
   AuthenticatedContainerTuckExsitRouteImport.update({
     id: '/exsit',
@@ -128,25 +159,50 @@ const AuthenticatedContainerTuckEntryRoute =
     path: '/entry',
     getParentRoute: () => AuthenticatedContainerTuckRouteRoute,
   } as any)
+const AuthenticatedExitRegistrationVisitorVisitorIdRoute =
+  AuthenticatedExitRegistrationVisitorVisitorIdRouteImport.update({
+    id: '/$visitorId',
+    path: '/$visitorId',
+    getParentRoute: () => AuthenticatedExitRegistrationVisitorRoute,
+  } as any)
+const AuthenticatedExitRegistrationVisitingVehicleVehicleIdRoute =
+  AuthenticatedExitRegistrationVisitingVehicleVehicleIdRouteImport.update({
+    id: '/$vehicleId',
+    path: '/$vehicleId',
+    getParentRoute: () => AuthenticatedExitRegistrationVisitingVehicleRoute,
+  } as any)
+const AuthenticatedExitRegistrationContainerTruckTruckIdRoute =
+  AuthenticatedExitRegistrationContainerTruckTruckIdRouteImport.update({
+    id: '/$truckId',
+    path: '/$truckId',
+    getParentRoute: () => AuthenticatedExitRegistrationContainerTruckRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
   '/container-tuck': typeof AuthenticatedContainerTuckRouteRouteWithChildren
   '/gates': typeof AuthenticatedGatesRouteRoute
-  '/settings': typeof AuthenticatedSettingsRouteRouteWithChildren
   '/trucks': typeof AuthenticatedTrucksRouteRouteWithChildren
   '/users': typeof AuthenticatedUsersRouteRoute
   '/vehicles': typeof AuthenticatedVehiclesRouteRoute
   '/visitors': typeof AuthenticatedVisitorsRouteRoute
   '/change-password': typeof authChangePasswordRoute
   '/sign-in': typeof authSignInRoute
-  '/entry-registration': typeof AuthenticatedEntryRegistrationRoute
+  '/live-monitoring': typeof AuthenticatedLiveMonitoringRoute
   '/container-tuck/entry': typeof AuthenticatedContainerTuckEntryRoute
   '/container-tuck/exsit': typeof AuthenticatedContainerTuckExsitRoute
+  '/entry-registration/container-truck': typeof AuthenticatedEntryRegistrationContainerTruckRoute
+  '/entry-registration/visiting-vehicle': typeof AuthenticatedEntryRegistrationVisitingVehicleRoute
+  '/entry-registration/visitor': typeof AuthenticatedEntryRegistrationVisitorRoute
+  '/exit-registration/container-truck': typeof AuthenticatedExitRegistrationContainerTruckRouteWithChildren
+  '/exit-registration/visiting-vehicle': typeof AuthenticatedExitRegistrationVisitingVehicleRouteWithChildren
+  '/exit-registration/visitor': typeof AuthenticatedExitRegistrationVisitorRouteWithChildren
   '/trucks/entry': typeof AuthenticatedTrucksEntryRoute
   '/trucks/exit': typeof AuthenticatedTrucksExitRoute
   '/container-tuck/': typeof AuthenticatedContainerTuckIndexRoute
-  '/settings/': typeof AuthenticatedSettingsIndexRoute
+  '/exit-registration/container-truck/$truckId': typeof AuthenticatedExitRegistrationContainerTruckTruckIdRoute
+  '/exit-registration/visiting-vehicle/$vehicleId': typeof AuthenticatedExitRegistrationVisitingVehicleVehicleIdRoute
+  '/exit-registration/visitor/$visitorId': typeof AuthenticatedExitRegistrationVisitorVisitorIdRoute
 }
 export interface FileRoutesByTo {
   '/gates': typeof AuthenticatedGatesRouteRoute
@@ -156,35 +212,50 @@ export interface FileRoutesByTo {
   '/visitors': typeof AuthenticatedVisitorsRouteRoute
   '/change-password': typeof authChangePasswordRoute
   '/sign-in': typeof authSignInRoute
-  '/entry-registration': typeof AuthenticatedEntryRegistrationRoute
+  '/live-monitoring': typeof AuthenticatedLiveMonitoringRoute
   '/': typeof AuthenticatedIndexRoute
   '/container-tuck/entry': typeof AuthenticatedContainerTuckEntryRoute
   '/container-tuck/exsit': typeof AuthenticatedContainerTuckExsitRoute
+  '/entry-registration/container-truck': typeof AuthenticatedEntryRegistrationContainerTruckRoute
+  '/entry-registration/visiting-vehicle': typeof AuthenticatedEntryRegistrationVisitingVehicleRoute
+  '/entry-registration/visitor': typeof AuthenticatedEntryRegistrationVisitorRoute
+  '/exit-registration/container-truck': typeof AuthenticatedExitRegistrationContainerTruckRouteWithChildren
+  '/exit-registration/visiting-vehicle': typeof AuthenticatedExitRegistrationVisitingVehicleRouteWithChildren
+  '/exit-registration/visitor': typeof AuthenticatedExitRegistrationVisitorRouteWithChildren
   '/trucks/entry': typeof AuthenticatedTrucksEntryRoute
   '/trucks/exit': typeof AuthenticatedTrucksExitRoute
   '/container-tuck': typeof AuthenticatedContainerTuckIndexRoute
-  '/settings': typeof AuthenticatedSettingsIndexRoute
+  '/exit-registration/container-truck/$truckId': typeof AuthenticatedExitRegistrationContainerTruckTruckIdRoute
+  '/exit-registration/visiting-vehicle/$vehicleId': typeof AuthenticatedExitRegistrationVisitingVehicleVehicleIdRoute
+  '/exit-registration/visitor/$visitorId': typeof AuthenticatedExitRegistrationVisitorVisitorIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/_authenticated/container-tuck': typeof AuthenticatedContainerTuckRouteRouteWithChildren
   '/_authenticated/gates': typeof AuthenticatedGatesRouteRoute
-  '/_authenticated/settings': typeof AuthenticatedSettingsRouteRouteWithChildren
   '/_authenticated/trucks': typeof AuthenticatedTrucksRouteRouteWithChildren
   '/_authenticated/users': typeof AuthenticatedUsersRouteRoute
   '/_authenticated/vehicles': typeof AuthenticatedVehiclesRouteRoute
   '/_authenticated/visitors': typeof AuthenticatedVisitorsRouteRoute
   '/(auth)/change-password': typeof authChangePasswordRoute
   '/(auth)/sign-in': typeof authSignInRoute
-  '/_authenticated/entry-registration': typeof AuthenticatedEntryRegistrationRoute
+  '/_authenticated/live-monitoring': typeof AuthenticatedLiveMonitoringRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/container-tuck/entry': typeof AuthenticatedContainerTuckEntryRoute
   '/_authenticated/container-tuck/exsit': typeof AuthenticatedContainerTuckExsitRoute
+  '/_authenticated/entry-registration/container-truck': typeof AuthenticatedEntryRegistrationContainerTruckRoute
+  '/_authenticated/entry-registration/visiting-vehicle': typeof AuthenticatedEntryRegistrationVisitingVehicleRoute
+  '/_authenticated/entry-registration/visitor': typeof AuthenticatedEntryRegistrationVisitorRoute
+  '/_authenticated/exit-registration/container-truck': typeof AuthenticatedExitRegistrationContainerTruckRouteWithChildren
+  '/_authenticated/exit-registration/visiting-vehicle': typeof AuthenticatedExitRegistrationVisitingVehicleRouteWithChildren
+  '/_authenticated/exit-registration/visitor': typeof AuthenticatedExitRegistrationVisitorRouteWithChildren
   '/_authenticated/trucks/entry': typeof AuthenticatedTrucksEntryRoute
   '/_authenticated/trucks/exit': typeof AuthenticatedTrucksExitRoute
   '/_authenticated/container-tuck/': typeof AuthenticatedContainerTuckIndexRoute
-  '/_authenticated/settings/': typeof AuthenticatedSettingsIndexRoute
+  '/_authenticated/exit-registration/container-truck/$truckId': typeof AuthenticatedExitRegistrationContainerTruckTruckIdRoute
+  '/_authenticated/exit-registration/visiting-vehicle/$vehicleId': typeof AuthenticatedExitRegistrationVisitingVehicleVehicleIdRoute
+  '/_authenticated/exit-registration/visitor/$visitorId': typeof AuthenticatedExitRegistrationVisitorVisitorIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -192,20 +263,27 @@ export interface FileRouteTypes {
     | '/'
     | '/container-tuck'
     | '/gates'
-    | '/settings'
     | '/trucks'
     | '/users'
     | '/vehicles'
     | '/visitors'
     | '/change-password'
     | '/sign-in'
-    | '/entry-registration'
+    | '/live-monitoring'
     | '/container-tuck/entry'
     | '/container-tuck/exsit'
+    | '/entry-registration/container-truck'
+    | '/entry-registration/visiting-vehicle'
+    | '/entry-registration/visitor'
+    | '/exit-registration/container-truck'
+    | '/exit-registration/visiting-vehicle'
+    | '/exit-registration/visitor'
     | '/trucks/entry'
     | '/trucks/exit'
     | '/container-tuck/'
-    | '/settings/'
+    | '/exit-registration/container-truck/$truckId'
+    | '/exit-registration/visiting-vehicle/$vehicleId'
+    | '/exit-registration/visitor/$visitorId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/gates'
@@ -215,34 +293,49 @@ export interface FileRouteTypes {
     | '/visitors'
     | '/change-password'
     | '/sign-in'
-    | '/entry-registration'
+    | '/live-monitoring'
     | '/'
     | '/container-tuck/entry'
     | '/container-tuck/exsit'
+    | '/entry-registration/container-truck'
+    | '/entry-registration/visiting-vehicle'
+    | '/entry-registration/visitor'
+    | '/exit-registration/container-truck'
+    | '/exit-registration/visiting-vehicle'
+    | '/exit-registration/visitor'
     | '/trucks/entry'
     | '/trucks/exit'
     | '/container-tuck'
-    | '/settings'
+    | '/exit-registration/container-truck/$truckId'
+    | '/exit-registration/visiting-vehicle/$vehicleId'
+    | '/exit-registration/visitor/$visitorId'
   id:
     | '__root__'
     | '/_authenticated'
     | '/_authenticated/container-tuck'
     | '/_authenticated/gates'
-    | '/_authenticated/settings'
     | '/_authenticated/trucks'
     | '/_authenticated/users'
     | '/_authenticated/vehicles'
     | '/_authenticated/visitors'
     | '/(auth)/change-password'
     | '/(auth)/sign-in'
-    | '/_authenticated/entry-registration'
+    | '/_authenticated/live-monitoring'
     | '/_authenticated/'
     | '/_authenticated/container-tuck/entry'
     | '/_authenticated/container-tuck/exsit'
+    | '/_authenticated/entry-registration/container-truck'
+    | '/_authenticated/entry-registration/visiting-vehicle'
+    | '/_authenticated/entry-registration/visitor'
+    | '/_authenticated/exit-registration/container-truck'
+    | '/_authenticated/exit-registration/visiting-vehicle'
+    | '/_authenticated/exit-registration/visitor'
     | '/_authenticated/trucks/entry'
     | '/_authenticated/trucks/exit'
     | '/_authenticated/container-tuck/'
-    | '/_authenticated/settings/'
+    | '/_authenticated/exit-registration/container-truck/$truckId'
+    | '/_authenticated/exit-registration/visiting-vehicle/$vehicleId'
+    | '/_authenticated/exit-registration/visitor/$visitorId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -267,11 +360,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/entry-registration': {
-      id: '/_authenticated/entry-registration'
-      path: '/entry-registration'
-      fullPath: '/entry-registration'
-      preLoaderRoute: typeof AuthenticatedEntryRegistrationRouteImport
+    '/_authenticated/live-monitoring': {
+      id: '/_authenticated/live-monitoring'
+      path: '/live-monitoring'
+      fullPath: '/live-monitoring'
+      preLoaderRoute: typeof AuthenticatedLiveMonitoringRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/(auth)/sign-in': {
@@ -316,13 +409,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedTrucksRouteRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/settings': {
-      id: '/_authenticated/settings'
-      path: '/settings'
-      fullPath: '/settings'
-      preLoaderRoute: typeof AuthenticatedSettingsRouteRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/gates': {
       id: '/_authenticated/gates'
       path: '/gates'
@@ -336,13 +422,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/container-tuck'
       preLoaderRoute: typeof AuthenticatedContainerTuckRouteRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/settings/': {
-      id: '/_authenticated/settings/'
-      path: '/'
-      fullPath: '/settings/'
-      preLoaderRoute: typeof AuthenticatedSettingsIndexRouteImport
-      parentRoute: typeof AuthenticatedSettingsRouteRoute
     }
     '/_authenticated/container-tuck/': {
       id: '/_authenticated/container-tuck/'
@@ -365,6 +444,48 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedTrucksEntryRouteImport
       parentRoute: typeof AuthenticatedTrucksRouteRoute
     }
+    '/_authenticated/exit-registration/visitor': {
+      id: '/_authenticated/exit-registration/visitor'
+      path: '/exit-registration/visitor'
+      fullPath: '/exit-registration/visitor'
+      preLoaderRoute: typeof AuthenticatedExitRegistrationVisitorRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/exit-registration/visiting-vehicle': {
+      id: '/_authenticated/exit-registration/visiting-vehicle'
+      path: '/exit-registration/visiting-vehicle'
+      fullPath: '/exit-registration/visiting-vehicle'
+      preLoaderRoute: typeof AuthenticatedExitRegistrationVisitingVehicleRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/exit-registration/container-truck': {
+      id: '/_authenticated/exit-registration/container-truck'
+      path: '/exit-registration/container-truck'
+      fullPath: '/exit-registration/container-truck'
+      preLoaderRoute: typeof AuthenticatedExitRegistrationContainerTruckRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/entry-registration/visitor': {
+      id: '/_authenticated/entry-registration/visitor'
+      path: '/entry-registration/visitor'
+      fullPath: '/entry-registration/visitor'
+      preLoaderRoute: typeof AuthenticatedEntryRegistrationVisitorRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/entry-registration/visiting-vehicle': {
+      id: '/_authenticated/entry-registration/visiting-vehicle'
+      path: '/entry-registration/visiting-vehicle'
+      fullPath: '/entry-registration/visiting-vehicle'
+      preLoaderRoute: typeof AuthenticatedEntryRegistrationVisitingVehicleRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/entry-registration/container-truck': {
+      id: '/_authenticated/entry-registration/container-truck'
+      path: '/entry-registration/container-truck'
+      fullPath: '/entry-registration/container-truck'
+      preLoaderRoute: typeof AuthenticatedEntryRegistrationContainerTruckRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/container-tuck/exsit': {
       id: '/_authenticated/container-tuck/exsit'
       path: '/exsit'
@@ -378,6 +499,27 @@ declare module '@tanstack/react-router' {
       fullPath: '/container-tuck/entry'
       preLoaderRoute: typeof AuthenticatedContainerTuckEntryRouteImport
       parentRoute: typeof AuthenticatedContainerTuckRouteRoute
+    }
+    '/_authenticated/exit-registration/visitor/$visitorId': {
+      id: '/_authenticated/exit-registration/visitor/$visitorId'
+      path: '/$visitorId'
+      fullPath: '/exit-registration/visitor/$visitorId'
+      preLoaderRoute: typeof AuthenticatedExitRegistrationVisitorVisitorIdRouteImport
+      parentRoute: typeof AuthenticatedExitRegistrationVisitorRoute
+    }
+    '/_authenticated/exit-registration/visiting-vehicle/$vehicleId': {
+      id: '/_authenticated/exit-registration/visiting-vehicle/$vehicleId'
+      path: '/$vehicleId'
+      fullPath: '/exit-registration/visiting-vehicle/$vehicleId'
+      preLoaderRoute: typeof AuthenticatedExitRegistrationVisitingVehicleVehicleIdRouteImport
+      parentRoute: typeof AuthenticatedExitRegistrationVisitingVehicleRoute
+    }
+    '/_authenticated/exit-registration/container-truck/$truckId': {
+      id: '/_authenticated/exit-registration/container-truck/$truckId'
+      path: '/$truckId'
+      fullPath: '/exit-registration/container-truck/$truckId'
+      preLoaderRoute: typeof AuthenticatedExitRegistrationContainerTruckTruckIdRouteImport
+      parentRoute: typeof AuthenticatedExitRegistrationContainerTruckRoute
     }
   }
 }
@@ -400,20 +542,6 @@ const AuthenticatedContainerTuckRouteRouteWithChildren =
     AuthenticatedContainerTuckRouteRouteChildren,
   )
 
-interface AuthenticatedSettingsRouteRouteChildren {
-  AuthenticatedSettingsIndexRoute: typeof AuthenticatedSettingsIndexRoute
-}
-
-const AuthenticatedSettingsRouteRouteChildren: AuthenticatedSettingsRouteRouteChildren =
-  {
-    AuthenticatedSettingsIndexRoute: AuthenticatedSettingsIndexRoute,
-  }
-
-const AuthenticatedSettingsRouteRouteWithChildren =
-  AuthenticatedSettingsRouteRoute._addFileChildren(
-    AuthenticatedSettingsRouteRouteChildren,
-  )
-
 interface AuthenticatedTrucksRouteRouteChildren {
   AuthenticatedTrucksEntryRoute: typeof AuthenticatedTrucksEntryRoute
   AuthenticatedTrucksExitRoute: typeof AuthenticatedTrucksExitRoute
@@ -430,29 +558,90 @@ const AuthenticatedTrucksRouteRouteWithChildren =
     AuthenticatedTrucksRouteRouteChildren,
   )
 
+interface AuthenticatedExitRegistrationContainerTruckRouteChildren {
+  AuthenticatedExitRegistrationContainerTruckTruckIdRoute: typeof AuthenticatedExitRegistrationContainerTruckTruckIdRoute
+}
+
+const AuthenticatedExitRegistrationContainerTruckRouteChildren: AuthenticatedExitRegistrationContainerTruckRouteChildren =
+  {
+    AuthenticatedExitRegistrationContainerTruckTruckIdRoute:
+      AuthenticatedExitRegistrationContainerTruckTruckIdRoute,
+  }
+
+const AuthenticatedExitRegistrationContainerTruckRouteWithChildren =
+  AuthenticatedExitRegistrationContainerTruckRoute._addFileChildren(
+    AuthenticatedExitRegistrationContainerTruckRouteChildren,
+  )
+
+interface AuthenticatedExitRegistrationVisitingVehicleRouteChildren {
+  AuthenticatedExitRegistrationVisitingVehicleVehicleIdRoute: typeof AuthenticatedExitRegistrationVisitingVehicleVehicleIdRoute
+}
+
+const AuthenticatedExitRegistrationVisitingVehicleRouteChildren: AuthenticatedExitRegistrationVisitingVehicleRouteChildren =
+  {
+    AuthenticatedExitRegistrationVisitingVehicleVehicleIdRoute:
+      AuthenticatedExitRegistrationVisitingVehicleVehicleIdRoute,
+  }
+
+const AuthenticatedExitRegistrationVisitingVehicleRouteWithChildren =
+  AuthenticatedExitRegistrationVisitingVehicleRoute._addFileChildren(
+    AuthenticatedExitRegistrationVisitingVehicleRouteChildren,
+  )
+
+interface AuthenticatedExitRegistrationVisitorRouteChildren {
+  AuthenticatedExitRegistrationVisitorVisitorIdRoute: typeof AuthenticatedExitRegistrationVisitorVisitorIdRoute
+}
+
+const AuthenticatedExitRegistrationVisitorRouteChildren: AuthenticatedExitRegistrationVisitorRouteChildren =
+  {
+    AuthenticatedExitRegistrationVisitorVisitorIdRoute:
+      AuthenticatedExitRegistrationVisitorVisitorIdRoute,
+  }
+
+const AuthenticatedExitRegistrationVisitorRouteWithChildren =
+  AuthenticatedExitRegistrationVisitorRoute._addFileChildren(
+    AuthenticatedExitRegistrationVisitorRouteChildren,
+  )
+
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedContainerTuckRouteRoute: typeof AuthenticatedContainerTuckRouteRouteWithChildren
   AuthenticatedGatesRouteRoute: typeof AuthenticatedGatesRouteRoute
-  AuthenticatedSettingsRouteRoute: typeof AuthenticatedSettingsRouteRouteWithChildren
   AuthenticatedTrucksRouteRoute: typeof AuthenticatedTrucksRouteRouteWithChildren
   AuthenticatedUsersRouteRoute: typeof AuthenticatedUsersRouteRoute
   AuthenticatedVehiclesRouteRoute: typeof AuthenticatedVehiclesRouteRoute
   AuthenticatedVisitorsRouteRoute: typeof AuthenticatedVisitorsRouteRoute
-  AuthenticatedEntryRegistrationRoute: typeof AuthenticatedEntryRegistrationRoute
+  AuthenticatedLiveMonitoringRoute: typeof AuthenticatedLiveMonitoringRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
+  AuthenticatedEntryRegistrationContainerTruckRoute: typeof AuthenticatedEntryRegistrationContainerTruckRoute
+  AuthenticatedEntryRegistrationVisitingVehicleRoute: typeof AuthenticatedEntryRegistrationVisitingVehicleRoute
+  AuthenticatedEntryRegistrationVisitorRoute: typeof AuthenticatedEntryRegistrationVisitorRoute
+  AuthenticatedExitRegistrationContainerTruckRoute: typeof AuthenticatedExitRegistrationContainerTruckRouteWithChildren
+  AuthenticatedExitRegistrationVisitingVehicleRoute: typeof AuthenticatedExitRegistrationVisitingVehicleRouteWithChildren
+  AuthenticatedExitRegistrationVisitorRoute: typeof AuthenticatedExitRegistrationVisitorRouteWithChildren
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedContainerTuckRouteRoute:
     AuthenticatedContainerTuckRouteRouteWithChildren,
   AuthenticatedGatesRouteRoute: AuthenticatedGatesRouteRoute,
-  AuthenticatedSettingsRouteRoute: AuthenticatedSettingsRouteRouteWithChildren,
   AuthenticatedTrucksRouteRoute: AuthenticatedTrucksRouteRouteWithChildren,
   AuthenticatedUsersRouteRoute: AuthenticatedUsersRouteRoute,
   AuthenticatedVehiclesRouteRoute: AuthenticatedVehiclesRouteRoute,
   AuthenticatedVisitorsRouteRoute: AuthenticatedVisitorsRouteRoute,
-  AuthenticatedEntryRegistrationRoute: AuthenticatedEntryRegistrationRoute,
+  AuthenticatedLiveMonitoringRoute: AuthenticatedLiveMonitoringRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
+  AuthenticatedEntryRegistrationContainerTruckRoute:
+    AuthenticatedEntryRegistrationContainerTruckRoute,
+  AuthenticatedEntryRegistrationVisitingVehicleRoute:
+    AuthenticatedEntryRegistrationVisitingVehicleRoute,
+  AuthenticatedEntryRegistrationVisitorRoute:
+    AuthenticatedEntryRegistrationVisitorRoute,
+  AuthenticatedExitRegistrationContainerTruckRoute:
+    AuthenticatedExitRegistrationContainerTruckRouteWithChildren,
+  AuthenticatedExitRegistrationVisitingVehicleRoute:
+    AuthenticatedExitRegistrationVisitingVehicleRouteWithChildren,
+  AuthenticatedExitRegistrationVisitorRoute:
+    AuthenticatedExitRegistrationVisitorRouteWithChildren,
 }
 
 const AuthenticatedRouteRouteWithChildren =

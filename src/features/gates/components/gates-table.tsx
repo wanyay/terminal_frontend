@@ -28,13 +28,6 @@ import { GateDeleteDialog } from './gate-delete-dialog'
 
 const columns: ColumnDef<Gate>[] = [
   {
-    accessorKey: 'code',
-    header: 'Code',
-    cell: ({ row }) => (
-      <span className='font-mono text-sm font-medium'>{row.getValue('code')}</span>
-    ),
-  },
-  {
     accessorKey: 'name',
     header: 'Name',
     cell: ({ row }) => <span>{row.getValue('name')}</span>,
@@ -93,7 +86,7 @@ const columns: ColumnDef<Gate>[] = [
               onClick={() => setFormOpen(true)}
             >
               <Pencil className='h-4 w-4' />
-              <span className='sr-only'>Edit {gate.code}</span>
+              <span className='sr-only'>Edit {gate.name}</span>
             </Button>
             <Button
               variant='ghost'
@@ -102,7 +95,7 @@ const columns: ColumnDef<Gate>[] = [
               onClick={() => setDeleteOpen(true)}
             >
               <Trash2 className='h-4 w-4' />
-              <span className='sr-only'>Delete {gate.code}</span>
+              <span className='sr-only'>Delete {gate.name}</span>
             </Button>
           </div>
 
@@ -213,9 +206,9 @@ export function GatesTable({
                     {header.isPlaceholder
                       ? null
                       : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
+                        header.column.columnDef.header,
+                        header.getContext(),
+                      )}
                   </TableHead>
                 ))}
               </TableRow>

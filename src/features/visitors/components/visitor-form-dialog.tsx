@@ -180,7 +180,7 @@ export function VisitorFormDialog({
             <SelectContent>
               {entryGates.map((gate) => (
                 <SelectItem key={gate.id} value={gate.id}>
-                  {gate.code} — {gate.name}
+                  {gate.name}
                 </SelectItem>
               ))}
             </SelectContent>

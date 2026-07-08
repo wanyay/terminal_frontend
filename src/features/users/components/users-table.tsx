@@ -8,7 +8,7 @@ import {
   type ColumnFiltersState,
   type PaginationState,
 } from '@tanstack/react-table'
-import { Pencil, Trash2 } from 'lucide-react'
+import { KeyRound, Pencil, Trash2 } from 'lucide-react'
 import {
   Table,
   TableBody,
@@ -25,6 +25,7 @@ import { DataTablePagination } from '@/components/data-table/pagination'
 import { useUsers, type User } from '../api/queries'
 import { UserFormDialog } from './user-form-dialog'
 import { UserDeleteDialog } from './user-delete-dialog'
+import { UserChangePasswordDialog } from './user-change-password-dialog'
 
 const columns: ColumnDef<User>[] = [
   {
@@ -73,14 +74,14 @@ const columns: ColumnDef<User>[] = [
     cell: ({ row }) => {
       const user = row.original
       const isSecurityOfficer = user.roles.some((r) => r.name === 'SECURITY_OFFICER')
-      
+
       if (isSecurityOfficer) {
         // Show assigned gate for Security Officers
         return (
           <span className='text-sm'>
             {user.assignedGate ? (
               <Badge variant='outline' className='text-xs'>
-                {user.assignedGate.code}
+                {user.assignedGate.name}
               </Badge>
             ) : (
               <span className='text-muted-foreground text-sm'>—</span>
@@ -94,7 +95,7 @@ const columns: ColumnDef<User>[] = [
             {user.manageableGates && user.manageableGates.length > 0 ? (
               user.manageableGates.map((gate) => (
                 <Badge key={gate.id} variant='outline' className='text-xs'>
-                  {gate.code}
+                  {gate.name}
                 </Badge>
               ))
             ) : (
@@ -127,6 +128,7 @@ const columns: ColumnDef<User>[] = [
       const user = row.original
       const [formOpen, setFormOpen] = useState(false)
       const [deleteOpen, setDeleteOpen] = useState(false)
+      const [changePasswordOpen, setChangePasswordOpen] = useState(false)
 
       return (
         <>
@@ -143,6 +145,15 @@ const columns: ColumnDef<User>[] = [
             <Button
               variant='ghost'
               size='icon'
+              className='h-8 w-8'
+              onClick={() => setChangePasswordOpen(true)}
+            >
+              <KeyRound className='h-4 w-4' />
+              <span className='sr-only'>Change password for {user.username}</span>
+            </Button>
+            <Button
+              variant='ghost'
+              size='icon'
               className='h-8 w-8 text-destructive hover:text-destructive'
               onClick={() => setDeleteOpen(true)}
             >
@@ -154,6 +165,12 @@ const columns: ColumnDef<User>[] = [
           <UserFormDialog
             open={formOpen}
             onOpenChange={setFormOpen}
+            user={user}
+          />
+
+          <UserChangePasswordDialog
+            open={changePasswordOpen}
+            onOpenChange={setChangePasswordOpen}
             user={user}
           />
 
@@ -255,9 +272,9 @@ export function UsersTable({
                     {header.isPlaceholder
                       ? null
                       : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
+                        header.column.columnDef.header,
+                        header.getContext(),
+                      )}
                   </TableHead>
                 ))}
               </TableRow>

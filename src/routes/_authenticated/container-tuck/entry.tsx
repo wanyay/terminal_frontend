@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { TrucksEntryPage } from '@/features/entry/pages/trucks-entry-page'
+import { TrucksEntryPage } from '@/features/entry/container-truck/pages/trucks-entry-page'
 import { requireRoles, requireGateType } from '@/lib/route-guards'
 
 export const Route = createFileRoute('/_authenticated/container-tuck/entry')({

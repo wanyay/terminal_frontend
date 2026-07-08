@@ -30,10 +30,6 @@ import { Button } from '@/components/ui/button'
 import { useCreateGate, useUpdateGate, type Gate } from '../api/queries'
 
 const formSchema = z.object({
-  code: z
-    .string()
-    .min(1, 'Gate code is required')
-    .max(20, 'Gate code must be at most 20 characters'),
   name: z
     .string()
     .min(1, 'Gate name is required')
@@ -65,7 +61,6 @@ export function GateFormDialog({
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      code: gate?.code ?? '',
       name: gate?.name ?? '',
       type: gate?.type ?? 'ENTRY',
       description: gate?.description ?? '',
@@ -74,7 +69,6 @@ export function GateFormDialog({
 
   function onSubmit(data: FormValues) {
     const payload = {
-      code: data.code,
       name: data.name,
       type: data.type,
       description: data.description || undefined,
@@ -111,20 +105,6 @@ export function GateFormDialog({
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
-            <FormField
-              control={form.control}
-              name='code'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Gate Code</FormLabel>
-                  <FormControl>
-                    <Input placeholder='e.g. EG-01' {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
             <FormField
               control={form.control}
               name='name'

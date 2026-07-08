@@ -92,8 +92,8 @@ const editSchema = z.object({
     .max(100),
   email: z
     .string()
-    .email('Invalid email address')
-    .min(1, 'Email is required'),
+    .optional()
+    .or(z.literal('')),
   isActive: z.boolean().optional(),
   role: z.string().min(1, 'Role is required'),
   assignedGateId: z.string().optional(),
@@ -177,7 +177,7 @@ export function UserFormDialog({
       editForm.reset({
         username: user.username,
         fullName: user.fullName,
-        email: user.email,
+        email: user.email ?? '',
         isActive: user.isActive,
         role: user.roles[0]?.name ?? '',
         assignedGateId: user.assignedGate?.id ?? '',
@@ -189,12 +189,12 @@ export function UserFormDialog({
   function onCreateSubmit(data: CreateFormValues) {
     const { role, assignedGateId, manageableGateIds, email, ...rest } = data
     const payload: CreateUserPayload = { ...rest, roles: [role] }
-    
+
     // Only include email if it's not empty
     if (email && email.trim()) {
       payload.email = email
     }
-    
+
     // Only include gate fields based on role
     if (role === 'SECURITY_OFFICER') {
       if (assignedGateId) payload.assignedGateId = assignedGateId
@@ -203,7 +203,7 @@ export function UserFormDialog({
         payload.manageableGateIds = manageableGateIds
       }
     }
-    
+
     createUser(payload, {
       onSuccess: () => {
         createForm.reset()
@@ -214,9 +214,16 @@ export function UserFormDialog({
 
   function onEditSubmit(data: EditFormValues) {
     if (!user) return
-    const { role, assignedGateId, manageableGateIds, ...rest } = data
+    const { role, assignedGateId, manageableGateIds, email, ...rest } = data
     const payload: UpdateUserPayload = { ...rest, roles: [role] }
-    
+
+    // Only include email if it's not empty
+    if (email && email.trim()) {
+      payload.email = email
+    } else {
+      payload.email = undefined
+    }
+
     // Only include gate fields based on role
     if (role === 'SECURITY_OFFICER') {
       if (assignedGateId) payload.assignedGateId = assignedGateId
@@ -225,7 +232,7 @@ export function UserFormDialog({
       if (manageableGateIds) payload.manageableGateIds = manageableGateIds
       else payload.manageableGateIds = []
     }
-    
+
     updateUser(payload, {
       onSuccess: () => {
         onOpenChange(false)
@@ -342,7 +349,7 @@ export function UserFormDialog({
                         <SelectContent>
                           {gates.map((gate) => (
                             <SelectItem key={gate.id} value={gate.id}>
-                              {gate.code} — {gate.name}
+                              {gate.name}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -354,42 +361,42 @@ export function UserFormDialog({
               )}
               {(editForm.watch('role') === 'SUPER_ADMIN' ||
                 editForm.watch('role') === 'SUPERVISOR') && (
-                <FormField
-                  control={editForm.control}
-                  name='manageableGateIds'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Manageable Gates</FormLabel>
-                      <div className='space-y-2'>
-                        {gates.map((gate) => (
-                          <div key={gate.id} className='flex items-center space-x-2'>
-                            <Checkbox
-                              id={`gate-${gate.id}`}
-                              checked={field.value?.includes(gate.id)}
-                              onCheckedChange={(checked) => {
-                                if (checked) {
-                                  field.onChange([...(field.value || []), gate.id])
-                                } else {
-                                  field.onChange(
-                                    field.value?.filter((id) => id !== gate.id) || []
-                                  )
-                                }
-                              }}
-                            />
-                            <label
-                              htmlFor={`gate-${gate.id}`}
-                              className='text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
-                            >
-                              {gate.code} — {gate.name}
-                            </label>
-                          </div>
-                        ))}
-                      </div>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              )}
+                  <FormField
+                    control={editForm.control}
+                    name='manageableGateIds'
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Manageable Gates</FormLabel>
+                        <div className='space-y-2'>
+                          {gates.map((gate) => (
+                            <div key={gate.id} className='flex items-center space-x-2'>
+                              <Checkbox
+                                id={`gate-${gate.id}`}
+                                checked={field.value?.includes(gate.id)}
+                                onCheckedChange={(checked) => {
+                                  if (checked) {
+                                    field.onChange([...(field.value || []), gate.id])
+                                  } else {
+                                    field.onChange(
+                                      field.value?.filter((id) => id !== gate.id) || []
+                                    )
+                                  }
+                                }}
+                              />
+                              <label
+                                htmlFor={`gate-${gate.id}`}
+                                className='text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
+                              >
+                                {gate.name}
+                              </label>
+                            </div>
+                          ))}
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
               <div className='flex justify-end gap-3 pt-2'>
                 <Button
                   type='button'
@@ -522,7 +529,7 @@ export function UserFormDialog({
                         <SelectContent>
                           {gates.map((gate) => (
                             <SelectItem key={gate.id} value={gate.id}>
-                              {gate.code} — {gate.name}
+                              {gate.name}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -534,42 +541,42 @@ export function UserFormDialog({
               )}
               {(createForm.watch('role') === 'SUPER_ADMIN' ||
                 createForm.watch('role') === 'SUPERVISOR') && (
-                <FormField
-                  control={createForm.control}
-                  name='manageableGateIds'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Manageable Gates</FormLabel>
-                      <div className='space-y-2'>
-                        {gates.map((gate) => (
-                          <div key={gate.id} className='flex items-center space-x-2'>
-                            <Checkbox
-                              id={`create-gate-${gate.id}`}
-                              checked={field.value?.includes(gate.id)}
-                              onCheckedChange={(checked) => {
-                                if (checked) {
-                                  field.onChange([...(field.value || []), gate.id])
-                                } else {
-                                  field.onChange(
-                                    field.value?.filter((id) => id !== gate.id) || []
-                                  )
-                                }
-                              }}
-                            />
-                            <label
-                              htmlFor={`create-gate-${gate.id}`}
-                              className='text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
-                            >
-                              {gate.code} — {gate.name}
-                            </label>
-                          </div>
-                        ))}
-                      </div>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              )}
+                  <FormField
+                    control={createForm.control}
+                    name='manageableGateIds'
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Manageable Gates</FormLabel>
+                        <div className='space-y-2'>
+                          {gates.map((gate) => (
+                            <div key={gate.id} className='flex items-center space-x-2'>
+                              <Checkbox
+                                id={`create-gate-${gate.id}`}
+                                checked={field.value?.includes(gate.id)}
+                                onCheckedChange={(checked) => {
+                                  if (checked) {
+                                    field.onChange([...(field.value || []), gate.id])
+                                  } else {
+                                    field.onChange(
+                                      field.value?.filter((id) => id !== gate.id) || []
+                                    )
+                                  }
+                                }}
+                              />
+                              <label
+                                htmlFor={`create-gate-${gate.id}`}
+                                className='text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
+                              >
+                                {gate.name}
+                              </label>
+                            </div>
+                          ))}
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
               <div className='flex justify-end gap-3 pt-2'>
                 <Button
                   type='button'
