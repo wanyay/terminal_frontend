@@ -125,10 +125,29 @@ export const sidebarData: SidebarData = {
       items: [
         {
           title: 'Reports',
-          url: '/reports',
           icon: FileBarChart,
           authorized: (roles) =>
             roles.some((r) => ['SUPER_ADMIN', 'SUPERVISOR'].includes(r)),
+          items: [
+            {
+              title: 'Container Trucks',
+              url: '/reports/trucks',
+              authorized: (roles) =>
+                roles.some((r) => ['SUPER_ADMIN', 'SUPERVISOR'].includes(r)),
+            },
+            {
+              title: 'Visiting Vehicles',
+              url: '/reports/vehicles',
+              authorized: (roles) =>
+                roles.some((r) => ['SUPER_ADMIN', 'SUPERVISOR'].includes(r)),
+            },
+            {
+              title: 'Visitors',
+              url: '/reports/visitors',
+              authorized: (roles) =>
+                roles.some((r) => ['SUPER_ADMIN', 'SUPERVISOR'].includes(r)),
+            },
+          ],
         },
         {
           title: 'Audit Logs',

@@ -37,6 +37,14 @@ import { format } from 'date-fns'
 
 const truckColumns: ColumnDef<ActiveTruck>[] = [
   {
+    accessorKey: 'entryTime',
+    header: 'Entry Time',
+    cell: ({ row }) => {
+      const val = row.getValue('entryTime') as string
+      return <span className='text-sm'>{format(new Date(val), 'dd/MM/yyyy HH:mm')}</span>
+    },
+  },
+  {
     accessorKey: 'licensePlate',
     header: 'License Plate',
     cell: ({ row }) => (
@@ -77,14 +85,6 @@ const truckColumns: ColumnDef<ActiveTruck>[] = [
     },
   },
   {
-    accessorKey: 'entryTime',
-    header: 'Entry Time',
-    cell: ({ row }) => {
-      const val = row.getValue('entryTime') as string
-      return <span className='text-sm'>{format(new Date(val), 'dd/MM/yyyy HH:mm')}</span>
-    },
-  },
-  {
     accessorKey: 'status',
     header: 'Status',
     cell: ({ row }) => {
@@ -101,6 +101,14 @@ const truckColumns: ColumnDef<ActiveTruck>[] = [
 // ==================== Visiting Vehicles Table ====================
 
 const vehicleColumns: ColumnDef<ActiveVehicle>[] = [
+  {
+    accessorKey: 'entryTime',
+    header: 'Entry Time',
+    cell: ({ row }) => {
+      const val = row.getValue('entryTime') as string
+      return <span className='text-sm'>{format(new Date(val), 'dd/MM/yyyy HH:mm')}</span>
+    },
+  },
   {
     accessorKey: 'plateNumber',
     header: 'Plate Number',
@@ -150,14 +158,6 @@ const vehicleColumns: ColumnDef<ActiveVehicle>[] = [
     },
   },
   {
-    accessorKey: 'entryTime',
-    header: 'Entry Time',
-    cell: ({ row }) => {
-      const val = row.getValue('entryTime') as string
-      return <span className='text-sm'>{format(new Date(val), 'dd/MM/yyyy HH:mm')}</span>
-    },
-  },
-  {
     accessorKey: 'status',
     header: 'Status',
     cell: ({ row }) => {
@@ -174,6 +174,14 @@ const vehicleColumns: ColumnDef<ActiveVehicle>[] = [
 // ==================== Visitors Table ====================
 
 const visitorColumns: ColumnDef<ActiveVisitor>[] = [
+  {
+    accessorKey: 'entryTime',
+    header: 'Entry Time',
+    cell: ({ row }) => {
+      const val = row.getValue('entryTime') as string
+      return <span className='text-sm'>{format(new Date(val), 'dd/MM/yyyy HH:mm')}</span>
+    },
+  },
   {
     accessorKey: 'visitorName',
     header: 'Visitor Name',
@@ -216,26 +224,6 @@ const visitorColumns: ColumnDef<ActiveVisitor>[] = [
     cell: ({ row }) => {
       const val = row.getValue('hostEmployee') as string | null
       return <span>{val || '—'}</span>
-    },
-  },
-  {
-    id: 'entryGate',
-    header: 'Entry Gate',
-    cell: ({ row }) => {
-      const gate = row.original.entryGate
-      return gate ? (
-        <Badge variant='outline' className='text-xs'>{gate.name}</Badge>
-      ) : (
-        <span className='text-muted-foreground text-sm'>—</span>
-      )
-    },
-  },
-  {
-    accessorKey: 'entryTime',
-    header: 'Entry Time',
-    cell: ({ row }) => {
-      const val = row.getValue('entryTime') as string
-      return <span className='text-sm'>{format(new Date(val), 'dd/MM/yyyy HH:mm')}</span>
     },
   },
   {
