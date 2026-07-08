@@ -257,7 +257,7 @@ export function ActiveTrucksTable({
               onSearchChange(e.target.value)
               onPageChange(1)
             }}
-            className='h-8 w-[250px]'
+            className='h-8 w-62.5'
           />
           {gateOptions.length > 0 && (
             <DataTableFacetedFilter

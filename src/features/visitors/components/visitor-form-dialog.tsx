@@ -299,7 +299,7 @@ export function VisitorFormDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className='sm:max-w-[550px]'>
+      <DialogContent className='sm:max-w-137.5'>
         <DialogHeader>
           <DialogTitle>
             {isEditing ? 'Edit Visitor' : 'Register Visitor Entry'}
