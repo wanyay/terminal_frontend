@@ -8,7 +8,7 @@ import {
   type ColumnFiltersState,
   type PaginationState,
 } from '@tanstack/react-table'
-import { KeyRound, Pencil, Trash2 } from 'lucide-react'
+import { KeyRound, Pencil, Trash2, UserCheck, UserX } from 'lucide-react'
 import {
   Table,
   TableBody,
@@ -26,6 +26,7 @@ import { useUsers, type User } from '../api/queries'
 import { UserFormDialog } from './user-form-dialog'
 import { UserDeleteDialog } from './user-delete-dialog'
 import { UserChangePasswordDialog } from './user-change-password-dialog'
+import { UserActivateDeactivateDialog } from './user-activate-deactivate-dialog'
 
 const columns: ColumnDef<User>[] = [
   {
@@ -129,6 +130,8 @@ const columns: ColumnDef<User>[] = [
       const [formOpen, setFormOpen] = useState(false)
       const [deleteOpen, setDeleteOpen] = useState(false)
       const [changePasswordOpen, setChangePasswordOpen] = useState(false)
+      const [activateDeactivateOpen, setActivateDeactivateOpen] = useState(false)
+      const [activateDeactivateAction, setActivateDeactivateAction] = useState<'activate' | 'deactivate'>('activate')
 
       return (
         <>
@@ -151,6 +154,33 @@ const columns: ColumnDef<User>[] = [
               <KeyRound className='h-4 w-4' />
               <span className='sr-only'>Change password for {user.username}</span>
             </Button>
+            {user.isActive ? (
+              <Button
+                variant='ghost'
+                size='icon'
+                className='h-8 w-8 text-red-500 hover:text-red-600'
+                onClick={() => {
+                  setActivateDeactivateAction('deactivate')
+                  setActivateDeactivateOpen(true)
+                }}
+              >
+                <UserX className='h-4 w-4' />
+                <span className='sr-only'>Deactivate {user.username}</span>
+              </Button>
+            ) : (
+              <Button
+                variant='ghost'
+                size='icon'
+                className='h-8 w-8 text-green-500 hover:text-green-600'
+                onClick={() => {
+                  setActivateDeactivateAction('activate')
+                  setActivateDeactivateOpen(true)
+                }}
+              >
+                <UserCheck className='h-4 w-4' />
+                <span className='sr-only'>Activate {user.username}</span>
+              </Button>
+            )}
             <Button
               variant='ghost'
               size='icon'
@@ -178,6 +208,13 @@ const columns: ColumnDef<User>[] = [
             open={deleteOpen}
             onOpenChange={setDeleteOpen}
             user={user}
+          />
+
+          <UserActivateDeactivateDialog
+            open={activateDeactivateOpen}
+            onOpenChange={setActivateDeactivateOpen}
+            user={user}
+            action={activateDeactivateAction}
           />
         </>
       )

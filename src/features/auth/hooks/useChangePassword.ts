@@ -17,11 +17,12 @@ export function useChangePassword() {
     mutationFn: async (payload) => {
       await axiosClient.post('/api/v1/auth/change-password', payload)
     },
-    onSuccess: () => {
+    onSuccess: (_, payload) => {
       // Update the user profile to reflect password changed for self-serve
       if (auth.user && auth.user.mustChangePassword) {
         auth.setUser({ ...auth.user, mustChangePassword: false })
       }
+      toast.success(payload.targetUserId ? 'Password reset successfully' : 'Password changed successfully')
     },
     onError: (error) => {
       toast.error(error.message || 'Failed to change password')
