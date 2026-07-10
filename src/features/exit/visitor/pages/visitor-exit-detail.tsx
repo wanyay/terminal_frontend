@@ -1,9 +1,11 @@
+import { useState } from 'react'
 import { z } from 'zod'
+import { format } from 'date-fns'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigate, useParams } from '@tanstack/react-router'
 import { ArrowLeft, Loader2, LogOut } from 'lucide-react'
-import { format } from 'date-fns'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
@@ -21,10 +23,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Textarea } from '@/components/ui/textarea'
-import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
-import { useState } from 'react'
+import { Textarea } from '@/components/ui/textarea'
 import { useAuthStore } from '@/features/auth/stores/auth-store'
 import { useVisitor, useRegisterVisitorExit } from '../api/queries'
 
@@ -144,7 +144,9 @@ export function VisitorExitDetail() {
                     <dd className='text-sm'>{visitor.hostEmployee || '—'}</dd>
                   </div>
                   <div className='flex justify-between'>
-                    <dt className='text-muted-foreground text-sm'>Entry Gate</dt>
+                    <dt className='text-muted-foreground text-sm'>
+                      Entry Gate
+                    </dt>
                     <dd className='text-sm'>
                       {visitor.entryGate ? (
                         <Badge variant='outline' className='text-xs'>
@@ -156,7 +158,9 @@ export function VisitorExitDetail() {
                     </dd>
                   </div>
                   <div className='flex justify-between'>
-                    <dt className='text-muted-foreground text-sm'>Entry Time</dt>
+                    <dt className='text-muted-foreground text-sm'>
+                      Entry Time
+                    </dt>
                     <dd className='text-sm'>
                       {format(new Date(visitor.entryTime), 'dd/MM/yyyy HH:mm')}
                     </dd>
@@ -166,7 +170,7 @@ export function VisitorExitDetail() {
                     <dd>
                       <Badge
                         variant='outline'
-                        className='border-blue-500 text-blue-600 text-xs'
+                        className='border-blue-500 text-xs text-blue-600'
                       >
                         {visitor.status}
                       </Badge>
@@ -249,71 +253,66 @@ export function VisitorExitDetail() {
         </Card>
 
         {/* Barrier Gate Animation Card */}
-        <Card>
-          <CardHeader>
-            <CardTitle className='text-lg'>Gate Control</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {/* 2 & 3. Controls and Visualization Grouped Together */}
-            {/* Changed to `items-end` so the bottoms of the buttons and animation align perfectly */}
-            <div className='flex w-full flex-1 flex-col items-center justify-center gap-12 pb-10 sm:flex-row'>
-              {/* Gate Control Buttons */}
-              <div className='flex shrink-0 flex-col gap-5'>
-                <button
-                  type='button'
-                  onClick={() => setGateStatus('open')}
-                  className='flex h-14 w-40 items-center justify-center rounded-lg bg-green-600 text-sm font-bold tracking-wide text-white shadow-md transition-all hover:bg-green-500 hover:shadow-lg active:scale-95'
-                >
-                  OPEN GATE
-                </button>
-                <button
-                  type='button'
-                  onClick={() => setGateStatus('closed')}
-                  className='flex h-14 w-40 items-center justify-center rounded-lg bg-red-700 text-sm font-bold tracking-wide text-white shadow-md transition-all hover:bg-red-600 hover:shadow-lg active:scale-95'
-                >
-                  CLOSE GATE
-                </button>
-              </div>
+        {/* 2 & 3. Controls and Visualization Grouped Together */}
+        {/* Changed to `items-end` so the bottoms of the buttons and animation align perfectly */}
+        <div className='flex w-full flex-1 flex-col items-center justify-center gap-12 pb-10 sm:flex-row'>
+          {/* Gate Control Buttons */}
+          <div className='flex shrink-0 flex-col gap-5'>
+            <button
+              type='button'
+              onClick={() => setGateStatus('open')}
+              className='flex h-14 w-40 items-center justify-center rounded-lg bg-green-600 text-sm font-bold tracking-wide text-white shadow-md transition-all hover:bg-green-500 hover:shadow-lg active:scale-95'
+            >
+              OPEN GATE
+            </button>
+            <button
+              type='button'
+              onClick={() => setGateStatus('closed')}
+              className='flex h-14 w-40 items-center justify-center rounded-lg bg-red-700 text-sm font-bold tracking-wide text-white shadow-md transition-all hover:bg-red-600 hover:shadow-lg active:scale-95'
+            >
+              CLOSE GATE
+            </button>
+          </div>
 
-              {/* Gate Visualization (No Background) */}
-              {/* Removed translate-y shift to keep it completely level with the bottom button */}
-              <div className='relative flex items-end justify-center'>
-                {/* Traffic Light */}
-                <div className='z-10 flex h-32 w-16 flex-col items-center justify-center gap-4 rounded-full border-2 border-slate-700 bg-slate-800 shadow-xl'>
-                  <div
-                    className={`h-10 w-10 rounded-full shadow-inner transition-all duration-300 ${gateStatus === 'open'
-                      ? 'bg-green-500 shadow-[0_0_15px_rgba(34,197,94,0.7)]'
-                      : 'bg-slate-700'
-                    }`}
-                  ></div>
-                  <div
-                    className={`h-10 w-10 rounded-full shadow-inner transition-all duration-300 ${gateStatus === 'closed'
-                      ? 'animate-pulse bg-red-500 shadow-[0_0_15px_rgba(239,68,68,0.7)]'
-                      : 'bg-slate-700'
-                    }`}
-                  ></div>
-                </div>
-
-                {/* Boom Barrier Pole Base */}
-                <div className='z-10 ml-4 h-24 w-8 rounded-sm border-2 border-orange-800 bg-orange-600 shadow-md'></div>
-
-                {/* Boom Barrier Arm */}
-                <div
-                  className='z-0 mb-20 -ml-4 h-4 w-56 origin-left rounded-r-full border border-slate-300 shadow-lg transition-transform duration-1000 ease-in-out sm:w-72'
-                  style={{
-                    transform:
-                      gateStatus === 'open' ? 'rotate(-90deg)' : 'rotate(0deg)',
-                    background:
-                      'repeating-linear-gradient(45deg, #ef4444, #ef4444 20px, #ffffff 20px, #ffffff 40px)',
-                  }}
-                >
-                  {/* End cap for the barrier */}
-                  <div className='absolute top-0 right-0 bottom-0 w-2 rounded-r-full bg-blue-900'></div>
-                </div>
-              </div>
+          {/* Gate Visualization (No Background) */}
+          {/* Removed translate-y shift to keep it completely level with the bottom button */}
+          <div className='relative flex items-end justify-center'>
+            {/* Traffic Light */}
+            <div className='z-10 flex h-32 w-16 flex-col items-center justify-center gap-4 rounded-full border-2 border-slate-700 bg-slate-800 shadow-xl'>
+              <div
+                className={`h-10 w-10 rounded-full shadow-inner transition-all duration-300 ${
+                  gateStatus === 'open'
+                    ? 'bg-green-500 shadow-[0_0_15px_rgba(34,197,94,0.7)]'
+                    : 'bg-slate-700'
+                }`}
+              ></div>
+              <div
+                className={`h-10 w-10 rounded-full shadow-inner transition-all duration-300 ${
+                  gateStatus === 'closed'
+                    ? 'animate-pulse bg-red-500 shadow-[0_0_15px_rgba(239,68,68,0.7)]'
+                    : 'bg-slate-700'
+                }`}
+              ></div>
             </div>
-          </CardContent>
-        </Card>
+
+            {/* Boom Barrier Pole Base */}
+            <div className='z-10 ml-4 h-24 w-8 rounded-sm border-2 border-orange-800 bg-orange-600 shadow-md'></div>
+
+            {/* Boom Barrier Arm */}
+            <div
+              className='z-0 mb-20 -ml-4 h-4 w-56 origin-left rounded-r-full border border-slate-300 shadow-lg transition-transform duration-1000 ease-in-out sm:w-72'
+              style={{
+                transform:
+                  gateStatus === 'open' ? 'rotate(-90deg)' : 'rotate(0deg)',
+                background:
+                  'repeating-linear-gradient(45deg, #ef4444, #ef4444 20px, #ffffff 20px, #ffffff 40px)',
+              }}
+            >
+              {/* End cap for the barrier */}
+              <div className='absolute top-0 right-0 bottom-0 w-2 rounded-r-full bg-blue-900'></div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   )

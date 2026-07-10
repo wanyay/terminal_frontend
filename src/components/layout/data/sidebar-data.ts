@@ -150,10 +150,10 @@ export const sidebarData: SidebarData = {
           ],
         },
         {
-          title: 'Audit Logs',
-          url: '/audit-logs',
+          title: 'Blacklist',
+          url: '/blacklist',
           icon: ClipboardList,
-          authorized: (roles) => roles.includes('SUPER_ADMIN'),
+          authorized: (roles) => roles.some((r) => ['SUPER_ADMIN', 'SUPERVISOR'].includes(r)),
         },
       ],
     },

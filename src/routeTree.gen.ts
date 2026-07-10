@@ -21,6 +21,7 @@ import { Route as AuthenticatedTrucksRouteRouteImport } from './routes/_authenti
 import { Route as AuthenticatedReportsRouteRouteImport } from './routes/_authenticated/reports/route'
 import { Route as AuthenticatedGatesRouteRouteImport } from './routes/_authenticated/gates/route'
 import { Route as AuthenticatedContainerTuckRouteRouteImport } from './routes/_authenticated/container-tuck/route'
+import { Route as AuthenticatedBlacklistRouteRouteImport } from './routes/_authenticated/blacklist/route'
 import { Route as AuthenticatedReportsIndexRouteImport } from './routes/_authenticated/reports/index'
 import { Route as AuthenticatedContainerTuckIndexRouteImport } from './routes/_authenticated/container-tuck/index'
 import { Route as AuthenticatedTrucksExitRouteImport } from './routes/_authenticated/trucks/exit'
@@ -103,6 +104,12 @@ const AuthenticatedContainerTuckRouteRoute =
   AuthenticatedContainerTuckRouteRouteImport.update({
     id: '/container-tuck',
     path: '/container-tuck',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedBlacklistRouteRoute =
+  AuthenticatedBlacklistRouteRouteImport.update({
+    id: '/blacklist',
+    path: '/blacklist',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedReportsIndexRoute =
@@ -215,6 +222,7 @@ const AuthenticatedExitRegistrationContainerTruckTruckIdRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
+  '/blacklist': typeof AuthenticatedBlacklistRouteRoute
   '/container-tuck': typeof AuthenticatedContainerTuckRouteRouteWithChildren
   '/gates': typeof AuthenticatedGatesRouteRoute
   '/reports': typeof AuthenticatedReportsRouteRouteWithChildren
@@ -245,6 +253,7 @@ export interface FileRoutesByFullPath {
   '/exit-registration/visitor/$visitorId': typeof AuthenticatedExitRegistrationVisitorVisitorIdRoute
 }
 export interface FileRoutesByTo {
+  '/blacklist': typeof AuthenticatedBlacklistRouteRoute
   '/gates': typeof AuthenticatedGatesRouteRoute
   '/trucks': typeof AuthenticatedTrucksRouteRouteWithChildren
   '/users': typeof AuthenticatedUsersRouteRoute
@@ -276,6 +285,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/_authenticated/blacklist': typeof AuthenticatedBlacklistRouteRoute
   '/_authenticated/container-tuck': typeof AuthenticatedContainerTuckRouteRouteWithChildren
   '/_authenticated/gates': typeof AuthenticatedGatesRouteRoute
   '/_authenticated/reports': typeof AuthenticatedReportsRouteRouteWithChildren
@@ -310,6 +320,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/blacklist'
     | '/container-tuck'
     | '/gates'
     | '/reports'
@@ -340,6 +351,7 @@ export interface FileRouteTypes {
     | '/exit-registration/visitor/$visitorId'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/blacklist'
     | '/gates'
     | '/trucks'
     | '/users'
@@ -370,6 +382,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/_authenticated'
+    | '/_authenticated/blacklist'
     | '/_authenticated/container-tuck'
     | '/_authenticated/gates'
     | '/_authenticated/reports'
@@ -491,6 +504,13 @@ declare module '@tanstack/react-router' {
       path: '/container-tuck'
       fullPath: '/container-tuck'
       preLoaderRoute: typeof AuthenticatedContainerTuckRouteRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/blacklist': {
+      id: '/_authenticated/blacklist'
+      path: '/blacklist'
+      fullPath: '/blacklist'
+      preLoaderRoute: typeof AuthenticatedBlacklistRouteRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/reports/': {
@@ -722,6 +742,7 @@ const AuthenticatedExitRegistrationVisitorRouteWithChildren =
   )
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedBlacklistRouteRoute: typeof AuthenticatedBlacklistRouteRoute
   AuthenticatedContainerTuckRouteRoute: typeof AuthenticatedContainerTuckRouteRouteWithChildren
   AuthenticatedGatesRouteRoute: typeof AuthenticatedGatesRouteRoute
   AuthenticatedReportsRouteRoute: typeof AuthenticatedReportsRouteRouteWithChildren
@@ -740,6 +761,7 @@ interface AuthenticatedRouteRouteChildren {
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedBlacklistRouteRoute: AuthenticatedBlacklistRouteRoute,
   AuthenticatedContainerTuckRouteRoute:
     AuthenticatedContainerTuckRouteRouteWithChildren,
   AuthenticatedGatesRouteRoute: AuthenticatedGatesRouteRoute,
