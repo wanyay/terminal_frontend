@@ -163,6 +163,7 @@ export function BlacklistTable({
   const table = useReactTable({
     data: entries,
     columns,
+    getRowId: (row) => row.id,
     pageCount: meta.totalPages,
     state: {
       pagination,

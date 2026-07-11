@@ -19,4 +19,5 @@ contextBridge.exposeInMainWorld('electronAPI', {
     }
     return () => {};
   },
+  saveFile: (data: Uint8Array, defaultName: string) => ipcRenderer.invoke('save-file', { data, defaultName }),
 });

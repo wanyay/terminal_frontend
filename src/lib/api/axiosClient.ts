@@ -35,6 +35,12 @@ axiosClient.interceptors.request.use((config) => {
 
 axiosClient.interceptors.response.use(
   (response) => {
+    if (
+      response.config.responseType === 'blob' ||
+      response.config.responseType === 'arraybuffer'
+    ) {
+      return response
+    }
     // Unwrap standard API response: { success, message, data, meta } -> data
     if (
       response.data &&

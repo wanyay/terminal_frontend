@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -65,11 +66,29 @@ export function BlacklistFormDialog({
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      type: entry?.type ?? 'license_plate',
-      value: entry?.value ?? '',
-      reason: entry?.reason ?? '',
+      type: 'license_plate',
+      value: '',
+      reason: '',
     },
   })
+
+  useEffect(() => {
+    if (!open) return
+
+    if (isEditing && entry) {
+      form.reset({
+        type: entry.type,
+        value: entry.value,
+        reason: entry.reason ?? '',
+      })
+    } else if (!isEditing) {
+      form.reset({
+        type: 'license_plate',
+        value: '',
+        reason: '',
+      })
+    }
+  }, [open, entry, isEditing, form])
 
   function onSubmit(data: FormValues) {
     const payload = {

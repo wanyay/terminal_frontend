@@ -1,5 +1,5 @@
 {
-  "name": "shadcn-admin",
+  "name": "terminal-port-management-system",
   "private": false,
   "version": "2.1.0",
   "type": "module",
@@ -99,7 +99,7 @@
   },
   "build": {
     "appId": "com.wanyay.terminal",
-    "productName": "TPMS",
+    "productName": "Terminal Port Management System",
     "files": [
       "dist/**",
       "dist-electron/**",

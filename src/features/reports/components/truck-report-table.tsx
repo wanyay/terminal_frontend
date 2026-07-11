@@ -45,13 +45,6 @@ const columns: ColumnDef<TruckReport>[] = [
     ),
   },
   {
-    accessorKey: 'containerNumber',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Container Number' />
-    ),
-    cell: ({ row }) => <span>{row.original.containerNumber}</span>,
-  },
-  {
     accessorKey: 'driverName',
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='Driver Name' />

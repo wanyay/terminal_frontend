@@ -171,8 +171,9 @@ export function UserFormDialog({
     },
   })
 
-  // Reset form when user changes
   useEffect(() => {
+    if (!open) return
+
     if (isEditing && user) {
       editForm.reset({
         username: user.username,
@@ -183,8 +184,18 @@ export function UserFormDialog({
         assignedGateId: user.assignedGate?.id ?? '',
         manageableGateIds: user.manageableGates?.map((g) => g.id) ?? [],
       })
+    } else if (!isEditing) {
+      createForm.reset({
+        username: '',
+        password: '',
+        fullName: '',
+        email: '',
+        role: '',
+        assignedGateId: '',
+        manageableGateIds: [],
+      })
     }
-  }, [user, isEditing, editForm])
+  }, [open, user, isEditing, editForm, createForm])
 
   function onCreateSubmit(data: CreateFormValues) {
     const { role, assignedGateId, manageableGateIds, email, ...rest } = data
@@ -310,7 +321,7 @@ export function UserFormDialog({
                         editForm.setValue('assignedGateId', '')
                         editForm.setValue('manageableGateIds', [])
                       }}
-                      defaultValue={field.value}
+                      value={field.value}
                     >
                       <FormControl>
                         <SelectTrigger>
@@ -490,7 +501,7 @@ export function UserFormDialog({
                         createForm.setValue('assignedGateId', '')
                         createForm.setValue('manageableGateIds', [])
                       }}
-                      defaultValue={field.value}
+                      value={field.value}
                     >
                       <FormControl>
                         <SelectTrigger>

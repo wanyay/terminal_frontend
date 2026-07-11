@@ -151,6 +151,7 @@ export function GatesTable({
   const table = useReactTable({
     data: gates,
     columns,
+    getRowId: (row) => row.id,
     pageCount: meta.totalPages,
     state: {
       pagination,

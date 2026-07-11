@@ -17,9 +17,9 @@ function hasGateType(gates: { type: string }[], ...types: string[]) {
 export const sidebarData: SidebarData = {
   teams: [
     {
-      name: 'TPMS',
+      name: 'Terminal Port Management System',
       logo: Command,
-      plan: 'Terminal Port Management',
+      plan: 'Port Operations',
     },
   ],
   navGroups: [

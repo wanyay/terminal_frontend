@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -61,11 +62,29 @@ export function GateFormDialog({
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: gate?.name ?? '',
-      type: gate?.type ?? 'ENTRY',
-      description: gate?.description ?? '',
+      name: '',
+      type: 'ENTRY',
+      description: '',
     },
   })
+
+  useEffect(() => {
+    if (!open) return
+
+    if (isEditing && gate) {
+      form.reset({
+        name: gate.name,
+        type: gate.type,
+        description: gate.description ?? '',
+      })
+    } else if (!isEditing) {
+      form.reset({
+        name: '',
+        type: 'ENTRY',
+        description: '',
+      })
+    }
+  }, [open, gate, isEditing, form])
 
   function onSubmit(data: FormValues) {
     const payload = {
@@ -127,7 +146,7 @@ export function GateFormDialog({
                   <FormLabel>Gate Type</FormLabel>
                   <Select
                     onValueChange={field.onChange}
-                    defaultValue={field.value}
+                    value={field.value}
                   >
                     <FormControl>
                       <SelectTrigger>

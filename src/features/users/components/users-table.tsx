@@ -257,6 +257,7 @@ export function UsersTable({
   const table = useReactTable({
     data: users,
     columns,
+    getRowId: (row) => row.id,
     pageCount: meta.totalPages,
     state: {
       pagination,
