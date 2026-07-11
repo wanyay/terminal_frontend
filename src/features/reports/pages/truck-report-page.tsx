@@ -64,6 +64,10 @@ export function TruckReportPage() {
     setSorting([{ id: 'createdAt', desc: true }])
   }
 
+  const handleExport = () => {
+    // Option 2 (native save dialog) will be wired here
+  }
+
   return (
     <>
       <Header>
@@ -87,6 +91,7 @@ export function TruckReportPage() {
           values={filters}
           onSubmit={handleApplyFilters}
           onReset={handleResetFilters}
+          onExport={handleExport}
         />
 
         <div className='mt-6'>

@@ -1,11 +1,13 @@
 import { useMemo, useState } from 'react'
 import { subMonths, format } from 'date-fns'
 import { type SortingState } from '@tanstack/react-table'
+import { toast } from 'sonner'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { ThemeSwitch } from '@/components/theme-switch'
-import { useVisitorReports } from '../api/queries'
+import { handleServerError } from '@/lib/handle-server-error'
+import { exportVisitorReports, useVisitorReports } from '../api/queries'
 import { TruckReportFilters, type TruckReportFiltersFormValues } from '../components/truck-report-filters'
 import { VisitorReportTable } from '../components/visitor-report-table'
 
@@ -25,6 +27,7 @@ export function VisitorReportPage() {
   const [sorting, setSorting] = useState<SortingState>([
     { id: 'createdAt', desc: true },
   ])
+  const [isExporting, setIsExporting] = useState(false)
 
   const sortBy = sorting[0]?.id ?? 'createdAt'
   const sortOrder = sorting[0]?.desc ? 'DESC' : 'ASC'
@@ -64,6 +67,30 @@ export function VisitorReportPage() {
     setSorting([{ id: 'createdAt', desc: true }])
   }
 
+  const handleExport = async () => {
+    setIsExporting(true)
+    try {
+      const result = await exportVisitorReports({
+        search: filters.search || undefined,
+        sortBy:
+          sortBy === 'entryGate' || sortBy === 'exitGate' ? 'createdAt' : sortBy,
+        sortOrder,
+        startDate: filters.startDate || undefined,
+        endDate: filters.endDate || undefined,
+        entryGateId: filters.entryGateId || undefined,
+        exitGateId: filters.exitGateId || undefined,
+      })
+
+      if (!result.canceled) {
+        toast.success('Report exported successfully')
+      }
+    } catch (error) {
+      handleServerError(error)
+    } finally {
+      setIsExporting(false)
+    }
+  }
+
   return (
     <>
       <Header>
@@ -87,6 +114,8 @@ export function VisitorReportPage() {
           values={filters}
           onSubmit={handleApplyFilters}
           onReset={handleResetFilters}
+          onExport={handleExport}
+          isExporting={isExporting}
         />
 
         <div className='mt-6'>

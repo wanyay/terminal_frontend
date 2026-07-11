@@ -10,6 +10,7 @@
     "dev:watch:main": "esbuild electron/main.ts --bundle --platform=node --external:electron --target=node18 --format=cjs --outfile=dist-electron/main.cjs --watch",
     "dev:watch:preload": "esbuild electron/preload.ts --bundle --platform=node --external:electron --target=chrome116 --format=cjs --outfile=dist-electron/preload.cjs --watch",
     "dev:electron": "concurrently \"npm:dev:renderer\" \"npm:dev:watch:main\" \"npm:dev:watch:preload\" \"wait-on http://localhost:5173 && electron .\"",
+    "dev:electron:linux": "concurrently \"npm:dev:renderer\" \"npm:dev:watch:main\" \"npm:dev:watch:preload\" \"wait-on http://localhost:5173 && electron . --no-sandbox\"",
     "dev:all": "npm run dev:electron",
     "build": "tsc -b && vite build",
     "build:renderer": "tsc -b && vite build",

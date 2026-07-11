@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { RotateCcw, Search } from 'lucide-react'
+import { Download, RotateCcw, Search } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -43,12 +43,16 @@ interface TruckReportFiltersProps {
   }
   onSubmit: (values: TruckReportFiltersFormValues) => void
   onReset: () => void
+  onExport?: () => void
+  isExporting?: boolean
 }
 
 export function TruckReportFilters({
   values,
   onSubmit,
   onReset,
+  onExport,
+  isExporting = false,
 }: TruckReportFiltersProps) {
   const { data: gatesData } = useGates({ perPage: 100 })
   const gates = (gatesData?.data ?? []).filter((gate: Gate) => gate.isActive)
@@ -82,8 +86,9 @@ export function TruckReportFilters({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(handleSubmit)}
-        className='bg-card grid gap-4 rounded-lg border p-4 lg:grid-cols-[1.4fr_0.8fr_0.8fr_0.8fr_0.8fr_auto_auto]'
+        className='bg-card space-y-4 rounded-lg border p-4'
       >
+        <div className='grid w-full grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'>
         <FormField
           control={form.control}
           name='search'
@@ -92,10 +97,10 @@ export function TruckReportFilters({
               <FormLabel>Search</FormLabel>
               <FormControl>
                 <div className='relative'>
-                  <Search className='text-muted-foreground absolute top-2.5 left-2 h-4 w-4' />
+                  <Search className='text-muted-foreground absolute top-3.5 left-3 h-5 w-5' />
                   <Input
                     placeholder='License plate, container, driver...'
-                    className='pl-8'
+                    className='pl-10 h-11 text-base'
                     {...field}
                   />
                 </div>
@@ -116,6 +121,7 @@ export function TruckReportFilters({
                   selected={field.value}
                   onSelect={field.onChange}
                   placeholder='Start date'
+                  className='h-11 text-base'
                 />
               </FormControl>
               <FormMessage />
@@ -134,6 +140,7 @@ export function TruckReportFilters({
                   selected={field.value}
                   onSelect={field.onChange}
                   placeholder='End date'
+                  className='h-11 text-base'
                 />
               </FormControl>
               <FormMessage />
@@ -154,7 +161,7 @@ export function TruckReportFilters({
                 value={field.value || '__all__'}
               >
                 <FormControl>
-                  <SelectTrigger>
+                  <SelectTrigger className='h-11 text-base w-full'>
                     <SelectValue placeholder='All entry gates' />
                   </SelectTrigger>
                 </FormControl>
@@ -187,7 +194,7 @@ export function TruckReportFilters({
                 value={field.value || '__all__'}
               >
                 <FormControl>
-                  <SelectTrigger>
+                  <SelectTrigger className='h-11 text-base w-full'>
                     <SelectValue placeholder='All exit gates' />
                   </SelectTrigger>
                 </FormControl>
@@ -206,17 +213,13 @@ export function TruckReportFilters({
             </FormItem>
           )}
         />
-
-        <div className='flex items-end gap-2'>
-          <Button type='submit' className='w-full'>
-            Apply
-          </Button>
         </div>
-        <div className='flex items-end gap-2'>
+
+        <div className='flex flex-wrap items-center justify-start gap-2'>
+          <Button type='submit'>Apply</Button>
           <Button
             type='button'
             variant='outline'
-            className='w-full'
             onClick={() => {
               form.reset({
                 search: '',
@@ -231,6 +234,17 @@ export function TruckReportFilters({
             <RotateCcw className='mr-2 h-4 w-4' />
             Reset
           </Button>
+          {onExport && (
+            <Button
+              type='button'
+              variant='outline'
+              onClick={onExport}
+              disabled={isExporting}
+            >
+              <Download className='mr-2 h-4 w-4' />
+              {isExporting ? 'Exporting...' : 'Export'}
+            </Button>
+          )}
         </div>
       </form>
     </Form>

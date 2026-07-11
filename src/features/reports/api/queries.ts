@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import axiosClient from '@/lib/api/axiosClient'
+import { saveExportedFile } from '@/lib/download-file'
 
 export interface ReportGate {
   id: string
@@ -140,6 +141,60 @@ export function useTruckReports(params: ReportFilters) {
       }
     },
   })
+}
+
+export type TruckReportExportFilters = Omit<ReportFilters, 'page' | 'perPage'>
+
+export function exportTruckReports(params: TruckReportExportFilters) {
+  return saveExportedFile(
+    '/api/v1/trucks/export',
+    {
+      search: params.search,
+      sortBy: params.sortBy,
+      sortOrder: params.sortOrder,
+      startDate: params.startDate,
+      endDate: params.endDate,
+      entryGateId: params.entryGateId,
+      exitGateId: params.exitGateId,
+    },
+    'container-trucks.xlsx'
+  )
+}
+
+export type VehicleReportExportFilters = Omit<ReportFilters, 'page' | 'perPage'>
+
+export function exportVehicleReports(params: VehicleReportExportFilters) {
+  return saveExportedFile(
+    '/api/v1/vehicles/export',
+    {
+      search: params.search,
+      sortBy: params.sortBy,
+      sortOrder: params.sortOrder,
+      startDate: params.startDate,
+      endDate: params.endDate,
+      entryGateId: params.entryGateId,
+      exitGateId: params.exitGateId,
+    },
+    'visiting-vehicles.xlsx'
+  )
+}
+
+export type VisitorReportExportFilters = Omit<ReportFilters, 'page' | 'perPage'>
+
+export function exportVisitorReports(params: VisitorReportExportFilters) {
+  return saveExportedFile(
+    '/api/v1/visitors/export',
+    {
+      search: params.search,
+      sortBy: params.sortBy,
+      sortOrder: params.sortOrder,
+      startDate: params.startDate,
+      endDate: params.endDate,
+      entryGateId: params.entryGateId,
+      exitGateId: params.exitGateId,
+    },
+    'visitors.xlsx'
+  )
 }
 
 export function useVehicleReports(params: ReportFilters) {
