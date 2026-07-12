@@ -2,9 +2,12 @@ import { app, BrowserWindow, dialog, ipcMain, Menu } from 'electron';
 import fs from 'fs/promises'
 import path from 'path';
 
-const APP_NAME = 'Terminal Port Management System';
-const isDev = process.env.NODE_ENV !== 'production';
-const VITE_DEV_SERVER_URL = process.env.VITE_DEV_SERVER_URL ?? 'http://localhost:5173';
+const APP_NAME = 'Terminal Port Management System'
+const VITE_DEV_SERVER_URL = process.env.VITE_DEV_SERVER_URL
+
+function isDevMode() {
+  return !app.isPackaged && Boolean(VITE_DEV_SERVER_URL)
+}
 
 async function createWindow() {
   const win = new BrowserWindow({
@@ -27,33 +30,40 @@ async function createWindow() {
     win.show();
   });
 
-  if (isDev) {
-    await win.loadURL(VITE_DEV_SERVER_URL);
-    win.webContents.openDevTools();
+  if (isDevMode() && VITE_DEV_SERVER_URL) {
+    await win.loadURL(VITE_DEV_SERVER_URL)
+    win.webContents.openDevTools()
   } else {
-    const indexHtml = path.join(__dirname, '..', 'dist', 'index.html');
-    await win.loadFile(indexHtml);
+    const indexHtml = path.join(__dirname, '..', 'dist', 'index.html')
+    await win.loadFile(indexHtml)
   }
 }
 
 app.whenReady().then(() => {
-  app.setName(APP_NAME);
-  Menu.setApplicationMenu(null);
-  createWindow();
-});
+  app.setName(APP_NAME)
+  Menu.setApplicationMenu(null)
+  void createWindow().catch((error: unknown) => {
+    dialog.showErrorBox('Startup Error', String(error))
+    app.quit()
+  })
+})
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();
 });
 
 app.on('activate', () => {
-  if (BrowserWindow.getAllWindows().length === 0) createWindow();
-});
+  if (BrowserWindow.getAllWindows().length === 0) {
+    void createWindow().catch((error: unknown) => {
+      dialog.showErrorBox('Startup Error', String(error))
+    })
+  }
+})
 
 // Example IPC handler
 ipcMain.on('toMain', (event) => {
-  event.reply('fromMain', { ok: true, ts: Date.now() });
-});
+  event.reply('fromMain', { ok: true, ts: Date.now() })
+})
 
 ipcMain.handle(
   'save-file',
