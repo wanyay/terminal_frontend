@@ -39,12 +39,18 @@ const queryClient = new QueryClient({
     },
     mutations: {
       onError: (error) => {
-        handleServerError(error)
-
         if (error instanceof AxiosError) {
-          if (error.response?.status === 304) {
+          const status = error.response?.status
+          // Only show global toast for 500 errors; other errors are
+          // handled by the component-level onError callbacks
+          if (status && status >= 500) {
+            handleServerError(error)
+          }
+          if (status === 304) {
             toast.error('Content not modified!')
           }
+        } else {
+          handleServerError(error)
         }
       },
     },

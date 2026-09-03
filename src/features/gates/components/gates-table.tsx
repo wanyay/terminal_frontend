@@ -31,7 +31,7 @@ const columns: ColumnDef<Gate>[] = [
     accessorKey: 'code',
     header: 'Code',
     cell: ({ row }) => (
-      <span className='font-mono text-sm font-medium'>{row.getValue('code')}</span>
+      <span className='font-medium'>{row.getValue('code')}</span>
     ),
   },
   {
@@ -93,7 +93,7 @@ const columns: ColumnDef<Gate>[] = [
               onClick={() => setFormOpen(true)}
             >
               <Pencil className='h-4 w-4' />
-              <span className='sr-only'>Edit {gate.code}</span>
+              <span className='sr-only'>Edit {gate.name}</span>
             </Button>
             <Button
               variant='ghost'
@@ -102,7 +102,7 @@ const columns: ColumnDef<Gate>[] = [
               onClick={() => setDeleteOpen(true)}
             >
               <Trash2 className='h-4 w-4' />
-              <span className='sr-only'>Delete {gate.code}</span>
+              <span className='sr-only'>Delete {gate.name}</span>
             </Button>
           </div>
 
@@ -158,6 +158,7 @@ export function GatesTable({
   const table = useReactTable({
     data: gates,
     columns,
+    getRowId: (row) => row.id,
     pageCount: meta.totalPages,
     state: {
       pagination,
@@ -199,7 +200,7 @@ export function GatesTable({
             onSearchChange(e.target.value)
             onPageChange(1)
           }}
-          className='h-8 w-[250px]'
+          className='h-8 w-62.5'
         />
       </div>
 
@@ -213,9 +214,9 @@ export function GatesTable({
                     {header.isPlaceholder
                       ? null
                       : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
+                        header.column.columnDef.header,
+                        header.getContext(),
+                      )}
                   </TableHead>
                 ))}
               </TableRow>

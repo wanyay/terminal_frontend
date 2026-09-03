@@ -3,7 +3,6 @@ import { useLayout } from '@/context/layout-provider'
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
   SidebarHeader,
   SidebarRail,
 } from '@/components/ui/sidebar'
@@ -11,7 +10,6 @@ import { useAuthStore } from '@/features/auth/stores/auth-store'
 import { AppTitle } from './app-title'
 import { sidebarData } from './data/sidebar-data'
 import { NavGroup } from './nav-group'
-import { NavUser } from './nav-user'
 import type { NavItem } from './types'
 
 export function AppSidebar() {
@@ -42,11 +40,6 @@ export function AppSidebar() {
       .filter((group) => group.items.length > 0)
   }, [userRoles, userGates])
 
-  const fullName = [auth.user?.firstName, auth.user?.lastName]
-    .filter(Boolean)
-    .join(' ')
-  const email = auth.user?.email ?? ''
-
   return (
     <Sidebar collapsible={collapsible} variant={variant}>
       <SidebarHeader>
@@ -57,15 +50,6 @@ export function AppSidebar() {
           <NavGroup key={props.title} {...props} />
         ))}
       </SidebarContent>
-      <SidebarFooter>
-        <NavUser
-          user={{
-            name: fullName || auth.user?.username || 'User',
-            email,
-            avatar: '',
-          }}
-        />
-      </SidebarFooter>
       <SidebarRail />
     </Sidebar>
   )

@@ -1,5 +1,6 @@
 import {
   LayoutDashboard,
+  Monitor,
   DoorOpen,
   UserCog,
   FileBarChart,
@@ -16,9 +17,9 @@ function hasGateType(gates: { type: string }[], ...types: string[]) {
 export const sidebarData: SidebarData = {
   teams: [
     {
-      name: 'TPMS',
+      name: 'Terminal Port Management System',
       logo: Command,
-      plan: 'Terminal Port Management',
+      plan: 'Port Operations',
     },
   ],
   navGroups: [
@@ -39,18 +40,66 @@ export const sidebarData: SidebarData = {
               ].includes(r)
             ),
         },
+        {
+          title: 'Live Monitoring',
+          url: '/live-monitoring',
+          icon: Monitor,
+          authorized: (roles) =>
+            roles.some((r) =>
+              ['SUPER_ADMIN', 'SECURITY_OFFICER', 'SUPERVISOR'].includes(r)
+            ),
+        },
       ],
     },
     {
-      title: 'Operations',
+      title: 'Entry Registration',
       items: [
         {
-          title: 'Entry Registration',
-          url: '/entry-registration',
+          title: 'Container Truck',
+          url: '/entry-registration/container-truck',
           icon: DoorOpen,
           authorized: (roles, gates) =>
-            roles.includes('SUPER_ADMIN') ||
-            (roles.includes('SECURITY_OFFICER') && hasGateType(gates, 'ENTRY')),
+            roles.includes('SECURITY_OFFICER') && hasGateType(gates, 'ENTRY'),
+        },
+        {
+          title: 'Visiting Vehicle',
+          url: '/entry-registration/visiting-vehicle',
+          icon: DoorOpen,
+          authorized: (roles, gates) =>
+            roles.includes('SECURITY_OFFICER') && hasGateType(gates, 'ENTRY'),
+        },
+        {
+          title: 'Visitor',
+          url: '/entry-registration/visitor',
+          icon: DoorOpen,
+          authorized: (roles, gates) =>
+            roles.includes('SECURITY_OFFICER') && hasGateType(gates, 'ENTRY'),
+        },
+      ],
+    },
+    {
+      title: 'Exit Registration',
+      items: [
+        {
+          title: 'Container Truck',
+          url: '/exit-registration/container-truck',
+          icon: DoorOpen,
+          authorized: (roles, gates) =>
+            roles.includes('SECURITY_OFFICER') && hasGateType(gates, 'EXIT'),
+        },
+        {
+          title: 'Visiting Vehicle',
+          url: '/exit-registration/visiting-vehicle',
+          icon: DoorOpen,
+          authorized: (roles, gates) =>
+            roles.includes('SECURITY_OFFICER') && hasGateType(gates, 'EXIT'),
+        },
+        {
+          title: 'Visitor',
+          url: '/exit-registration/visitor',
+          icon: DoorOpen,
+          authorized: (roles, gates) =>
+            roles.includes('SECURITY_OFFICER') && hasGateType(gates, 'EXIT'),
         },
       ],
     },
@@ -76,17 +125,36 @@ export const sidebarData: SidebarData = {
       items: [
         {
           title: 'Reports',
-          url: '/reports',
           icon: FileBarChart,
           authorized: (roles) =>
             roles.some((r) => ['SUPER_ADMIN', 'SUPERVISOR'].includes(r)),
+          items: [
+            {
+              title: 'Container Trucks',
+              url: '/reports/trucks',
+              authorized: (roles) =>
+                roles.some((r) => ['SUPER_ADMIN', 'SUPERVISOR'].includes(r)),
+            },
+            {
+              title: 'Visiting Vehicles',
+              url: '/reports/vehicles',
+              authorized: (roles) =>
+                roles.some((r) => ['SUPER_ADMIN', 'SUPERVISOR'].includes(r)),
+            },
+            {
+              title: 'Visitors',
+              url: '/reports/visitors',
+              authorized: (roles) =>
+                roles.some((r) => ['SUPER_ADMIN', 'SUPERVISOR'].includes(r)),
+            },
+          ],
         },
         {
-          title: 'Audit Logs',
-          url: '/audit-logs',
+          title: 'Blacklist',
+          url: '/blacklist',
           icon: ClipboardList,
-          authorized: (roles) => roles.includes('SUPER_ADMIN'),
-        }
+          authorized: (roles) => roles.some((r) => ['SUPER_ADMIN', 'SUPERVISOR'].includes(r)),
+        },
       ],
     },
   ],

@@ -8,7 +8,7 @@ import {
   type ColumnFiltersState,
   type PaginationState,
 } from '@tanstack/react-table'
-import { Pencil, Trash2 } from 'lucide-react'
+import { KeyRound, Pencil, Trash2, UserCheck, UserX } from 'lucide-react'
 import {
   Table,
   TableBody,
@@ -25,6 +25,8 @@ import { DataTablePagination } from '@/components/data-table/pagination'
 import { useUsers, type User } from '../api/queries'
 import { UserFormDialog } from './user-form-dialog'
 import { UserDeleteDialog } from './user-delete-dialog'
+import { UserChangePasswordDialog } from './user-change-password-dialog'
+import { UserActivateDeactivateDialog } from './user-activate-deactivate-dialog'
 
 const columns: ColumnDef<User>[] = [
   {
@@ -73,14 +75,14 @@ const columns: ColumnDef<User>[] = [
     cell: ({ row }) => {
       const user = row.original
       const isSecurityOfficer = user.roles.some((r) => r.name === 'SECURITY_OFFICER')
-      
+
       if (isSecurityOfficer) {
         // Show assigned gate for Security Officers
         return (
           <span className='text-sm'>
             {user.assignedGate ? (
               <Badge variant='outline' className='text-xs'>
-                {user.assignedGate.code}
+                {user.assignedGate.name}
               </Badge>
             ) : (
               <span className='text-muted-foreground text-sm'>—</span>
@@ -94,7 +96,7 @@ const columns: ColumnDef<User>[] = [
             {user.manageableGates && user.manageableGates.length > 0 ? (
               user.manageableGates.map((gate) => (
                 <Badge key={gate.id} variant='outline' className='text-xs'>
-                  {gate.code}
+                  {gate.name}
                 </Badge>
               ))
             ) : (
@@ -127,6 +129,9 @@ const columns: ColumnDef<User>[] = [
       const user = row.original
       const [formOpen, setFormOpen] = useState(false)
       const [deleteOpen, setDeleteOpen] = useState(false)
+      const [changePasswordOpen, setChangePasswordOpen] = useState(false)
+      const [activateDeactivateOpen, setActivateDeactivateOpen] = useState(false)
+      const [activateDeactivateAction, setActivateDeactivateAction] = useState<'activate' | 'deactivate'>('activate')
 
       return (
         <>
@@ -140,6 +145,42 @@ const columns: ColumnDef<User>[] = [
               <Pencil className='h-4 w-4' />
               <span className='sr-only'>Edit {user.username}</span>
             </Button>
+            <Button
+              variant='ghost'
+              size='icon'
+              className='h-8 w-8'
+              onClick={() => setChangePasswordOpen(true)}
+            >
+              <KeyRound className='h-4 w-4' />
+              <span className='sr-only'>Change password for {user.username}</span>
+            </Button>
+            {user.isActive ? (
+              <Button
+                variant='ghost'
+                size='icon'
+                className='h-8 w-8 text-red-500 hover:text-red-600'
+                onClick={() => {
+                  setActivateDeactivateAction('deactivate')
+                  setActivateDeactivateOpen(true)
+                }}
+              >
+                <UserX className='h-4 w-4' />
+                <span className='sr-only'>Deactivate {user.username}</span>
+              </Button>
+            ) : (
+              <Button
+                variant='ghost'
+                size='icon'
+                className='h-8 w-8 text-green-500 hover:text-green-600'
+                onClick={() => {
+                  setActivateDeactivateAction('activate')
+                  setActivateDeactivateOpen(true)
+                }}
+              >
+                <UserCheck className='h-4 w-4' />
+                <span className='sr-only'>Activate {user.username}</span>
+              </Button>
+            )}
             <Button
               variant='ghost'
               size='icon'
@@ -157,10 +198,23 @@ const columns: ColumnDef<User>[] = [
             user={user}
           />
 
+          <UserChangePasswordDialog
+            open={changePasswordOpen}
+            onOpenChange={setChangePasswordOpen}
+            user={user}
+          />
+
           <UserDeleteDialog
             open={deleteOpen}
             onOpenChange={setDeleteOpen}
             user={user}
+          />
+
+          <UserActivateDeactivateDialog
+            open={activateDeactivateOpen}
+            onOpenChange={setActivateDeactivateOpen}
+            user={user}
+            action={activateDeactivateAction}
           />
         </>
       )
@@ -203,6 +257,7 @@ export function UsersTable({
   const table = useReactTable({
     data: users,
     columns,
+    getRowId: (row) => row.id,
     pageCount: meta.totalPages,
     state: {
       pagination,
@@ -241,7 +296,7 @@ export function UsersTable({
             onSearchChange(e.target.value)
             onPageChange(1)
           }}
-          className='h-8 w-[250px]'
+          className='h-8 w-62.5'
         />
       </div>
 
@@ -255,9 +310,9 @@ export function UsersTable({
                     {header.isPlaceholder
                       ? null
                       : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
+                        header.column.columnDef.header,
+                        header.getContext(),
+                      )}
                   </TableHead>
                 ))}
               </TableRow>

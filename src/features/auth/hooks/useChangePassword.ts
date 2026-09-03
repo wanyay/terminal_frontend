@@ -4,8 +4,10 @@ import axiosClient from '@/lib/api/axiosClient'
 import { useAuthStore } from '../stores/auth-store'
 
 interface ChangePasswordPayload {
-  currentPassword: string
+  currentPassword?: string
   newPassword: string
+  targetUserId?: string
+  mustChangePassword: boolean
 }
 
 export function useChangePassword() {
@@ -15,12 +17,12 @@ export function useChangePassword() {
     mutationFn: async (payload) => {
       await axiosClient.post('/api/v1/auth/change-password', payload)
     },
-    onSuccess: () => {
-      toast.success('Password changed successfully')
-      // Update the user profile to reflect password changed
-      if (auth.user) {
+    onSuccess: (_, payload) => {
+      // Update the user profile to reflect password changed for self-serve
+      if (auth.user && auth.user.mustChangePassword) {
         auth.setUser({ ...auth.user, mustChangePassword: false })
       }
+      toast.success(payload.targetUserId ? 'Password reset successfully' : 'Password changed successfully')
     },
     onError: (error) => {
       toast.error(error.message || 'Failed to change password')

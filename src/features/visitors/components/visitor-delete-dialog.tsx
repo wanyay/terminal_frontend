@@ -35,7 +35,7 @@ export function VisitorDeleteDialog({
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent className='sm:max-w-[425px]'>
+      <AlertDialogContent className='sm:max-w-106.25'>
         <AlertDialogHeader>
           <AlertDialogTitle>Delete Visitor</AlertDialogTitle>
           <AlertDialogDescription>

@@ -176,3 +176,43 @@ export function useDeleteUser() {
     },
   })
 }
+
+// --- Activate User ---
+
+export function useActivateUser() {
+  const queryClient = useQueryClient()
+
+  return useMutation<User, Error, string>({
+    mutationFn: async (id) => {
+      const res = await axiosClient.post<User>(`/api/v1/users/${id}/activate`)
+      return res.data
+    },
+    onSuccess: () => {
+      toast.success('User activated successfully')
+      queryClient.invalidateQueries({ queryKey: usersKeys.all })
+    },
+    onError: (error) => {
+      toast.error(error.message || 'Failed to activate user')
+    },
+  })
+}
+
+// --- Deactivate User ---
+
+export function useDeactivateUser() {
+  const queryClient = useQueryClient()
+
+  return useMutation<User, Error, string>({
+    mutationFn: async (id) => {
+      const res = await axiosClient.post<User>(`/api/v1/users/${id}/deactivate`)
+      return res.data
+    },
+    onSuccess: () => {
+      toast.success('User deactivated successfully')
+      queryClient.invalidateQueries({ queryKey: usersKeys.all })
+    },
+    onError: (error) => {
+      toast.error(error.message || 'Failed to deactivate user')
+    },
+  })
+}

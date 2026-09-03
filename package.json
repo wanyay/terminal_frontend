@@ -1,11 +1,24 @@
 {
-  "name": "shadcn-admin",
+  "name": "terminal-port-management-system",
   "private": false,
-  "version": "2.1.0",
+  "version": "1.0.0",
   "type": "module",
+  "main": "dist-electron/main.cjs",
   "scripts": {
     "dev": "vite",
+    "dev:renderer": "vite",
+    "dev:watch:main": "esbuild electron/main.ts --bundle --platform=node --external:electron --target=node18 --format=cjs --outfile=dist-electron/main.cjs --watch",
+    "dev:watch:preload": "esbuild electron/preload.ts --bundle --platform=node --external:electron --target=chrome116 --format=cjs --outfile=dist-electron/preload.cjs --watch",
+    "dev:electron": "concurrently \"npm:dev:renderer\" \"npm:dev:watch:main\" \"npm:dev:watch:preload\" \"wait-on http://localhost:5173 && electron .\"",
+    "dev:electron:linux": "concurrently \"npm:dev:renderer\" \"npm:dev:watch:main\" \"npm:dev:watch:preload\" \"wait-on http://localhost:5173 && electron . --no-sandbox\"",
+    "dev:all": "npm run dev:electron",
     "build": "tsc -b && vite build",
+    "build:renderer": "tsc -b && vite build",
+    "build:main": "esbuild electron/main.ts --bundle --platform=node --external:electron --target=node18 --format=cjs --outfile=dist-electron/main.cjs",
+    "build:preload": "esbuild electron/preload.ts --bundle --platform=node --external:electron --target=chrome116 --format=cjs --outfile=dist-electron/preload.cjs",
+    "build:all": "npm run build:renderer && npm run build:main && npm run build:preload",
+    "pack": "npm run build:all && electron-builder --dir",
+    "dist": "npm run build:all && electron-builder",
     "lint": "eslint .",
     "preview": "vite preview",
     "format:check": "prettier --check .",
@@ -42,17 +55,21 @@
     "cmdk": "1.1.1",
     "date-fns": "^4.1.0",
     "input-otp": "^1.4.2",
+    "koffi": "^3.1.2",
     "lucide-react": "^0.542.0",
+    "node-hid": "^3.4.0",
     "react": "^19.1.1",
     "react-day-picker": "9.8.1",
     "react-dom": "^19.1.1",
     "react-hook-form": "^7.62.0",
     "react-top-loading-bar": "^3.0.2",
     "recharts": "^3.1.2",
+    "serialport": "^13.0.0",
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.3.1",
     "tailwindcss": "^4.1.12",
     "tw-animate-css": "^1.3.6",
+    "usb": "^1.9.2",
     "zod": "^4.0.17",
     "zustand": "^5.0.8"
   },
@@ -68,6 +85,11 @@
     "@types/react": "^19.1.10",
     "@types/react-dom": "^19.1.7",
     "@vitejs/plugin-react-swc": "^4.0.0",
+    "concurrently": "^8.2.0",
+    "electron": "^43.0.0",
+    "electron-builder": "^26.15.3",
+    "electron-rebuild": "^3.2.9",
+    "esbuild": "^0.28.1",
     "eslint": "^9.33.0",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
@@ -77,6 +99,30 @@
     "prettier-plugin-tailwindcss": "^0.6.14",
     "typescript": "~5.9.2",
     "typescript-eslint": "^8.39.1",
-    "vite": "^7.1.2"
+    "vite": "^7.1.2",
+    "wait-on": "^7.0.0"
+  },
+  "build": {
+    "appId": "com.wanyay.terminal",
+    "productName": "Terminal Port Management System",
+    "files": [
+      "dist/**",
+      "dist-electron/**",
+      "relay-tools/**",
+      "node_modules/**",
+      "package.json"
+    ],
+    "directories": {
+      "buildResources": "build"
+    },
+    "win": {
+      "icon": "build/icon.ico"
+    },
+    "mac": {
+      "icon": "build/icon.icns"
+    },
+    "linux": {
+      "icon": "build/icon.png"
+    }
   }
 }

@@ -39,5 +39,10 @@ export const useLogin = () => {
       // Store the full user profile
       auth.setUser(profile)
     },
+
+    onError: () => {
+      // Error is handled by the component's onError callback
+      // This prevents the error from propagating to global error handler
+    },
   })
 }

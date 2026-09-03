@@ -35,6 +35,12 @@ axiosClient.interceptors.request.use((config) => {
 
 axiosClient.interceptors.response.use(
   (response) => {
+    if (
+      response.config.responseType === 'blob' ||
+      response.config.responseType === 'arraybuffer'
+    ) {
+      return response
+    }
     // Unwrap standard API response: { success, message, data, meta } -> data
     if (
       response.data &&
@@ -53,8 +59,27 @@ axiosClient.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config
 
+    // Extract error message from backend response format
+    if (error.response?.data?.message) {
+      const errorMessage = error.response.data.message
+      if (Array.isArray(errorMessage)) {
+        error.message = errorMessage.join(', ')
+      } else {
+        error.message = errorMessage
+      }
+    }
+
+    // Skip refresh for login/refresh endpoints (expected 401 responses)
+    const isAuthEndpoint =
+      originalRequest.url?.includes('/auth/login') ||
+      originalRequest.url?.includes('/auth/refresh')
+
     // If error is 401 and we haven't tried refreshing yet
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      !isAuthEndpoint
+    ) {
       if (isRefreshing) {
         // If already refreshing, add to queue
         return new Promise((resolve, reject) => {

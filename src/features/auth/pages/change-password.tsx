@@ -62,6 +62,7 @@ export function ChangePassword({
       {
         currentPassword: data.currentPassword,
         newPassword: data.newPassword,
+        mustChangePassword: false,
       },
       {
         onSuccess: () => {

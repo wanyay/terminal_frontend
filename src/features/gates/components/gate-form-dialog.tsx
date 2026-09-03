@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -33,7 +34,7 @@ const formSchema = z.object({
   code: z
     .string()
     .min(1, 'Gate code is required')
-    .max(20, 'Gate code must be at most 20 characters'),
+    .max(50, 'Gate code must be at most 50 characters'),
   name: z
     .string()
     .min(1, 'Gate name is required')
@@ -65,12 +66,32 @@ export function GateFormDialog({
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      code: gate?.code ?? '',
-      name: gate?.name ?? '',
-      type: gate?.type ?? 'ENTRY',
-      description: gate?.description ?? '',
+      code: '',
+      name: '',
+      type: 'ENTRY',
+      description: '',
     },
   })
+
+  useEffect(() => {
+    if (!open) return
+
+    if (isEditing && gate) {
+      form.reset({
+        code: gate.code,
+        name: gate.name,
+        type: gate.type,
+        description: gate.description ?? '',
+      })
+    } else if (!isEditing) {
+      form.reset({
+        code: '',
+        name: '',
+        type: 'ENTRY',
+        description: '',
+      })
+    }
+  }, [open, gate, isEditing, form])
 
   function onSubmit(data: FormValues) {
     const payload = {
@@ -99,7 +120,7 @@ export function GateFormDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className='sm:max-w-[500px]'>
+      <DialogContent className='sm:max-w-125'>
         <DialogHeader>
           <DialogTitle>{isEditing ? 'Edit Gate' : 'Create Gate'}</DialogTitle>
           <DialogDescription>
@@ -147,7 +168,7 @@ export function GateFormDialog({
                   <FormLabel>Gate Type</FormLabel>
                   <Select
                     onValueChange={field.onChange}
-                    defaultValue={field.value}
+                    value={field.value}
                   >
                     <FormControl>
                       <SelectTrigger>
