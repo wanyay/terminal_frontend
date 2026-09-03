@@ -28,6 +28,7 @@ interface GatesResponse {
 }
 
 interface GatePayload {
+  code: string
   name: string
   type: 'ENTRY' | 'EXIT'
   description?: string

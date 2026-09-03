@@ -28,6 +28,13 @@ import { GateDeleteDialog } from './gate-delete-dialog'
 
 const columns: ColumnDef<Gate>[] = [
   {
+    accessorKey: 'code',
+    header: 'Code',
+    cell: ({ row }) => (
+      <span className='font-medium'>{row.getValue('code')}</span>
+    ),
+  },
+  {
     accessorKey: 'name',
     header: 'Name',
     cell: ({ row }) => <span>{row.getValue('name')}</span>,

@@ -34,7 +34,7 @@ export function UserDeleteDialog({
   }
 
   const displayName =
-    [user?.firstName, user?.lastName].filter(Boolean).join(' ') ||
+    user?.fullName ||
     user?.username ||
     ''
 
