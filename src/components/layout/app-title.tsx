@@ -1,6 +1,7 @@
 import { Link } from '@tanstack/react-router'
 import { Menu, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useTranslation } from '@/context/language-provider'
 import {
   SidebarMenu,
   SidebarMenuButton,
@@ -11,6 +12,7 @@ import { Button } from '../ui/button'
 
 export function AppTitle() {
   const { setOpenMobile } = useSidebar()
+  const { t } = useTranslation()
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -25,7 +27,7 @@ export function AppTitle() {
               onClick={() => setOpenMobile(false)}
               className='grid flex-1 text-start text-lg leading-tight'
             >
-              <span className='truncate font-bold'>Dashboard</span>
+              <span className='truncate font-bold'>{t('nav.dashboard')}</span>
               {/* <span className='truncate text-xs'>Development</span> */}
             </Link>
             <ToggleSidebar />
@@ -42,6 +44,7 @@ function ToggleSidebar({
   ...props
 }: React.ComponentProps<typeof Button>) {
   const { toggleSidebar } = useSidebar()
+  const { t } = useTranslation()
 
   return (
     <Button
@@ -58,7 +61,7 @@ function ToggleSidebar({
     >
       <X className='md:hidden' />
       <Menu className='max-md:hidden' />
-      <span className='sr-only'>Toggle Sidebar</span>
+      <span className='sr-only'>{t('common.toggleSidebar')}</span>
     </Button>
   )
 }

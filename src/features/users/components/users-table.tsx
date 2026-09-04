@@ -22,28 +22,33 @@ import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Input } from '@/components/ui/input'
 import { DataTablePagination } from '@/components/data-table/pagination'
+import { useTranslation } from '@/context/language-provider'
+import type { TranslationKey } from '@/lib/i18n'
 import { useUsers, type User } from '../api/queries'
 import { UserFormDialog } from './user-form-dialog'
 import { UserDeleteDialog } from './user-delete-dialog'
 import { UserChangePasswordDialog } from './user-change-password-dialog'
 import { UserActivateDeactivateDialog } from './user-activate-deactivate-dialog'
 
-const columns: ColumnDef<User>[] = [
+type ColumnType = ColumnDef<User>[]
+
+function buildColumns(t: (key: TranslationKey, params?: Record<string, string | number>) => string): ColumnType {
+  return [
   {
     accessorKey: 'username',
-    header: 'Username',
+    header: t('users.username' as never),
     cell: ({ row }) => (
       <span className='font-medium'>{row.getValue('username')}</span>
     ),
   },
   {
     accessorKey: 'fullName',
-    header: 'Name',
+    header: t('users.name' as never),
     cell: ({ row }) => <span>{row.getValue('fullName')}</span>,
   },
   {
     accessorKey: 'email',
-    header: 'Email',
+    header: t('users.email' as never),
     cell: ({ row }) => (
       <span className='text-muted-foreground text-sm'>
         {row.getValue('email')}
@@ -52,7 +57,7 @@ const columns: ColumnDef<User>[] = [
   },
   {
     id: 'roles',
-    header: 'Roles',
+    header: t('users.roles' as never),
     cell: ({ row }) => {
       const roles = row.original.roles
       return (
@@ -71,7 +76,7 @@ const columns: ColumnDef<User>[] = [
   },
   {
     id: 'gates',
-    header: 'Gates',
+    header: t('users.gates' as never),
     cell: ({ row }) => {
       const user = row.original
       const isSecurityOfficer = user.roles.some((r) => r.name === 'SECURITY_OFFICER')
@@ -109,7 +114,7 @@ const columns: ColumnDef<User>[] = [
   },
   {
     accessorKey: 'isActive',
-    header: 'Status',
+    header: t('common.status' as never),
     cell: ({ row }) => {
       const active = row.getValue('isActive') as boolean
       return (
@@ -117,14 +122,14 @@ const columns: ColumnDef<User>[] = [
           variant={active ? 'outline' : 'secondary'}
           className={active ? 'border-green-500 text-green-600' : ''}
         >
-          {active ? 'Active' : 'Inactive'}
+          {active ? t('common.active' as never) : t('common.inactive' as never)}
         </Badge>
       )
     },
   },
   {
     id: 'actions',
-    header: 'Actions',
+    header: t('common.actions' as never),
     cell: function ActionCell({ row }) {
       const user = row.original
       const [formOpen, setFormOpen] = useState(false)
@@ -143,7 +148,7 @@ const columns: ColumnDef<User>[] = [
               onClick={() => setFormOpen(true)}
             >
               <Pencil className='h-4 w-4' />
-              <span className='sr-only'>Edit {user.username}</span>
+              <span className='sr-only'>{t('users.editAccessible' as never, { name: user.username })}</span>
             </Button>
             <Button
               variant='ghost'
@@ -152,7 +157,7 @@ const columns: ColumnDef<User>[] = [
               onClick={() => setChangePasswordOpen(true)}
             >
               <KeyRound className='h-4 w-4' />
-              <span className='sr-only'>Change password for {user.username}</span>
+              <span className='sr-only'>{t('users.changePasswordAccessible' as never, { name: user.username })}</span>
             </Button>
             {user.isActive ? (
               <Button
@@ -165,7 +170,7 @@ const columns: ColumnDef<User>[] = [
                 }}
               >
                 <UserX className='h-4 w-4' />
-                <span className='sr-only'>Deactivate {user.username}</span>
+                <span className='sr-only'>{t('users.deactivateAccessible' as never, { name: user.username })}</span>
               </Button>
             ) : (
               <Button
@@ -178,7 +183,7 @@ const columns: ColumnDef<User>[] = [
                 }}
               >
                 <UserCheck className='h-4 w-4' />
-                <span className='sr-only'>Activate {user.username}</span>
+                <span className='sr-only'>{t('users.activateAccessible' as never, { name: user.username })}</span>
               </Button>
             )}
             <Button
@@ -188,7 +193,7 @@ const columns: ColumnDef<User>[] = [
               onClick={() => setDeleteOpen(true)}
             >
               <Trash2 className='h-4 w-4' />
-              <span className='sr-only'>Delete {user.username}</span>
+              <span className='sr-only'>{t('users.deleteAccessible' as never, { name: user.username })}</span>
             </Button>
           </div>
 
@@ -221,6 +226,7 @@ const columns: ColumnDef<User>[] = [
     },
   },
 ]
+}
 
 interface UsersTableProps {
   page: number
@@ -239,6 +245,8 @@ export function UsersTable({
   onPerPageChange,
   onSearchChange,
 }: UsersTableProps) {
+  const { t } = useTranslation()
+  const columns = buildColumns(t)
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const { data, isLoading, isError } = useUsers({
     page,
@@ -280,7 +288,7 @@ export function UsersTable({
     return (
       <div className='flex items-center justify-center py-12'>
         <p className='text-destructive text-sm'>
-          Failed to load users. Please try again.
+          {t('users.failedLoad' as never)}
         </p>
       </div>
     )
@@ -290,7 +298,7 @@ export function UsersTable({
     <div className='space-y-4'>
       <div className='flex items-center justify-between'>
         <Input
-          placeholder='Search users...'
+          placeholder={t('users.search' as never)}
           value={search}
           onChange={(e) => {
             onSearchChange(e.target.value)
@@ -335,7 +343,7 @@ export function UsersTable({
                   colSpan={columns.length}
                   className='h-24 text-center text-muted-foreground'
                 >
-                  No users found.
+                  {t('users.noUsersFound' as never)}
                 </TableCell>
               </TableRow>
             ) : (

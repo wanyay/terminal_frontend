@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { type Table } from '@tanstack/react-table'
 import { X } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useTranslation } from '@/context/language-provider'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
@@ -32,6 +33,7 @@ export function DataTableBulkActions<TData>({
   entityName,
   children,
 }: DataTableBulkActionsProps<TData>): React.ReactNode | null {
+  const { t } = useTranslation()
   const selectedRows = table.getFilteredSelectedRowModel().rows
   const selectedCount = selectedRows.length
   const toolbarRef = useRef<HTMLDivElement>(null)
@@ -40,14 +42,14 @@ export function DataTableBulkActions<TData>({
   // Announce selection changes to screen readers
   useEffect(() => {
     if (selectedCount > 0) {
-      const message = `${selectedCount} ${entityName}${selectedCount > 1 ? 's' : ''} selected. Bulk actions toolbar is available.`
+      const message = `${t('common.selectedCount' as never, { count: selectedCount })} ${entityName}${selectedCount > 1 ? 's' : ''} selected. Bulk actions toolbar is available.`
       setAnnouncement(message)
 
       // Clear announcement after a delay
       const timer = setTimeout(() => setAnnouncement(''), 3000)
       return () => clearTimeout(timer)
     }
-  }, [selectedCount, entityName])
+  }, [selectedCount, entityName, t])
 
   const handleClearSelection = () => {
     table.resetRowSelection()
@@ -134,7 +136,7 @@ export function DataTableBulkActions<TData>({
       <div
         ref={toolbarRef}
         role='toolbar'
-        aria-label={`Bulk actions for ${selectedCount} selected ${entityName}${selectedCount > 1 ? 's' : ''}`}
+        aria-label={`${t('common.selectedCount' as never, { count: selectedCount })} ${entityName}${selectedCount > 1 ? 's' : ''} ${t('common.selected' as never)}`}
         aria-describedby='bulk-actions-description'
         tabIndex={-1}
         onKeyDown={handleKeyDown}
@@ -159,15 +161,15 @@ export function DataTableBulkActions<TData>({
                 size='icon'
                 onClick={handleClearSelection}
                 className='size-6 rounded-full'
-                aria-label='Clear selection'
-                title='Clear selection (Escape)'
+                aria-label={t('common.clearSelection' as never)}
+                title={`${t('common.clearSelection' as never)} (${t('common.clearSelectionEscape' as never)})`}
               >
                 <X />
-                <span className='sr-only'>Clear selection</span>
+                <span className='sr-only'>{t('common.clearSelection' as never)}</span>
               </Button>
             </TooltipTrigger>
             <TooltipContent>
-              <p>Clear selection (Escape)</p>
+              <p>{t('common.clearSelection' as never)} ({t('common.clearSelectionEscape' as never)})</p>
             </TooltipContent>
           </Tooltip>
 
@@ -184,7 +186,7 @@ export function DataTableBulkActions<TData>({
             <Badge
               variant='default'
               className='min-w-8 rounded-lg'
-              aria-label={`${selectedCount} selected`}
+              aria-label={t('common.selectedCount' as never, { count: selectedCount })}
             >
               {selectedCount}
             </Badge>{' '}
@@ -192,7 +194,7 @@ export function DataTableBulkActions<TData>({
               {entityName}
               {selectedCount > 1 ? 's' : ''}
             </span>{' '}
-            selected
+            {t('common.selected' as never)}
           </div>
 
           <Separator

@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import axiosClient from '@/lib/api/axiosClient'
+import { getT } from '@/lib/i18n'
 
 // --- Types ---
 
@@ -28,6 +29,7 @@ interface GatesResponse {
 }
 
 interface GatePayload {
+  code: string
   name: string
   type: 'ENTRY' | 'EXIT'
   description?: string
@@ -97,11 +99,11 @@ export function useCreateGate() {
       return res.data
     },
     onSuccess: () => {
-      toast.success('Gate created successfully')
+      toast.success(getT('gates.createdSuccess' as never))
       queryClient.invalidateQueries({ queryKey: gatesKeys.all })
     },
     onError: (error) => {
-      toast.error(error.message || 'Failed to create gate')
+      toast.error(error.message || getT('gates.failedCreate' as never))
     },
   })
 }
@@ -117,11 +119,11 @@ export function useUpdateGate(id: string) {
       return res.data
     },
     onSuccess: () => {
-      toast.success('Gate updated successfully')
+      toast.success(getT('gates.updatedSuccess' as never))
       queryClient.invalidateQueries({ queryKey: gatesKeys.all })
     },
     onError: (error) => {
-      toast.error(error.message || 'Failed to update gate')
+      toast.error(error.message || getT('gates.failedUpdate' as never))
     },
   })
 }
@@ -136,11 +138,11 @@ export function useDeleteGate() {
       await axiosClient.delete(`/api/v1/gates/${id}`)
     },
     onSuccess: () => {
-      toast.success('Gate deleted successfully')
+      toast.success(getT('gates.deletedSuccess' as never))
       queryClient.invalidateQueries({ queryKey: gatesKeys.all })
     },
     onError: (error) => {
-      toast.error(error.message || 'Failed to delete gate')
+      toast.error(error.message || getT('gates.failedDelete' as never))
     },
   })
 }

@@ -5,6 +5,7 @@ import {
   UserCog,
   FileBarChart,
   ClipboardList,
+  ScrollText,
   Command,
 } from 'lucide-react'
 import { type SidebarData } from '../types'
@@ -17,17 +18,17 @@ function hasGateType(gates: { type: string }[], ...types: string[]) {
 export const sidebarData: SidebarData = {
   teams: [
     {
-      name: 'Terminal Port Management System',
+      nameKey: 'app.name',
       logo: Command,
-      plan: 'Port Operations',
+      planKey: 'app.plan',
     },
   ],
   navGroups: [
     {
-      title: 'Main',
+      titleKey: 'nav.main',
       items: [
         {
-          title: 'Dashboard',
+          titleKey: 'nav.dashboard',
           url: '/',
           icon: LayoutDashboard,
           authorized: (roles) =>
@@ -41,7 +42,7 @@ export const sidebarData: SidebarData = {
             ),
         },
         {
-          title: 'Live Monitoring',
+          titleKey: 'nav.liveMonitoring',
           url: '/live-monitoring',
           icon: Monitor,
           authorized: (roles) =>
@@ -52,24 +53,24 @@ export const sidebarData: SidebarData = {
       ],
     },
     {
-      title: 'Entry Registration',
+      titleKey: 'nav.entryRegistration',
       items: [
         {
-          title: 'Container Truck',
+          titleKey: 'nav.containerTruck',
           url: '/entry-registration/container-truck',
           icon: DoorOpen,
           authorized: (roles, gates) =>
             roles.includes('SECURITY_OFFICER') && hasGateType(gates, 'ENTRY'),
         },
         {
-          title: 'Visiting Vehicle',
+          titleKey: 'nav.visitingVehicle',
           url: '/entry-registration/visiting-vehicle',
           icon: DoorOpen,
           authorized: (roles, gates) =>
             roles.includes('SECURITY_OFFICER') && hasGateType(gates, 'ENTRY'),
         },
         {
-          title: 'Visitor',
+          titleKey: 'nav.visitor',
           url: '/entry-registration/visitor',
           icon: DoorOpen,
           authorized: (roles, gates) =>
@@ -78,24 +79,24 @@ export const sidebarData: SidebarData = {
       ],
     },
     {
-      title: 'Exit Registration',
+      titleKey: 'nav.exitRegistration',
       items: [
         {
-          title: 'Container Truck',
+          titleKey: 'nav.containerTruck',
           url: '/exit-registration/container-truck',
           icon: DoorOpen,
           authorized: (roles, gates) =>
             roles.includes('SECURITY_OFFICER') && hasGateType(gates, 'EXIT'),
         },
         {
-          title: 'Visiting Vehicle',
+          titleKey: 'nav.visitingVehicle',
           url: '/exit-registration/visiting-vehicle',
           icon: DoorOpen,
           authorized: (roles, gates) =>
             roles.includes('SECURITY_OFFICER') && hasGateType(gates, 'EXIT'),
         },
         {
-          title: 'Visitor',
+          titleKey: 'nav.visitor',
           url: '/exit-registration/visitor',
           icon: DoorOpen,
           authorized: (roles, gates) =>
@@ -104,16 +105,16 @@ export const sidebarData: SidebarData = {
       ],
     },
     {
-      title: 'Configuration',
+      titleKey: 'nav.configuration',
       items: [
         {
-          title: 'Gates',
+          titleKey: 'nav.gates',
           url: '/gates',
           icon: DoorOpen,
           authorized: (roles) => roles.includes('SUPER_ADMIN'),
         },
         {
-          title: 'Users',
+          titleKey: 'nav.users',
           url: '/users',
           icon: UserCog,
           authorized: (roles) => roles.includes('SUPER_ADMIN'),
@@ -121,28 +122,28 @@ export const sidebarData: SidebarData = {
       ],
     },
     {
-      title: 'System',
+      titleKey: 'nav.system',
       items: [
         {
-          title: 'Reports',
+          titleKey: 'nav.reports',
           icon: FileBarChart,
           authorized: (roles) =>
             roles.some((r) => ['SUPER_ADMIN', 'SUPERVISOR'].includes(r)),
           items: [
             {
-              title: 'Container Trucks',
+              titleKey: 'nav.containerTrucks',
               url: '/reports/trucks',
               authorized: (roles) =>
                 roles.some((r) => ['SUPER_ADMIN', 'SUPERVISOR'].includes(r)),
             },
             {
-              title: 'Visiting Vehicles',
+              titleKey: 'nav.visitingVehicles',
               url: '/reports/vehicles',
               authorized: (roles) =>
                 roles.some((r) => ['SUPER_ADMIN', 'SUPERVISOR'].includes(r)),
             },
             {
-              title: 'Visitors',
+              titleKey: 'nav.visitors',
               url: '/reports/visitors',
               authorized: (roles) =>
                 roles.some((r) => ['SUPER_ADMIN', 'SUPERVISOR'].includes(r)),
@@ -150,10 +151,18 @@ export const sidebarData: SidebarData = {
           ],
         },
         {
-          title: 'Blacklist',
+          titleKey: 'nav.blacklist',
           url: '/blacklist',
           icon: ClipboardList,
-          authorized: (roles) => roles.some((r) => ['SUPER_ADMIN', 'SUPERVISOR'].includes(r)),
+          authorized: (roles) =>
+            roles.some((r) => ['SUPER_ADMIN', 'SUPERVISOR'].includes(r)),
+        },
+        {
+          titleKey: 'nav.auditLogs',
+          url: '/audit-logs',
+          icon: ScrollText,
+          authorized: (roles) =>
+            roles.some((r) => ['SUPER_ADMIN', 'SUPERVISOR'].includes(r)),
         },
       ],
     },

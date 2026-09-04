@@ -1,4 +1,5 @@
 import useDialogState from '@/hooks/use-dialog-state'
+import { useTranslation } from '@/context/language-provider'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import {
@@ -13,6 +14,7 @@ import { SignOutDialog } from '@/components/sign-out-dialog'
 import { useAuthStore } from '@/features/auth/stores/auth-store'
 
 export function ProfileDropdown() {
+  const { t } = useTranslation()
   const [open, setOpen] = useDialogState()
   const { auth } = useAuthStore()
 
@@ -37,7 +39,7 @@ export function ProfileDropdown() {
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={() => setOpen(true)}>
-            Sign out
+            {t('common.signOut' as never)}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

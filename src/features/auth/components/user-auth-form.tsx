@@ -17,6 +17,8 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { PasswordInput } from '@/components/password-input'
+import { useTranslation } from '@/context/language-provider'
+import { getT } from '@/lib/i18n'
 import { useLogin } from '../hooks/useLogin'
 
 const formSchema = z.object({
@@ -39,6 +41,7 @@ export function UserAuthForm({
 }: UserAuthFormProps) {
   const navigate = useNavigate()
   const { mutate: login, isPending } = useLogin()
+  const { t } = useTranslation()
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -51,12 +54,9 @@ export function UserAuthForm({
   async function onSubmit(data: z.infer<typeof formSchema>) {
     login(data, {
       onSuccess: (_profile) => {
-        // Show success message
-        toast.success(`Welcome back, ${data.username}!`)
+        toast.success(getT('auth.welcomeBack' as never, { name: data.username }))
 
-        // Wait for next tick to ensure auth state is updated before navigation
         setTimeout(() => {
-          // Redirect to the stored location or default to dashboard
           const targetPath = redirectTo || '/'
           navigate({ to: targetPath, replace: true })
         }, 100)
@@ -64,14 +64,12 @@ export function UserAuthForm({
 
       onError: (error) => {
         if (error instanceof AxiosError) {
-          const errorMessage = error?.response?.data?.message || 'Login failed. Please check your credentials.'
+          const errorMessage = error?.response?.data?.message || getT('auth.loginFailed' as never)
           
-          // Only show toast for 500 errors
           if (error.response?.status === 500) {
             toast.error(errorMessage)
           }
           
-          // Always show form error
           form.setError(
             'password',
             {
@@ -97,9 +95,9 @@ export function UserAuthForm({
           name='username'
           render={({ field }) => (
             <FormItem>
-              <FormLabel>User Name</FormLabel>
+              <FormLabel>{t('auth.username' as never)}</FormLabel>
               <FormControl>
-                <Input placeholder='john-doe' {...field} />
+                <Input placeholder={t('auth.usernamePlaceholder' as never)} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -110,9 +108,9 @@ export function UserAuthForm({
           name='password'
           render={({ field }) => (
             <FormItem className='relative'>
-              <FormLabel>Password</FormLabel>
+              <FormLabel>{t('auth.password' as never)}</FormLabel>
               <FormControl>
-                <PasswordInput placeholder='********' {...field} />
+                <PasswordInput placeholder={t('auth.passwordPlaceholder' as never)} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -122,12 +120,12 @@ export function UserAuthForm({
           {isPending ? (
             <>
               <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-              Signing in...
+              {t('auth.signingIn' as never)}
             </>
           ) : (
             <>
               <LogIn className='mr-2 h-4 w-4' />
-              Sign in
+              {t('auth.signIn' as never)}
             </>
           )}
         </Button>

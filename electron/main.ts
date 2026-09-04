@@ -1,12 +1,14 @@
 import { app, BrowserWindow, dialog, ipcMain, Menu } from 'electron';
 import fs from 'fs/promises'
 import path from 'path';
+import { usbRelayService } from './usb-relay.service';
 
 const APP_NAME = 'Terminal Port Management System'
-const VITE_DEV_SERVER_URL = process.env.VITE_DEV_SERVER_URL
+// In development, default to the standard Vite dev server URL if not explicitly set
+const VITE_DEV_SERVER_URL = process.env.VITE_DEV_SERVER_URL || 'http://localhost:5173'
 
 function isDevMode() {
-  return !app.isPackaged && Boolean(VITE_DEV_SERVER_URL)
+  return !app.isPackaged
 }
 
 async function createWindow() {
@@ -14,7 +16,7 @@ async function createWindow() {
     width: 1200,
     height: 800,
     title: APP_NAME,
-    autoHideMenuBar: true,
+    autoHideMenuBar: false,
     show: false,
     webPreferences: {
       preload: path.join(__dirname, 'preload.cjs'),
@@ -30,12 +32,36 @@ async function createWindow() {
     win.show();
   });
 
+  win.webContents.session.on('select-usb-device', (event, details, callback) => {
+    const devices = details.deviceList;
+    if (devices.length > 0) {
+      console.log(devices);
+      callback(devices[0].deviceId)
+    } else {
+      callback('')
+    }
+  });
+
+  win.webContents.on('did-fail-load', (event, errorCode, errorDescription, validatedURL) => {
+    console.error('Failed to load:', errorCode, errorDescription, validatedURL);
+    dialog.showErrorBox('Load Error', `Failed to load: ${errorDescription}\nURL: ${validatedURL}`);
+  });
+
   if (isDevMode() && VITE_DEV_SERVER_URL) {
     await win.loadURL(VITE_DEV_SERVER_URL)
     win.webContents.openDevTools()
   } else {
+    // In production, the dist folder is in the same directory as the electron files
     const indexHtml = path.join(__dirname, '..', 'dist', 'index.html')
-    await win.loadFile(indexHtml)
+    console.log('Loading index.html from:', indexHtml)
+
+    try {
+      await win.loadFile(indexHtml)
+    } catch (error) {
+      console.error('Error loading index.html:', error)
+      dialog.showErrorBox('Load Error', `Failed to load index.html from: ${indexHtml}\nError: ${String(error)}`)
+      throw error
+    }
   }
 }
 
@@ -59,6 +85,35 @@ app.on('activate', () => {
     })
   }
 })
+
+// USB Relay IPC handlers
+ipcMain.handle('usb:connect', async (_event, config) => {
+  return await usbRelayService.connect(config);
+});
+
+ipcMain.handle('usb:disconnect', async () => {
+  await usbRelayService.disconnect();
+});
+
+ipcMain.handle('usb:set-relay', async (_event, { channel, state }) => {
+  return await usbRelayService.setRelay(channel, state);
+});
+
+ipcMain.handle('usb:toggle-relay', async (_event, { channel }) => {
+  return await usbRelayService.toggleRelay(channel);
+});
+
+ipcMain.handle('usb:set-all-relays', async (_event, { state }) => {
+  return await usbRelayService.setAllRelays(state);
+});
+
+ipcMain.handle('usb:get-status', async () => {
+  return await usbRelayService.getStatus();
+});
+
+ipcMain.handle('usb:get-device-info', async () => {
+  return await usbRelayService.getDeviceInfo();
+});
 
 // Example IPC handler
 ipcMain.on('toMain', (event) => {

@@ -6,6 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigate, useParams } from '@tanstack/react-router'
 import { ArrowLeft, Loader2, LogOut } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
+import { StatusBadge } from '@/components/status-badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
@@ -26,16 +27,19 @@ import {
 import { Skeleton } from '@/components/ui/skeleton'
 import { Textarea } from '@/components/ui/textarea'
 import { useAuthStore } from '@/features/auth/stores/auth-store'
+import { useTranslation } from '@/context/language-provider'
+import { getT } from '@/lib/i18n'
 import { useVisitor, useRegisterVisitorExit } from '../api/queries'
 
 const formSchema = z.object({
-  exitGateId: z.string().min(1, 'Exit gate is required'),
+  exitGateId: z.string().min(1, getT('exit.exitGateRequired' as never)),
   remarks: z.string().optional(),
 })
 
 type FormValues = z.infer<typeof formSchema>
 
 export function VisitorExitDetail() {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const { visitorId } = useParams({
     from: '/_authenticated/exit-registration/visitor/$visitorId',
@@ -76,7 +80,7 @@ export function VisitorExitDetail() {
     return (
       <div className='flex items-center justify-center py-12'>
         <p className='text-destructive text-sm'>
-          Failed to load visitor details.
+          {t('exit.failedLoadVisitor' as never)}
         </p>
       </div>
     )
@@ -90,14 +94,14 @@ export function VisitorExitDetail() {
         onClick={() => navigate({ to: '/exit-registration/visitor' })}
       >
         <ArrowLeft className='mr-1 h-4 w-4' />
-        Back to Active Visitors
+        {t('exit.backToActiveVisitors' as never)}
       </Button>
 
       <div className='grid gap-6 lg:grid-cols-2'>
         {/* Visitor Details Card */}
         <Card>
           <CardHeader>
-            <CardTitle className='text-lg'>Visitor Details</CardTitle>
+            <CardTitle className='text-lg'>{t('exit.visitorDetails' as never)}</CardTitle>
           </CardHeader>
           <CardContent>
             {isLoading ? (
@@ -111,7 +115,7 @@ export function VisitorExitDetail() {
                 <dl className='space-y-3'>
                   <div className='flex justify-between'>
                     <dt className='text-muted-foreground text-sm'>
-                      Visitor Name
+                      {t('exit.visitorName' as never)}
                     </dt>
                     <dd className='text-sm font-medium'>
                       {visitor.visitorName}
@@ -119,33 +123,33 @@ export function VisitorExitDetail() {
                   </div>
                   <div className='flex justify-between'>
                     <dt className='text-muted-foreground text-sm'>
-                      NRC / Passport
+                      {t('exit.nrcOrPassport' as never)}
                     </dt>
                     <dd className='text-sm'>{visitor.nrcOrPassport || '—'}</dd>
                   </div>
                   <div className='flex justify-between'>
-                    <dt className='text-muted-foreground text-sm'>Phone</dt>
+                    <dt className='text-muted-foreground text-sm'>{t('exit.phone' as never)}</dt>
                     <dd className='text-sm'>{visitor.phoneNumber || '—'}</dd>
                   </div>
                   <div className='flex justify-between'>
-                    <dt className='text-muted-foreground text-sm'>Company</dt>
+                    <dt className='text-muted-foreground text-sm'>{t('exit.company' as never)}</dt>
                     <dd className='text-sm'>{visitor.companyName || '—'}</dd>
                   </div>
                   <div className='flex justify-between'>
                     <dt className='text-muted-foreground text-sm'>
-                      Purpose of Visit
+                      {t('exit.purposeOfVisit' as never)}
                     </dt>
                     <dd className='text-sm'>{visitor.purposeOfVisit || '—'}</dd>
                   </div>
                   <div className='flex justify-between'>
                     <dt className='text-muted-foreground text-sm'>
-                      Host Employee
+                      {t('exit.hostEmployee' as never)}
                     </dt>
                     <dd className='text-sm'>{visitor.hostEmployee || '—'}</dd>
                   </div>
                   <div className='flex justify-between'>
                     <dt className='text-muted-foreground text-sm'>
-                      Entry Gate
+                      {t('exit.entryGate' as never)}
                     </dt>
                     <dd className='text-sm'>
                       {visitor.entryGate ? (
@@ -159,21 +163,20 @@ export function VisitorExitDetail() {
                   </div>
                   <div className='flex justify-between'>
                     <dt className='text-muted-foreground text-sm'>
-                      Entry Time
+                      {t('exit.entryTime' as never)}
                     </dt>
                     <dd className='text-sm'>
                       {format(new Date(visitor.entryTime), 'dd/MM/yyyy HH:mm')}
                     </dd>
                   </div>
                   <div className='flex justify-between'>
-                    <dt className='text-muted-foreground text-sm'>Status</dt>
+                    <dt className='text-muted-foreground text-sm'>{t('exit.status' as never)}</dt>
                     <dd>
-                      <Badge
-                        variant='outline'
-                        className='border-blue-500 text-xs text-blue-600'
-                      >
-                        {visitor.status}
-                      </Badge>
+                      <StatusBadge
+                        status={visitor.status}
+                        label={t(`statusBadges.${visitor.status.toLowerCase()}` as never)}
+                        className='text-xs'
+                      />
                     </dd>
                   </div>
                 </dl>
@@ -188,14 +191,14 @@ export function VisitorExitDetail() {
                       name='exitGateId'
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Exit Gate</FormLabel>
+                          <FormLabel>{t('exit.exitGate' as never)}</FormLabel>
                           <Select
                             onValueChange={field.onChange}
                             value={field.value}
                           >
                             <FormControl>
                               <SelectTrigger>
-                                <SelectValue placeholder='Select exit gate' />
+                                <SelectValue placeholder={t('exit.selectExitGate' as never)} />
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
@@ -215,11 +218,11 @@ export function VisitorExitDetail() {
                       name='remarks'
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Remarks</FormLabel>
+                          <FormLabel>{t('exit.remarks' as never)}</FormLabel>
                           <FormControl>
                             <Textarea
                               rows={3}
-                              placeholder='Any remarks...'
+                              placeholder={t('exit.anyRemarks' as never)}
                               className='resize-none'
                               {...field}
                             />
@@ -236,12 +239,12 @@ export function VisitorExitDetail() {
                       {isPending ? (
                         <>
                           <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                          Registering Exit...
+                          {t('exit.registeringExit' as never)}
                         </>
                       ) : (
                         <>
                           <LogOut className='mr-2 h-4 w-4' />
-                          Register Exit
+                          {t('exit.registerExit' as never)}
                         </>
                       )}
                     </Button>
@@ -263,14 +266,14 @@ export function VisitorExitDetail() {
               onClick={() => setGateStatus('open')}
               className='flex h-14 w-40 items-center justify-center rounded-lg bg-green-600 text-sm font-bold tracking-wide text-white shadow-md transition-all hover:bg-green-500 hover:shadow-lg active:scale-95'
             >
-              OPEN GATE
+              {t('common.openGate' as never)}
             </button>
             <button
               type='button'
               onClick={() => setGateStatus('closed')}
               className='flex h-14 w-40 items-center justify-center rounded-lg bg-red-700 text-sm font-bold tracking-wide text-white shadow-md transition-all hover:bg-red-600 hover:shadow-lg active:scale-95'
             >
-              CLOSE GATE
+              {t('common.closeGate' as never)}
             </button>
           </div>
 

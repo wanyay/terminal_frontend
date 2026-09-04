@@ -22,31 +22,43 @@ import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Input } from '@/components/ui/input'
 import { DataTablePagination } from '@/components/data-table/pagination'
+import { useTranslation } from '@/context/language-provider'
+import type { TranslationKey } from '@/lib/i18n'
 import { useGates, type Gate } from '../api/queries'
 import { GateFormDialog } from './gate-form-dialog'
 import { GateDeleteDialog } from './gate-delete-dialog'
 
-const columns: ColumnDef<Gate>[] = [
+type ColumnType = ColumnDef<Gate>[]
+
+function buildColumns(t: (key: TranslationKey, params?: Record<string, string | number>) => string): ColumnType {
+  return [
+  {
+    accessorKey: 'code',
+    header: t('gates.code' as never),
+    cell: ({ row }) => (
+      <span className='font-medium'>{row.getValue('code')}</span>
+    ),
+  },
   {
     accessorKey: 'name',
-    header: 'Name',
+    header: t('gates.name' as never),
     cell: ({ row }) => <span>{row.getValue('name')}</span>,
   },
   {
     accessorKey: 'type',
-    header: 'Type',
+    header: t('gates.type' as never),
     cell: ({ row }) => {
       const type = row.getValue('type') as string
       return (
         <Badge variant={type === 'ENTRY' ? 'default' : 'secondary'}>
-          {type === 'ENTRY' ? 'Entry' : 'Exit'}
+          {type === 'ENTRY' ? t('gates.entry' as never) : t('gates.exit' as never)}
         </Badge>
       )
     },
   },
   {
     accessorKey: 'description',
-    header: 'Description',
+    header: t('gates.description' as never),
     cell: ({ row }) => {
       const desc = row.getValue('description') as string | null
       return (
@@ -58,19 +70,19 @@ const columns: ColumnDef<Gate>[] = [
   },
   {
     accessorKey: 'isActive',
-    header: 'Status',
+    header: t('common.status' as never),
     cell: ({ row }) => {
       const active = row.getValue('isActive') as boolean
       return (
         <Badge variant={active ? 'outline' : 'secondary'} className={active ? 'border-green-500 text-green-600' : ''}>
-          {active ? 'Active' : 'Inactive'}
+          {active ? t('common.active' as never) : t('common.inactive' as never)}
         </Badge>
       )
     },
   },
   {
     id: 'actions',
-    header: 'Actions',
+    header: t('common.actions' as never),
     cell: function ActionCell({ row }) {
       const gate = row.original
       const [formOpen, setFormOpen] = useState(false)
@@ -86,7 +98,7 @@ const columns: ColumnDef<Gate>[] = [
               onClick={() => setFormOpen(true)}
             >
               <Pencil className='h-4 w-4' />
-              <span className='sr-only'>Edit {gate.name}</span>
+              <span className='sr-only'>{t('gates.editAccessible' as never, { name: gate.name })}</span>
             </Button>
             <Button
               variant='ghost'
@@ -95,7 +107,7 @@ const columns: ColumnDef<Gate>[] = [
               onClick={() => setDeleteOpen(true)}
             >
               <Trash2 className='h-4 w-4' />
-              <span className='sr-only'>Delete {gate.name}</span>
+              <span className='sr-only'>{t('gates.deleteAccessible' as never, { name: gate.name })}</span>
             </Button>
           </div>
 
@@ -115,6 +127,7 @@ const columns: ColumnDef<Gate>[] = [
     },
   },
 ]
+}
 
 interface GatesTableProps {
   page: number
@@ -133,6 +146,8 @@ export function GatesTable({
   onPerPageChange,
   onSearchChange,
 }: GatesTableProps) {
+  const { t } = useTranslation()
+  const columns = buildColumns(t)
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const { data, isLoading, isError } = useGates({
     page,
@@ -177,7 +192,7 @@ export function GatesTable({
     return (
       <div className='flex items-center justify-center py-12'>
         <p className='text-destructive text-sm'>
-          Failed to load gates. Please try again.
+          {t('gates.failedLoad' as never)}
         </p>
       </div>
     )
@@ -187,7 +202,7 @@ export function GatesTable({
     <div className='space-y-4'>
       <div className='flex items-center justify-between'>
         <Input
-          placeholder='Search gates...'
+          placeholder={t('gates.search' as never)}
           value={search}
           onChange={(e) => {
             onSearchChange(e.target.value)
@@ -232,7 +247,7 @@ export function GatesTable({
                   colSpan={columns.length}
                   className='h-24 text-center text-muted-foreground'
                 >
-                  No gates found.
+                  {t('gates.noGatesFound' as never)}
                 </TableCell>
               </TableRow>
             ) : (

@@ -23,19 +23,23 @@ import {
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
+import { StatusBadge } from '@/components/status-badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useState } from 'react'
 import { useAuthStore } from '@/features/auth/stores/auth-store'
+import { useTranslation } from '@/context/language-provider'
+import { getT } from '@/lib/i18n'
 import { useTruck, useRegisterTruckExit } from '../api/queries'
 
 const formSchema = z.object({
-  exitGateId: z.string().min(1, 'Exit gate is required'),
+  exitGateId: z.string().min(1, getT('exit.exitGateRequired' as never)),
   remarks: z.string().optional(),
 })
 
 type FormValues = z.infer<typeof formSchema>
 
 export function TruckExitDetail() {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const { truckId } = useParams({ from: '/_authenticated/exit-registration/container-truck/$truckId' })
   const { auth } = useAuthStore()
@@ -73,7 +77,7 @@ export function TruckExitDetail() {
   if (isError) {
     return (
       <div className='flex items-center justify-center py-12'>
-        <p className='text-destructive text-sm'>Failed to load truck details.</p>
+        <p className='text-destructive text-sm'>{t('exit.failedLoadTruck' as never)}</p>
       </div>
     )
   }
@@ -86,14 +90,14 @@ export function TruckExitDetail() {
         onClick={() => navigate({ to: '/exit-registration/container-truck' })}
       >
         <ArrowLeft className='mr-1 h-4 w-4' />
-        Back to Active Trucks
+        {t('exit.backToActiveTrucks' as never)}
       </Button>
 
       <div className='grid gap-6 lg:grid-cols-2'>
         {/* Truck Details Card */}
         <Card>
           <CardHeader>
-            <CardTitle className='text-lg'>Truck Details</CardTitle>
+            <CardTitle className='text-lg'>{t('exit.truckDetails' as never)}</CardTitle>
           </CardHeader>
           <CardContent>
             {isLoading ? (
@@ -106,19 +110,19 @@ export function TruckExitDetail() {
               <div className='space-y-6'>
                 <dl className='space-y-3'>
                   <div className='flex justify-between'>
-                    <dt className='text-muted-foreground text-sm'>License Plate</dt>
+                    <dt className='text-muted-foreground text-sm'>{t('exit.licensePlate' as never)}</dt>
                     <dd className='text-sm font-medium'>{truck.licensePlate}</dd>
                   </div>
                   <div className='flex justify-between'>
-                    <dt className='text-muted-foreground text-sm'>Driver Name</dt>
+                    <dt className='text-muted-foreground text-sm'>{t('exit.driverName' as never)}</dt>
                     <dd className='text-sm'>{truck.driverName || '—'}</dd>
                   </div>
                   <div className='flex justify-between'>
-                    <dt className='text-muted-foreground text-sm'>Driver NRC</dt>
+                    <dt className='text-muted-foreground text-sm'>{t('exit.driverNrc' as never)}</dt>
                     <dd className='text-sm'>{truck.driverNrc || '—'}</dd>
                   </div>
                   <div className='flex justify-between'>
-                    <dt className='text-muted-foreground text-sm'>Entry Gate</dt>
+                    <dt className='text-muted-foreground text-sm'>{t('exit.entryGate' as never)}</dt>
                     <dd className='text-sm'>
                       {truck.entryGate ? (
                         <Badge variant='outline' className='text-xs'>
@@ -130,17 +134,19 @@ export function TruckExitDetail() {
                     </dd>
                   </div>
                   <div className='flex justify-between'>
-                    <dt className='text-muted-foreground text-sm'>Entry Time</dt>
+                    <dt className='text-muted-foreground text-sm'>{t('exit.entryTime' as never)}</dt>
                     <dd className='text-sm'>
                       {format(new Date(truck.entryTime), 'dd/MM/yyyy HH:mm')}
                     </dd>
                   </div>
                   <div className='flex justify-between'>
-                    <dt className='text-muted-foreground text-sm'>Status</dt>
+                    <dt className='text-muted-foreground text-sm'>{t('exit.status' as never)}</dt>
                     <dd>
-                      <Badge variant='outline' className='border-blue-500 text-blue-600 text-xs'>
-                        {truck.status}
-                      </Badge>
+                      <StatusBadge
+                        status={truck.status}
+                        label={t(`statusBadges.${truck.status.toLowerCase()}` as never)}
+                        className='text-xs'
+                      />
                     </dd>
                   </div>
                 </dl>
@@ -152,11 +158,11 @@ export function TruckExitDetail() {
                       name='exitGateId'
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Exit Gate</FormLabel>
+                          <FormLabel>{t('exit.exitGate' as never)}</FormLabel>
                           <Select onValueChange={field.onChange} value={field.value}>
                             <FormControl>
                               <SelectTrigger>
-                                <SelectValue placeholder='Select exit gate' />
+                                <SelectValue placeholder={t('exit.selectExitGate' as never)} />
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
@@ -176,11 +182,11 @@ export function TruckExitDetail() {
                       name='remarks'
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Remarks</FormLabel>
+                          <FormLabel>{t('exit.remarks' as never)}</FormLabel>
                           <FormControl>
                             <Textarea
                               rows={3}
-                              placeholder='Any remarks...'
+                              placeholder={t('exit.anyRemarks' as never)}
                               className='resize-none'
                               {...field}
                             />
@@ -193,12 +199,12 @@ export function TruckExitDetail() {
                       {isPending ? (
                         <>
                           <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                          Registering Exit...
+                          {t('exit.registeringExit' as never)}
                         </>
                       ) : (
                         <>
                           <LogOut className='mr-2 h-4 w-4' />
-                          Register Exit
+                          {t('exit.registerExit' as never)}
                         </>
                       )}
                     </Button>
@@ -220,14 +226,14 @@ export function TruckExitDetail() {
                   onClick={() => setGateStatus('open')}
                   className='flex h-14 w-40 items-center justify-center rounded-lg bg-green-600 text-sm font-bold tracking-wide text-white shadow-md transition-all hover:bg-green-500 hover:shadow-lg active:scale-95'
                 >
-                  OPEN GATE
+                  {t('common.openGate' as never)}
                 </button>
                 <button
                   type='button'
                   onClick={() => setGateStatus('closed')}
                   className='flex h-14 w-40 items-center justify-center rounded-lg bg-red-700 text-sm font-bold tracking-wide text-white shadow-md transition-all hover:bg-red-600 hover:shadow-lg active:scale-95'
                 >
-                  CLOSE GATE
+                  {t('common.closeGate' as never)}
                 </button>
               </div>
 

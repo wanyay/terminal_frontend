@@ -9,6 +9,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
+import { useTranslation } from '@/context/language-provider'
 import { useDeleteVisitor, type Visitor } from '../api/queries'
 
 interface VisitorDeleteDialogProps {
@@ -23,6 +24,7 @@ export function VisitorDeleteDialog({
   visitor,
 }: VisitorDeleteDialogProps) {
   const { mutate: deleteVisitor, isPending } = useDeleteVisitor()
+  const { t } = useTranslation()
 
   function handleDelete() {
     if (!visitor) return
@@ -37,14 +39,13 @@ export function VisitorDeleteDialog({
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent className='sm:max-w-106.25'>
         <AlertDialogHeader>
-          <AlertDialogTitle>Delete Visitor</AlertDialogTitle>
+          <AlertDialogTitle>{t('visitors.deleteVisitor' as never)}</AlertDialogTitle>
           <AlertDialogDescription>
-            Are you sure you want to delete visitor{' '}
-            <strong>{visitor?.visitorName}</strong>? This action cannot be undone.
+            {t('visitors.deleteVisitorConfirm' as never, { name: visitor?.visitorName ?? '' })}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
+          <AlertDialogCancel disabled={isPending}>{t('common.cancel' as never)}</AlertDialogCancel>
           <AlertDialogAction
             onClick={(e) => {
               e.preventDefault()
@@ -56,7 +57,7 @@ export function VisitorDeleteDialog({
             {isPending && (
               <Loader2 className='mr-2 h-4 w-4 animate-spin' />
             )}
-            Delete
+            {t('common.delete' as never)}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

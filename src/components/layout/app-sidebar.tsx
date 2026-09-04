@@ -47,7 +47,7 @@ export function AppSidebar() {
       </SidebarHeader>
       <SidebarContent>
         {filteredNavGroups.map((props) => (
-          <NavGroup key={props.title} {...props} />
+          <NavGroup key={props.titleKey} {...props} />
         ))}
       </SidebarContent>
       <SidebarRail />

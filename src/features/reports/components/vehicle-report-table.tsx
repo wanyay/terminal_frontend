@@ -7,7 +7,7 @@ import {
   type ColumnDef,
   type SortingState,
 } from '@tanstack/react-table'
-import { Badge } from '@/components/ui/badge'
+import { StatusBadge } from '@/components/status-badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import {
   Table,
@@ -19,7 +19,124 @@ import {
 } from '@/components/ui/table'
 import { DataTableColumnHeader } from '@/components/data-table/column-header'
 import ServerSidePagination from '@/components/server-side-pagination'
+import { useTranslation } from '@/context/language-provider'
 import type { VehicleReport, ReportsMeta } from '../api/queries'
+
+type Translator = ReturnType<typeof useTranslation>['t']
+
+function buildColumns(t: Translator): ColumnDef<VehicleReport>[] {
+  return [
+  {
+    accessorKey: 'plateNumber',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title={t('reports.plateNumber' as never)} />
+    ),
+    cell: ({ row }) => (
+      <span className='font-medium'>{row.original.plateNumber}</span>
+    ),
+  },
+  {
+    accessorKey: 'vehicleType',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title={t('reports.vehicleType' as never)} />
+    ),
+    cell: ({ row }) => <span>{row.original.vehicleType || '—'}</span>,
+  },
+  {
+    accessorKey: 'vehicleModel',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title={t('reports.vehicleModel' as never)} />
+    ),
+    cell: ({ row }) => <span>{row.original.vehicleModel || '—'}</span>,
+  },
+  {
+    accessorKey: 'visitorName',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title={t('reports.visitorName' as never)} />
+    ),
+    cell: ({ row }) => <span>{row.original.visitorName}</span>,
+  },
+  {
+    accessorKey: 'nrcOrLicense',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title={t('reports.nrcPassportDriverLicense' as never)} />
+    ),
+    cell: ({ row }) => <span>{row.original.nrcOrLicense || '—'}</span>,
+  },
+  {
+    accessorKey: 'companyName',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title={t('reports.companyName' as never)} />
+    ),
+    cell: ({ row }) => <span>{row.original.companyName || '—'}</span>,
+  },
+  {
+    accessorKey: 'purposeOfVisit',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title={t('reports.purposeOfVisit' as never)} />
+    ),
+    cell: ({ row }) => <span>{row.original.purposeOfVisit || '—'}</span>,
+  },
+  {
+    id: 'entryGate',
+    header: t('reports.entryGate' as never),
+    cell: ({ row }) => <span>{row.original.entryGate?.name || '—'}</span>,
+  },
+  {
+    id: 'exitGate',
+    header: t('reports.exitGate' as never),
+    cell: ({ row }) => <span>{row.original.exitGate?.name || '—'}</span>,
+  },
+  {
+    accessorKey: 'entryTime',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title={t('reports.entryTime' as never)} />
+    ),
+    cell: ({ row }) => (
+      <span>
+        {row.original.entryTime
+          ? format(new Date(row.original.entryTime), 'dd/MM/yyyy h:mma')
+          : '—'}
+      </span>
+    ),
+  },
+  {
+    accessorKey: 'exitTime',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title={t('reports.exitTime' as never)} />
+    ),
+    cell: ({ row }) => (
+      <span>
+        {row.original.exitTime
+          ? format(new Date(row.original.exitTime), 'dd/MM/yyyy h:mma')
+          : '—'}
+      </span>
+    ),
+  },
+  {
+    accessorKey: 'status',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title={t('reports.status' as never)} />
+    ),
+    cell: ({ row }) => {
+      const status = row.original.status
+      return (
+        <StatusBadge
+          status={status}
+          label={t(`statusBadges.${status.toLowerCase()}` as never)}
+        />
+      )
+    },
+  },
+  {
+    accessorKey: 'remarks',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title={t('reports.remarks' as never)} />
+    ),
+    cell: ({ row }) => <span>{row.original.remarks || '—'}</span>,
+  },
+]
+}
 
 interface VehicleReportTableProps {
   data: VehicleReport[]
@@ -34,119 +151,6 @@ interface VehicleReportTableProps {
   onPerPageChange: (perPage: number) => void
 }
 
-const columns: ColumnDef<VehicleReport>[] = [
-  {
-    accessorKey: 'plateNumber',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Plate Number' />
-    ),
-    cell: ({ row }) => (
-      <span className='font-medium'>{row.original.plateNumber}</span>
-    ),
-  },
-  {
-    accessorKey: 'vehicleType',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Vehicle Type' />
-    ),
-    cell: ({ row }) => <span>{row.original.vehicleType || '—'}</span>,
-  },
-  {
-    accessorKey: 'vehicleModel',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Vehicle Model' />
-    ),
-    cell: ({ row }) => <span>{row.original.vehicleModel || '—'}</span>,
-  },
-  {
-    accessorKey: 'visitorName',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Visitor Name' />
-    ),
-    cell: ({ row }) => <span>{row.original.visitorName}</span>,
-  },
-  {
-    accessorKey: 'nrcOrLicense',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='NRC/Passport/Driver License' />
-    ),
-    cell: ({ row }) => <span>{row.original.nrcOrLicense || '—'}</span>,
-  },
-  {
-    accessorKey: 'companyName',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Company Name' />
-    ),
-    cell: ({ row }) => <span>{row.original.companyName || '—'}</span>,
-  },
-  {
-    accessorKey: 'purposeOfVisit',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Purpose of Visit' />
-    ),
-    cell: ({ row }) => <span>{row.original.purposeOfVisit || '—'}</span>,
-  },
-  {
-    id: 'entryGate',
-    header: 'Entry Gate',
-    cell: ({ row }) => <span>{row.original.entryGate?.name || '—'}</span>,
-  },
-  {
-    id: 'exitGate',
-    header: 'Exit Gate',
-    cell: ({ row }) => <span>{row.original.exitGate?.name || '—'}</span>,
-  },
-  {
-    accessorKey: 'entryTime',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Entry Time' />
-    ),
-    cell: ({ row }) => (
-      <span>
-        {row.original.entryTime
-          ? format(new Date(row.original.entryTime), 'dd/MM/yyyy HH:mm')
-          : '—'}
-      </span>
-    ),
-  },
-  {
-    accessorKey: 'exitTime',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Exit Time' />
-    ),
-    cell: ({ row }) => (
-      <span>
-        {row.original.exitTime
-          ? format(new Date(row.original.exitTime), 'dd/MM/yyyy HH:mm')
-          : '—'}
-      </span>
-    ),
-  },
-  {
-    accessorKey: 'status',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Status' />
-    ),
-    cell: ({ row }) => {
-      const status = row.original.status
-      const variant =
-        status === 'EXITED'
-          ? 'secondary'
-          : status === 'CANCELLED'
-          ? 'destructive'
-          : 'default'
-      return <Badge variant={variant}>{status}</Badge>
-    },
-  },
-  {
-    accessorKey: 'remarks',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Remarks' />
-    ),
-    cell: ({ row }) => <span>{row.original.remarks || '—'}</span>,
-  },
-]
-
 export function VehicleReportTable({
   data,
   meta,
@@ -159,11 +163,12 @@ export function VehicleReportTable({
   onPageChange,
   onPerPageChange,
 }: VehicleReportTableProps) {
-  const columnDefs = useMemo(() => columns, [])
+  const { t } = useTranslation()
+  const columns = useMemo(() => buildColumns(t), [t])
 
   const table = useReactTable({
     data,
-    columns: columnDefs,
+    columns,
     state: { sorting },
     manualSorting: true,
     onSortingChange: (updater) => {
@@ -177,7 +182,7 @@ export function VehicleReportTable({
     return (
       <div className='flex items-center justify-center py-12'>
         <p className='text-destructive text-sm'>
-          Failed to load vehicle report data. Please try again.
+          {t('reports.failedLoadVehicle' as never)}
         </p>
       </div>
     )
@@ -207,7 +212,7 @@ export function VehicleReportTable({
             {isLoading ? (
               Array.from({ length: 5 }).map((_, index) => (
                 <TableRow key={index}>
-                  {columnDefs.map((_, cellIndex) => (
+                  {columns.map((_, cellIndex) => (
                     <TableCell key={cellIndex}>
                       <Skeleton className='h-5 w-full' />
                     </TableCell>
@@ -217,10 +222,10 @@ export function VehicleReportTable({
             ) : data.length === 0 ? (
               <TableRow>
                 <TableCell
-                  colSpan={columnDefs.length}
+                  colSpan={columns.length}
                   className='text-muted-foreground h-24 text-center'
                 >
-                  No vehicle records found.
+                  {t('reports.noVehicleRecords' as never)}
                 </TableCell>
               </TableRow>
             ) : (

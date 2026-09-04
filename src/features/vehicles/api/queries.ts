@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import axiosClient from '@/lib/api/axiosClient'
+import { getT } from '@/lib/i18n'
 
 // --- Types ---
 
@@ -106,11 +107,11 @@ export function useRegisterVehicleEntry() {
       return res.data
     },
     onSuccess: (data) => {
-      toast.success(`${data.plateNumber} entry registered`)
+      toast.success(getT('vehicles.entryRegistered' as never, { plate: data.plateNumber }))
       qc.invalidateQueries({ queryKey: vehiclesKeys.all })
     },
     onError: (error) =>
-      toast.error(error.message || 'Failed to register entry'),
+      toast.error(error.message || getT('vehicles.failedRegisterEntry' as never)),
   })
 }
 
@@ -127,10 +128,10 @@ export function useRegisterVehicleExit() {
       return res.data
     },
     onSuccess: (data) => {
-      toast.success(`${data.plateNumber} exit registered`)
+      toast.success(getT('vehicles.exitRegistered' as never, { plate: data.plateNumber }))
       qc.invalidateQueries({ queryKey: vehiclesKeys.all })
     },
-    onError: (error) => toast.error(error.message || 'Failed to register exit'),
+    onError: (error) => toast.error(error.message || getT('vehicles.failedRegisterExit' as never)),
   })
 }
 
@@ -146,10 +147,10 @@ export function useCancelVehicle() {
       return res.data
     },
     onSuccess: (data) => {
-      toast.success(`${data.plateNumber} cancelled`)
+      toast.success(getT('vehicles.cancelled' as never, { plate: data.plateNumber }))
       qc.invalidateQueries({ queryKey: vehiclesKeys.all })
     },
-    onError: (error) => toast.error(error.message || 'Failed to cancel'),
+    onError: (error) => toast.error(error.message || getT('vehicles.failedCancel' as never)),
   })
 }
 
@@ -166,10 +167,10 @@ export function useUpdateVehicle(id: string) {
       return res.data
     },
     onSuccess: () => {
-      toast.success('Vehicle updated')
+      toast.success(getT('vehicles.updated' as never))
       qc.invalidateQueries({ queryKey: vehiclesKeys.all })
     },
-    onError: (error) => toast.error(error.message || 'Failed to update'),
+    onError: (error) => toast.error(error.message || getT('vehicles.failedUpdate' as never)),
   })
 }
 
@@ -182,9 +183,9 @@ export function useDeleteVehicle() {
       await axiosClient.delete(`/api/v1/vehicles/${id}`)
     },
     onSuccess: () => {
-      toast.success('Vehicle deleted')
+      toast.success(getT('vehicles.deleted' as never))
       qc.invalidateQueries({ queryKey: vehiclesKeys.all })
     },
-    onError: (error) => toast.error(error.message || 'Failed to delete'),
+    onError: (error) => toast.error(error.message || getT('vehicles.failedDelete' as never)),
   })
 }

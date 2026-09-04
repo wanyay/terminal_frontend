@@ -30,3 +30,19 @@ export function requireGateType(...gateTypes: Array<'ENTRY' | 'EXIT'>) {
     }
   }
 }
+
+/**
+ * Route guard that redirects to the dashboard if the user doesn't have
+ * at least one of the given permissions.
+ */
+export function requirePermissions(...allowedPermissions: string[]) {
+  return () => {
+    const { auth } = useAuthStore.getState()
+    const hasPermission = auth.permissionNames.some((p) =>
+      allowedPermissions.includes(p)
+    )
+    if (!hasPermission) {
+      throw redirect({ to: '/', replace: true })
+    }
+  }
+}

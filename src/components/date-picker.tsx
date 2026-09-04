@@ -1,6 +1,7 @@
 import { format } from 'date-fns'
 import { Calendar as CalendarIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useTranslation } from '@/context/language-provider'
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
 import {
@@ -13,15 +14,17 @@ type DatePickerProps = {
   selected: Date | undefined
   onSelect: (date: Date | undefined) => void
   placeholder?: string
-  className?: string 
+  className?: string
 }
 
 export function DatePicker({
   selected,
   onSelect,
-  placeholder = 'Pick a date',
+  placeholder,
   className,
 }: DatePickerProps) {
+  const { t } = useTranslation()
+  const resolvedPlaceholder = placeholder ?? t('common.pickADate' as never)
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -36,7 +39,7 @@ export function DatePicker({
           {selected ? (
             format(selected, 'MMM d, yyyy')
           ) : (
-            <span>{placeholder}</span>
+            <span>{resolvedPlaceholder}</span>
           )}
           <CalendarIcon className='ms-auto h-4 w-4 opacity-50' />
         </Button>

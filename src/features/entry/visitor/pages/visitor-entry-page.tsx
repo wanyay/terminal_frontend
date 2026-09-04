@@ -21,10 +21,12 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { useAuthStore } from '@/features/auth/stores/auth-store'
+import { useTranslation } from '@/context/language-provider'
+import { getT } from '@/lib/i18n'
 import { useCreateVisitorEntry } from '../api/queries'
 
 const formSchema = z.object({
-  visitorName: z.string().min(1, 'Visitor Name is required'),
+  visitorName: z.string().min(1, getT('entry.visitorNameRequired' as never)),
   nrcOrPassport: z.string().optional(),
   phoneNumber: z.string().optional(),
   companyName: z.string().optional(),
@@ -36,6 +38,7 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>
 
 export function VisitorEntryPage() {
+  const { t } = useTranslation()
   const createVisitorEntry = useCreateVisitorEntry()
   const { auth } = useAuthStore()
   const entryGates = auth.assignedGates.filter((g) => g.type === 'ENTRY')
@@ -98,9 +101,9 @@ export function VisitorEntryPage() {
                 name='visitorName'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Visitor Name</FormLabel>
+                    <FormLabel>{t('entry.visitorName' as never)}</FormLabel>
                     <FormControl>
-                      <Input placeholder='John Doe' {...field} />
+                      <Input placeholder={t('entry.johnDoe' as never)} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -111,9 +114,9 @@ export function VisitorEntryPage() {
                 name='nrcOrPassport'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>NRC / Passport</FormLabel>
+                    <FormLabel>{t('entry.nrcOrPassport' as never)}</FormLabel>
                     <FormControl>
-                      <Input placeholder='12/ABC(N)123456' {...field} />
+                      <Input placeholder={t('entry.nrcExample' as never)} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -124,9 +127,9 @@ export function VisitorEntryPage() {
                 name='phoneNumber'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Phone Number</FormLabel>
+                    <FormLabel>{t('entry.phoneNumber' as never)}</FormLabel>
                     <FormControl>
-                      <Input placeholder='+959123456789' {...field} />
+                      <Input placeholder={t('entry.phoneExample' as never)} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -137,9 +140,9 @@ export function VisitorEntryPage() {
                 name='companyName'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Company Name</FormLabel>
+                    <FormLabel>{t('entry.companyName' as never)}</FormLabel>
                     <FormControl>
-                      <Input placeholder='ABC Corp' {...field} />
+                      <Input placeholder={t('entry.companyExample' as never)} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -150,9 +153,9 @@ export function VisitorEntryPage() {
                 name='hostEmployee'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Host Employee</FormLabel>
+                    <FormLabel>{t('entry.hostEmployee' as never)}</FormLabel>
                     <FormControl>
-                      <Input placeholder='Mr. Manager' {...field} />
+                      <Input placeholder={t('entry.managerExample' as never)} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -163,9 +166,9 @@ export function VisitorEntryPage() {
                 name='purposeOfVisit'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Purpose of Visit</FormLabel>
+                    <FormLabel>{t('entry.purposeOfVisit' as never)}</FormLabel>
                     <FormControl>
-                      <Input placeholder='Meeting, Delivery, etc.' {...field} />
+                      <Input placeholder={t('entry.purposeExample' as never)} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -176,11 +179,11 @@ export function VisitorEntryPage() {
                 name='entryGateId'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Entry Gate</FormLabel>
+                    <FormLabel>{t('entry.entryGate' as never)}</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder='Select entry gate' />
+                          <SelectValue placeholder={t('entry.selectEntryGate' as never)} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -201,8 +204,8 @@ export function VisitorEntryPage() {
                 disabled={createVisitorEntry.isPending}
               >
                 {createVisitorEntry.isPending
-                  ? 'Submitting...'
-                  : 'Submit Entry'}
+                  ? t('common.submitting' as never)
+                  : t('entry.submitEntry' as never)}
               </Button>
             </form>
           </Form>
@@ -216,14 +219,14 @@ export function VisitorEntryPage() {
             onClick={() => setGateStatus('open')}
             className='flex h-14 w-40 items-center justify-center rounded-lg bg-green-600 text-sm font-bold tracking-wide text-white shadow-md transition-all hover:bg-green-500 hover:shadow-lg active:scale-95'
           >
-            OPEN GATE
+            {t('common.openGate' as never)}
           </button>
           <button
             type='button'
             onClick={() => setGateStatus('closed')}
             className='flex h-14 w-40 items-center justify-center rounded-lg bg-red-700 text-sm font-bold tracking-wide text-white shadow-md transition-all hover:bg-red-600 hover:shadow-lg active:scale-95'
           >
-            CLOSE GATE
+            {t('common.closeGate' as never)}
           </button>
         </div>
         <div className='relative flex items-end justify-center'>

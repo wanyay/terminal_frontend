@@ -7,7 +7,7 @@ import {
   type ColumnDef,
   type SortingState,
 } from '@tanstack/react-table'
-import { Badge } from '@/components/ui/badge'
+import { StatusBadge } from '@/components/status-badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import {
   Table,
@@ -19,7 +19,117 @@ import {
 } from '@/components/ui/table'
 import { DataTableColumnHeader } from '@/components/data-table/column-header'
 import ServerSidePagination from '@/components/server-side-pagination'
+import { useTranslation } from '@/context/language-provider'
 import type { VisitorReport, ReportsMeta } from '../api/queries'
+
+type Translator = ReturnType<typeof useTranslation>['t']
+
+function buildColumns(t: Translator): ColumnDef<VisitorReport>[] {
+  return [
+  {
+    accessorKey: 'visitorName',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title={t('reports.visitorName' as never)} />
+    ),
+    cell: ({ row }) => (
+      <span className='font-medium'>{row.original.visitorName}</span>
+    ),
+  },
+  {
+    accessorKey: 'nrcOrPassport',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title={t('reports.nrcOrPassport' as never)} />
+    ),
+    cell: ({ row }) => <span>{row.original.nrcOrPassport || '—'}</span>,
+  },
+  {
+    accessorKey: 'phoneNumber',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title={t('reports.phoneNumber' as never)} />
+    ),
+    cell: ({ row }) => <span>{row.original.phoneNumber || '—'}</span>,
+  },
+  {
+    accessorKey: 'companyName',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title={t('reports.companyName' as never)} />
+    ),
+    cell: ({ row }) => <span>{row.original.companyName || '—'}</span>,
+  },
+  {
+    accessorKey: 'purposeOfVisit',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title={t('reports.purposeOfVisit' as never)} />
+    ),
+    cell: ({ row }) => <span>{row.original.purposeOfVisit || '—'}</span>,
+  },
+  {
+    accessorKey: 'hostEmployee',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title={t('reports.hostEmployee' as never)} />
+    ),
+    cell: ({ row }) => <span>{row.original.hostEmployee || '—'}</span>,
+  },
+  {
+    id: 'entryGate',
+    header: t('reports.entryGate' as never),
+    cell: ({ row }) => <span>{row.original.entryGate?.name || '—'}</span>,
+  },
+  {
+    id: 'exitGate',
+    header: t('reports.exitGate' as never),
+    cell: ({ row }) => <span>{row.original.exitGate?.name || '—'}</span>,
+  },
+  {
+    accessorKey: 'entryTime',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title={t('reports.entryTime' as never)} />
+    ),
+    cell: ({ row }) => (
+      <span>
+        {row.original.entryTime
+          ? format(new Date(row.original.entryTime), 'dd/MM/yyyy h:mma')
+          : '—'}
+      </span>
+    ),
+  },
+  {
+    accessorKey: 'exitTime',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title={t('reports.exitTime' as never)} />
+    ),
+    cell: ({ row }) => (
+      <span>
+        {row.original.exitTime
+          ? format(new Date(row.original.exitTime), 'dd/MM/yyyy h:mma')
+          : '—'}
+      </span>
+    ),
+  },
+  {
+    accessorKey: 'status',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title={t('reports.status' as never)} />
+    ),
+    cell: ({ row }) => {
+      const status = row.original.status
+      return (
+        <StatusBadge
+          status={status}
+          label={t(`statusBadges.${status.toLowerCase()}` as never)}
+        />
+      )
+    },
+  },
+  {
+    accessorKey: 'remarks',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title={t('reports.remarks' as never)} />
+    ),
+    cell: ({ row }) => <span>{row.original.remarks || '—'}</span>,
+  },
+]
+}
 
 interface VisitorReportTableProps {
   data: VisitorReport[]
@@ -34,112 +144,6 @@ interface VisitorReportTableProps {
   onPerPageChange: (perPage: number) => void
 }
 
-const columns: ColumnDef<VisitorReport>[] = [
-  {
-    accessorKey: 'visitorName',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Visitor Name' />
-    ),
-    cell: ({ row }) => (
-      <span className='font-medium'>{row.original.visitorName}</span>
-    ),
-  },
-  {
-    accessorKey: 'nrcOrPassport',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='NRC/Passport' />
-    ),
-    cell: ({ row }) => <span>{row.original.nrcOrPassport || '—'}</span>,
-  },
-  {
-    accessorKey: 'phoneNumber',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Phone Number' />
-    ),
-    cell: ({ row }) => <span>{row.original.phoneNumber || '—'}</span>,
-  },
-  {
-    accessorKey: 'companyName',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Company Name' />
-    ),
-    cell: ({ row }) => <span>{row.original.companyName || '—'}</span>,
-  },
-  {
-    accessorKey: 'purposeOfVisit',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Purpose of Visit' />
-    ),
-    cell: ({ row }) => <span>{row.original.purposeOfVisit || '—'}</span>,
-  },
-  {
-    accessorKey: 'hostEmployee',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Host Employee' />
-    ),
-    cell: ({ row }) => <span>{row.original.hostEmployee || '—'}</span>,
-  },
-  {
-    id: 'entryGate',
-    header: 'Entry Gate',
-    cell: ({ row }) => <span>{row.original.entryGate?.name || '—'}</span>,
-  },
-  {
-    id: 'exitGate',
-    header: 'Exit Gate',
-    cell: ({ row }) => <span>{row.original.exitGate?.name || '—'}</span>,
-  },
-  {
-    accessorKey: 'entryTime',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Entry Time' />
-    ),
-    cell: ({ row }) => (
-      <span>
-        {row.original.entryTime
-          ? format(new Date(row.original.entryTime), 'dd/MM/yyyy HH:mm')
-          : '—'}
-      </span>
-    ),
-  },
-  {
-    accessorKey: 'exitTime',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Exit Time' />
-    ),
-    cell: ({ row }) => (
-      <span>
-        {row.original.exitTime
-          ? format(new Date(row.original.exitTime), 'dd/MM/yyyy HH:mm')
-          : '—'}
-      </span>
-    ),
-  },
-  {
-    accessorKey: 'status',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Status' />
-    ),
-    cell: ({ row }) => {
-      const status = row.original.status
-      const variant =
-        status === 'EXITED'
-          ? 'secondary'
-          : status === 'CANCELLED'
-          ? 'destructive'
-          : 'default'
-      return <Badge variant={variant}>{status}</Badge>
-    },
-  },
-  {
-    accessorKey: 'remarks',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Remarks' />
-    ),
-    cell: ({ row }) => <span>{row.original.remarks || '—'}</span>,
-  },
-]
-
 export function VisitorReportTable({
   data,
   meta,
@@ -152,11 +156,12 @@ export function VisitorReportTable({
   onPageChange,
   onPerPageChange,
 }: VisitorReportTableProps) {
-  const columnDefs = useMemo(() => columns, [])
+  const { t } = useTranslation()
+  const columns = useMemo(() => buildColumns(t), [t])
 
   const table = useReactTable({
     data,
-    columns: columnDefs,
+    columns,
     state: { sorting },
     manualSorting: true,
     onSortingChange: (updater) => {
@@ -170,7 +175,7 @@ export function VisitorReportTable({
     return (
       <div className='flex items-center justify-center py-12'>
         <p className='text-destructive text-sm'>
-          Failed to load visitor report data. Please try again.
+          {t('reports.failedLoadVisitor' as never)}
         </p>
       </div>
     )
@@ -200,7 +205,7 @@ export function VisitorReportTable({
             {isLoading ? (
               Array.from({ length: 5 }).map((_, index) => (
                 <TableRow key={index}>
-                  {columnDefs.map((_, cellIndex) => (
+                  {columns.map((_, cellIndex) => (
                     <TableCell key={cellIndex}>
                       <Skeleton className='h-5 w-full' />
                     </TableCell>
@@ -210,10 +215,10 @@ export function VisitorReportTable({
             ) : data.length === 0 ? (
               <TableRow>
                 <TableCell
-                  colSpan={columnDefs.length}
+                  colSpan={columns.length}
                   className='text-muted-foreground h-24 text-center'
                 >
-                  No visitor records found.
+                  {t('reports.noVisitorRecords' as never)}
                 </TableCell>
               </TableRow>
             ) : (

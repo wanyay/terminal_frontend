@@ -1,6 +1,7 @@
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import axiosClient from '@/lib/api/axiosClient'
+import { getT } from '@/lib/i18n'
 
 interface ContainerTruckEntryPayload {
   licensePlate: string
@@ -18,10 +19,10 @@ export function useCreateContainerTruckEntry() {
       return res.data
     },
     onSuccess: () => {
-      toast.success('Truck Entry created successfully')
+      toast.success(getT('entry.truckEntryCreated' as never))
     },
     onError: (error) => {
-      toast.error(error.message || 'Failed to create gate')
+      toast.error(error.message || getT('entry.failedCreateGate' as never))
     },
   })
 }

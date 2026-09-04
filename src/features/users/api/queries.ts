@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import axiosClient from '@/lib/api/axiosClient'
+import { getT, type TranslationKey } from '@/lib/i18n'
 
 // --- Types ---
 
@@ -70,6 +71,14 @@ export const ROLE_OPTIONS = [
   { value: 'USER', label: 'User' },
 ] as const
 
+export function getRoleOptions(t: (key: TranslationKey, params?: Record<string, string | number>) => string) {
+  return [
+    { value: 'SUPER_ADMIN', label: t('users.superAdmin' as never) },
+    { value: 'SECURITY_OFFICER', label: t('users.securityOfficer' as never) },
+    { value: 'SUPERVISOR', label: t('users.supervisor' as never) }
+  ] as const
+}
+
 // --- Query Keys ---
 
 export const usersKeys = {
@@ -129,11 +138,11 @@ export function useCreateUser() {
       return res.data
     },
     onSuccess: () => {
-      toast.success('User created successfully')
+      toast.success(getT('users.createdSuccess' as never))
       queryClient.invalidateQueries({ queryKey: usersKeys.all })
     },
     onError: (error) => {
-      toast.error(error.message || 'Failed to create user')
+      toast.error(error.message || getT('users.failedCreate' as never))
     },
   })
 }
@@ -149,11 +158,11 @@ export function useUpdateUser(id: string) {
       return res.data
     },
     onSuccess: () => {
-      toast.success('User updated successfully')
+      toast.success(getT('users.updatedSuccess' as never))
       queryClient.invalidateQueries({ queryKey: usersKeys.all })
     },
     onError: (error) => {
-      toast.error(error.message || 'Failed to update user')
+      toast.error(error.message || getT('users.failedUpdate' as never))
     },
   })
 }
@@ -168,11 +177,11 @@ export function useDeleteUser() {
       await axiosClient.delete(`/api/v1/users/${id}`)
     },
     onSuccess: () => {
-      toast.success('User deleted successfully')
+      toast.success(getT('users.deletedSuccess' as never))
       queryClient.invalidateQueries({ queryKey: usersKeys.all })
     },
     onError: (error) => {
-      toast.error(error.message || 'Failed to delete user')
+      toast.error(error.message || getT('users.failedDelete' as never))
     },
   })
 }
@@ -188,11 +197,11 @@ export function useActivateUser() {
       return res.data
     },
     onSuccess: () => {
-      toast.success('User activated successfully')
+      toast.success(getT('users.activatedSuccess' as never))
       queryClient.invalidateQueries({ queryKey: usersKeys.all })
     },
     onError: (error) => {
-      toast.error(error.message || 'Failed to activate user')
+      toast.error(error.message || getT('users.failedActivate' as never))
     },
   })
 }
@@ -208,11 +217,11 @@ export function useDeactivateUser() {
       return res.data
     },
     onSuccess: () => {
-      toast.success('User deactivated successfully')
+      toast.success(getT('users.deactivatedSuccess' as never))
       queryClient.invalidateQueries({ queryKey: usersKeys.all })
     },
     onError: (error) => {
-      toast.error(error.message || 'Failed to deactivate user')
+      toast.error(error.message || getT('users.failedDeactivate' as never))
     },
   })
 }

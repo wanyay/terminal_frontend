@@ -29,6 +29,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { useAuthStore } from '@/features/auth/stores/auth-store'
+import { useTranslation } from '@/context/language-provider'
 import {
   useRegisterEntry,
   useUpdateVisitor,
@@ -36,18 +37,18 @@ import {
 } from '../api/queries'
 
 const entrySchema = z.object({
-  visitorName: z.string().min(1, 'Visitor name is required').max(100),
+  visitorName: z.string().min(1, 'visitors.visitorNameRequired' as never).max(100),
   nrcOrPassport: z.string().max(50).optional().or(z.literal('')),
   phoneNumber: z.string().max(20).optional().or(z.literal('')),
   companyName: z.string().max(100).optional().or(z.literal('')),
   purposeOfVisit: z.string().max(255).optional().or(z.literal('')),
   hostEmployee: z.string().max(100).optional().or(z.literal('')),
-  entryGateId: z.string().min(1, 'Entry gate is required'),
+  entryGateId: z.string().min(1, 'visitors.entryGateRequired' as never),
   remarks: z.string().max(500).optional().or(z.literal('')),
 })
 
 const editSchema = z.object({
-  visitorName: z.string().min(1, 'Visitor name is required').max(100),
+  visitorName: z.string().min(1, 'visitors.visitorNameRequired' as never).max(100),
   nrcOrPassport: z.string().max(50).optional().or(z.literal('')),
   phoneNumber: z.string().max(20).optional().or(z.literal('')),
   companyName: z.string().max(100).optional().or(z.literal('')),
@@ -78,6 +79,7 @@ export function VisitorFormDialog({
   const isPending = isRegistering || isUpdating
 
   const { auth } = useAuthStore()
+  const { t } = useTranslation()
   const entryGates = auth.assignedGates.filter((g) => g.type === 'ENTRY')
 
   const entryForm = useForm<EntryFormValues>({
@@ -167,14 +169,14 @@ export function VisitorFormDialog({
       name='entryGateId'
       render={({ field }) => (
         <FormItem>
-          <FormLabel>Entry Gate</FormLabel>
+          <FormLabel>{t('visitors.entryGate' as never)}</FormLabel>
           <Select
             onValueChange={field.onChange}
             defaultValue={field.value}
           >
             <FormControl>
               <SelectTrigger>
-                <SelectValue placeholder='Select entry gate' />
+                <SelectValue placeholder={t('visitors.selectEntryGate' as never)} />
               </SelectTrigger>
             </FormControl>
             <SelectContent>
@@ -200,9 +202,9 @@ export function VisitorFormDialog({
         name='visitorName'
         render={({ field }: any) => (
           <FormItem>
-            <FormLabel>Visitor Name</FormLabel>
+            <FormLabel>{t('visitors.visitorName' as never)}</FormLabel>
             <FormControl>
-              <Input placeholder='John Doe' {...field} />
+              <Input placeholder={t('visitors.johnDoe' as never)} {...field} />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -214,9 +216,9 @@ export function VisitorFormDialog({
           name='nrcOrPassport'
           render={({ field }: any) => (
             <FormItem>
-              <FormLabel>NRC / Passport</FormLabel>
+              <FormLabel>{t('visitors.nrcOrPassport' as never)}</FormLabel>
               <FormControl>
-                <Input placeholder='12/AB123456' {...field} />
+                <Input placeholder={t('visitors.nrcExample' as never)} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -227,9 +229,9 @@ export function VisitorFormDialog({
           name='phoneNumber'
           render={({ field }: any) => (
             <FormItem>
-              <FormLabel>Phone Number</FormLabel>
+              <FormLabel>{t('visitors.phoneNumber' as never)}</FormLabel>
               <FormControl>
-                <Input placeholder='09...' {...field} />
+                <Input placeholder={t('visitors.phoneExample' as never)} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -242,9 +244,9 @@ export function VisitorFormDialog({
           name='companyName'
           render={({ field }: any) => (
             <FormItem>
-              <FormLabel>Company Name</FormLabel>
+              <FormLabel>{t('visitors.companyName' as never)}</FormLabel>
               <FormControl>
-                <Input placeholder='ABC Corp' {...field} />
+                <Input placeholder={t('visitors.companyExample' as never)} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -255,9 +257,9 @@ export function VisitorFormDialog({
           name='hostEmployee'
           render={({ field }: any) => (
             <FormItem>
-              <FormLabel>Host Employee</FormLabel>
+              <FormLabel>{t('visitors.hostEmployee' as never)}</FormLabel>
               <FormControl>
-                <Input placeholder='Jane Smith' {...field} />
+                <Input placeholder={t('visitors.hostExample' as never)} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -269,9 +271,9 @@ export function VisitorFormDialog({
         name='purposeOfVisit'
         render={({ field }: any) => (
           <FormItem>
-            <FormLabel>Purpose of Visit</FormLabel>
+            <FormLabel>{t('visitors.purposeOfVisit' as never)}</FormLabel>
             <FormControl>
-              <Input placeholder='Meeting, Delivery, etc.' {...field} />
+              <Input placeholder={t('visitors.purposeExample' as never)} {...field} />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -282,10 +284,10 @@ export function VisitorFormDialog({
         name='remarks'
         render={({ field }: any) => (
           <FormItem>
-            <FormLabel>Remarks</FormLabel>
+            <FormLabel>{t('visitors.remarks' as never)}</FormLabel>
             <FormControl>
               <Textarea
-                placeholder='Optional remarks...'
+                placeholder={t('visitors.optionalRemarks' as never)}
                 className='resize-none'
                 {...field}
               />
@@ -302,12 +304,12 @@ export function VisitorFormDialog({
       <DialogContent className='sm:max-w-137.5'>
         <DialogHeader>
           <DialogTitle>
-            {isEditing ? 'Edit Visitor' : 'Register Visitor Entry'}
+            {isEditing ? t('visitors.editVisitor' as never) : t('visitors.registerVisitorEntry' as never)}
           </DialogTitle>
           <DialogDescription>
             {isEditing
-              ? 'Update the visitor details.'
-              : 'Register a new visitor and their entry to the port.'}
+              ? t('visitors.editVisitorDesc' as never)
+              : t('visitors.registerVisitorEntryDesc' as never)}
           </DialogDescription>
         </DialogHeader>
 
@@ -325,13 +327,13 @@ export function VisitorFormDialog({
                   onClick={() => onOpenChange(false)}
                   disabled={isPending}
                 >
-                  Cancel
+                  {t('common.cancel' as never)}
                 </Button>
                 <Button type='submit' disabled={isPending}>
                   {isPending && (
                     <Loader2 className='mr-2 h-4 w-4 animate-spin' />
                   )}
-                  Update Visitor
+                  {t('visitors.updateVisitor' as never)}
                 </Button>
               </div>
             </form>
@@ -351,13 +353,13 @@ export function VisitorFormDialog({
                   onClick={() => onOpenChange(false)}
                   disabled={isPending}
                 >
-                  Cancel
+                  {t('common.cancel' as never)}
                 </Button>
                 <Button type='submit' disabled={isPending}>
                   {isPending && (
                     <Loader2 className='mr-2 h-4 w-4 animate-spin' />
                   )}
-                  Register Entry
+                  {t('visitors.registerEntry' as never)}
                 </Button>
               </div>
             </form>

@@ -22,19 +22,41 @@ import {
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { useAuthStore } from '@/features/auth/stores/auth-store'
+import { useTranslation } from '@/context/language-provider'
+import { getT } from '@/lib/i18n'
 import { useCreateContainerTruckEntry } from '../api/queries'
 
 const formSchema = z.object({
-  licensePlate: z.string().min(1, 'Car No is required'),
+  licensePlate: z.string().min(1, getT('entry.carNoRequired' as never)),
   driverName: z.string().optional(),
   driverNrc: z.string().optional(),
-  entryGateId: z.string().min(1, 'Entry gate is required'),
+  entryGateId: z.string().min(1, getT('entry.entryGateRequired' as never)),
   remarks: z.string().optional(),
 })
 
 type FormValues = z.infer<typeof formSchema>
 
+interface RelayState {
+  statuses: Array<{ channel: number; isOpen: boolean }>;
+  isConnected: boolean;
+  deviceInfo: any;
+  isLoading: boolean;
+  error: string | null;
+}
+
 export function TrucksEntryPage() {
+  const { t } = useTranslation()
+  const [stateDevice, setDeviceState] = useState<RelayState>({
+    statuses: Array.from({ length: 2 }, (_, i) => ({
+      channel: i + 1,
+      isOpen: false
+    })),
+    isConnected: false,
+    deviceInfo: null,
+    isLoading: false,
+    error: null
+  });
+
   const createContainerTruckEntry = useCreateContainerTruckEntry()
   const { auth } = useAuthStore()
   const entryGates = auth.assignedGates.filter((g) => g.type === 'ENTRY')
@@ -70,6 +92,114 @@ export function TrucksEntryPage() {
     }
   }, [createContainerTruckEntry.isSuccess, entryGates, form])
 
+  // Subscribe to USB status updates once on mount
+  useEffect(() => {
+    if (!window.usbAPI) return;
+
+    const statusUnsubscribe = window.usbAPI.onStatusUpdate((statusData) => {
+      setDeviceState(prev => ({
+        ...prev,
+        statuses: statusData.statuses || prev.statuses
+      }));
+      console.log(`📊 Status updated: ${JSON.stringify(statusData)}`);
+    });
+
+    return () => {
+      statusUnsubscribe();
+    };
+  }, [])
+
+  /** Relay channels: 2 = open gate, 1 = close gate */
+  const OPEN_RELAY_CHANNEL = 2;
+  const CLOSE_RELAY_CHANNEL = 1;
+
+  async function ensureConnected() {
+    if (!window.usbAPI) {
+      throw new Error('USB API not available — not running inside Electron');
+    }
+
+    if (stateDevice.isConnected) {
+      return; // Already connected
+    }
+
+    setDeviceState(prev => ({ ...prev, isLoading: true, error: null }));
+
+    try {
+      const result = await window.usbAPI.connect({
+        vendorId: 0x16c0,
+        productId: 0x05df,
+        configurationValue: 1,
+        interfaceNumber: 0,
+        endpointIn: 1,
+        endpointOut: 2
+      });
+
+      if (result) {
+        const deviceInfo = await window.usbAPI.getDeviceInfo();
+        setDeviceState(prev => ({
+          ...prev,
+          isConnected: true,
+          deviceInfo,
+          isLoading: false
+        }));
+        console.log('✅ Connected to device');
+
+        const status = await window.usbAPI.getStatus();
+        if (status) {
+          setDeviceState(prev => ({ ...prev, statuses: status.statuses }));
+        }
+      } else {
+        setDeviceState(prev => ({
+          ...prev,
+          isLoading: false,
+          error: 'Failed to connect'
+        }));
+        throw new Error('Failed to connect to USB device');
+      }
+    } catch (error: any) {
+      setDeviceState(prev => ({
+        ...prev,
+        isLoading: false,
+        error: error.message
+      }));
+      throw error;
+    }
+  }
+
+  /** Pulse a relay momentarily (on for 500ms, then off) */
+  async function pulseRelay(channel: number) {
+    await window.usbAPI!.setRelay(channel, 'on');
+    await new Promise(r => setTimeout(r, 500));
+    await window.usbAPI!.setRelay(channel, 'off');
+  }
+
+  async function handleOpenGate() {
+    console.log('🟢 OPEN GATE clicked');
+
+    try {
+      await ensureConnected();
+      await pulseRelay(OPEN_RELAY_CHANNEL);
+      setGateStatus('open');
+      console.log('✅ Gate opened (pulsed relay ' + OPEN_RELAY_CHANNEL + ')');
+    } catch (error: any) {
+      console.log(`❌ Error opening gate: ${error.message}`);
+    }
+  }
+
+  async function handleCloseGate() {
+    console.log('🔴 CLOSE GATE clicked');
+
+    try {
+      await ensureConnected();
+      await pulseRelay(CLOSE_RELAY_CHANNEL);
+      setGateStatus('closed');
+      console.log('✅ Gate closed (pulsed relay ' + CLOSE_RELAY_CHANNEL + ')');
+    } catch (error: any) {
+      console.log(`❌ Error closing gate: ${error.message}`);
+      setGateStatus('closed');
+    }
+  };
+
   function onSubmit(values: FormValues) {
     createContainerTruckEntry.mutate({
       ...values,
@@ -92,9 +222,9 @@ export function TrucksEntryPage() {
                 name='licensePlate'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Car No</FormLabel>
+                    <FormLabel>{t('entry.carNo' as never)}</FormLabel>
                     <FormControl>
-                      <Input placeholder='YGN-1234' {...field} />
+                      <Input placeholder={t('entry.licensePlateExample' as never)} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -105,9 +235,9 @@ export function TrucksEntryPage() {
                 name='driverName'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Driver Name</FormLabel>
+                    <FormLabel>{t('entry.driverName' as never)}</FormLabel>
                     <FormControl>
-                      <Input placeholder='John Doe' {...field} />
+                      <Input placeholder={t('entry.johnDoe' as never)} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -118,9 +248,9 @@ export function TrucksEntryPage() {
                 name='driverNrc'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Driver NRC</FormLabel>
+                    <FormLabel>{t('entry.driverNrc' as never)}</FormLabel>
                     <FormControl>
-                      <Input placeholder='12/ABC(N)123456' {...field} />
+                      <Input placeholder={t('entry.nrcExample' as never)} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -131,11 +261,11 @@ export function TrucksEntryPage() {
                 name='entryGateId'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Entry Gate</FormLabel>
+                    <FormLabel>{t('entry.entryGate' as never)}</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder='Select entry gate' />
+                          <SelectValue placeholder={t('entry.selectEntryGate' as never)} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -155,11 +285,11 @@ export function TrucksEntryPage() {
                 name='remarks'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Remarks</FormLabel>
+                    <FormLabel>{t('common.remarks' as never)}</FormLabel>
                     <FormControl>
                       <Textarea
                         rows={4}
-                        placeholder='Any remarks...'
+                        placeholder={t('entry.anyRemarks' as never)}
                         className='resize-none'
                         {...field}
                       />
@@ -174,8 +304,8 @@ export function TrucksEntryPage() {
                 disabled={createContainerTruckEntry.isPending}
               >
                 {createContainerTruckEntry.isPending
-                  ? 'Submitting...'
-                  : 'Submit Entry'}
+                  ? t('common.submitting' as never)
+                  : t('entry.submitEntry' as never)}
               </Button>
             </form>
           </Form>
@@ -189,17 +319,25 @@ export function TrucksEntryPage() {
         <div className='flex shrink-0 flex-col gap-5'>
           <button
             type='button'
-            onClick={() => setGateStatus('open')}
-            className='flex h-14 w-40 items-center justify-center rounded-lg bg-green-600 text-sm font-bold tracking-wide text-white shadow-md transition-all hover:bg-green-500 hover:shadow-lg active:scale-95'
+            onClick={handleOpenGate}
+            disabled={gateStatus === 'open'}
+            className={`flex h-14 w-40 items-center justify-center rounded-lg text-sm font-bold tracking-wide text-white shadow-md transition-all ${gateStatus === 'open'
+              ? 'cursor-not-allowed bg-gray-500'
+              : 'bg-green-600 hover:bg-green-500 hover:shadow-lg active:scale-95'
+              }`}
           >
-            OPEN GATE
+            {t('common.openGate' as never)}
           </button>
           <button
             type='button'
-            onClick={() => setGateStatus('closed')}
-            className='flex h-14 w-40 items-center justify-center rounded-lg bg-red-700 text-sm font-bold tracking-wide text-white shadow-md transition-all hover:bg-red-600 hover:shadow-lg active:scale-95'
+            onClick={handleCloseGate}
+            disabled={gateStatus === 'closed'}
+            className={`flex h-14 w-40 items-center justify-center rounded-lg text-sm font-bold tracking-wide text-white shadow-md transition-all ${gateStatus === 'closed'
+              ? 'cursor-not-allowed bg-gray-500'
+              : 'bg-red-700 hover:bg-red-600 hover:shadow-lg active:scale-95'
+              }`}
           >
-            CLOSE GATE
+            {t('common.closeGate' as never)}
           </button>
         </div>
 

@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import axiosClient from '@/lib/api/axiosClient'
+import { getT } from '@/lib/i18n'
 
 // --- Types ---
 
@@ -113,11 +114,11 @@ export function useRegisterTruckExit() {
       await axiosClient.post(`/api/v1/trucks/${id}/exit`, payload)
     },
     onSuccess: () => {
-      toast.success('Truck exit registered successfully')
+      toast.success(getT('exit.truckExitRegistered' as never))
       queryClient.invalidateQueries({ queryKey: activeTrucksKeys.all })
     },
     onError: (error) => {
-      toast.error(error.message || 'Failed to register truck exit')
+      toast.error(error.message || getT('exit.failedRegisterTruckExit' as never))
     },
   })
 }

@@ -21,11 +21,13 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { useAuthStore } from '@/features/auth/stores/auth-store'
+import { useTranslation } from '@/context/language-provider'
+import { getT } from '@/lib/i18n'
 import { useCreateVisitingVehicleEntry } from '../api/queries'
 
 const formSchema = z.object({
-  licensePlate: z.string().min(1, 'Car No is required'),
-  driverName: z.string().min(1, 'Visitor Name is required'),
+  licensePlate: z.string().min(1, getT('entry.carNoRequired' as never)),
+  driverName: z.string().min(1, getT('entry.visitorNameRequired' as never)),
   driverNrc: z.string().optional(),
   vehicleType: z.string().optional(),
   vehicleModel: z.string().optional(),
@@ -37,6 +39,7 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>
 
 export function VisitingVehicleEntryPage() {
+  const { t } = useTranslation()
   const createVisitingVehicleEntry = useCreateVisitingVehicleEntry()
   const { auth } = useAuthStore()
   const entryGates = auth.assignedGates.filter((g) => g.type === 'ENTRY')
@@ -103,9 +106,9 @@ export function VisitingVehicleEntryPage() {
                 name='licensePlate'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Car No</FormLabel>
+                    <FormLabel>{t('entry.carNo' as never)}</FormLabel>
                     <FormControl>
-                      <Input placeholder='YGN-1234' {...field} />
+                      <Input placeholder={t('entry.licensePlateExample' as never)} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -116,9 +119,9 @@ export function VisitingVehicleEntryPage() {
                 name='driverName'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Visitor Name</FormLabel>
+                    <FormLabel>{t('entry.visitorName' as never)}</FormLabel>
                     <FormControl>
-                      <Input placeholder='John Doe' {...field} />
+                      <Input placeholder={t('entry.johnDoe' as never)} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -129,9 +132,9 @@ export function VisitingVehicleEntryPage() {
                 name='driverNrc'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>NRC / License</FormLabel>
+                    <FormLabel>{t('entry.nrcOrLicense' as never)}</FormLabel>
                     <FormControl>
-                      <Input placeholder='12/ABC(N)123456' {...field} />
+                      <Input placeholder={t('entry.nrcExample' as never)} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -143,9 +146,9 @@ export function VisitingVehicleEntryPage() {
                   name='vehicleType'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Vehicle Type</FormLabel>
+                      <FormLabel>{t('entry.vehicleType' as never)}</FormLabel>
                       <FormControl>
-                        <Input placeholder='Sedan, SUV, etc.' {...field} />
+                        <Input placeholder={t('entry.vehicleTypeExample' as never)} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -156,9 +159,9 @@ export function VisitingVehicleEntryPage() {
                   name='vehicleModel'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Vehicle Model</FormLabel>
+                      <FormLabel>{t('entry.vehicleModel' as never)}</FormLabel>
                       <FormControl>
-                        <Input placeholder='Toyota Camry, etc.' {...field} />
+                        <Input placeholder={t('entry.vehicleModelExample' as never)} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -170,9 +173,9 @@ export function VisitingVehicleEntryPage() {
                 name='companyName'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Company Name</FormLabel>
+                    <FormLabel>{t('entry.companyName' as never)}</FormLabel>
                     <FormControl>
-                      <Input placeholder='ABC Company' {...field} />
+                      <Input placeholder={t('entry.companyExample' as never)} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -183,9 +186,9 @@ export function VisitingVehicleEntryPage() {
                 name='purposeOfVisit'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Purpose of Visit</FormLabel>
+                    <FormLabel>{t('entry.purposeOfVisit' as never)}</FormLabel>
                     <FormControl>
-                      <Input placeholder='Meeting, Delivery, etc.' {...field} />
+                      <Input placeholder={t('entry.purposeExample' as never)} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -196,11 +199,11 @@ export function VisitingVehicleEntryPage() {
                 name='entryGateId'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Entry Gate</FormLabel>
+                    <FormLabel>{t('entry.entryGate' as never)}</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder='Select entry gate' />
+                          <SelectValue placeholder={t('entry.selectEntryGate' as never)} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -221,8 +224,8 @@ export function VisitingVehicleEntryPage() {
                 disabled={createVisitingVehicleEntry.isPending}
               >
                 {createVisitingVehicleEntry.isPending
-                  ? 'Submitting...'
-                  : 'Submit Entry'}
+                  ? t('common.submitting' as never)
+                  : t('entry.submitEntry' as never)}
               </Button>
             </form>
           </Form>
@@ -239,14 +242,14 @@ export function VisitingVehicleEntryPage() {
             onClick={() => setGateStatus('open')}
             className='flex h-14 w-40 items-center justify-center rounded-lg bg-green-600 text-sm font-bold tracking-wide text-white shadow-md transition-all hover:bg-green-500 hover:shadow-lg active:scale-95'
           >
-            OPEN GATE
+            {t('common.openGate' as never)}
           </button>
           <button
             type='button'
             onClick={() => setGateStatus('closed')}
             className='flex h-14 w-40 items-center justify-center rounded-lg bg-red-700 text-sm font-bold tracking-wide text-white shadow-md transition-all hover:bg-red-600 hover:shadow-lg active:scale-95'
           >
-            CLOSE GATE
+            {t('common.closeGate' as never)}
           </button>
         </div>
 

@@ -17,6 +17,8 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { PasswordInput } from '@/components/password-input'
+import { useTranslation } from '@/context/language-provider'
+import { getT } from '@/lib/i18n'
 import { useChangePassword } from '../hooks/useChangePassword'
 import { AuthLayout } from '../layout/auth-layout'
 
@@ -47,6 +49,7 @@ export function ChangePassword({
 }: ChangePasswordProps) {
   const navigate = useNavigate()
   const { mutate: changePassword, isPending } = useChangePassword()
+  const { t } = useTranslation()
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -66,7 +69,7 @@ export function ChangePassword({
       },
       {
         onSuccess: () => {
-          toast.success('Password changed successfully!')
+          toast.success(getT('auth.passwordChangedSuccess' as never))
           const targetPath = redirectTo || '/'
           navigate({ to: targetPath, replace: true })
         },
@@ -93,11 +96,11 @@ export function ChangePassword({
           <CardTitle className='text-lg tracking-tight'>
             <div className='flex items-center gap-2'>
               <KeyRound className='h-5 w-5 text-amber-500' />
-              Change Password
+              {t('auth.changePassword' as never)}
             </div>
           </CardTitle>
           <p className='text-muted-foreground text-sm'>
-            You must change your password before continuing.
+            {t('auth.mustChangePassword' as never)}
           </p>
         </CardHeader>
         <CardContent>
@@ -112,7 +115,7 @@ export function ChangePassword({
                 name='currentPassword'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Current Password</FormLabel>
+                    <FormLabel>{t('auth.currentPassword' as never)}</FormLabel>
                     <FormControl>
                       <PasswordInput placeholder='••••••••' {...field} />
                     </FormControl>
@@ -125,7 +128,7 @@ export function ChangePassword({
                 name='newPassword'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>New Password</FormLabel>
+                    <FormLabel>{t('auth.newPassword' as never)}</FormLabel>
                     <FormControl>
                       <PasswordInput placeholder='••••••••' {...field} />
                     </FormControl>
@@ -138,7 +141,7 @@ export function ChangePassword({
                 name='confirmPassword'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Confirm New Password</FormLabel>
+                    <FormLabel>{t('auth.confirmNewPassword' as never)}</FormLabel>
                     <FormControl>
                       <PasswordInput placeholder='••••••••' {...field} />
                     </FormControl>
@@ -150,10 +153,10 @@ export function ChangePassword({
                 {isPending ? (
                   <>
                     <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                    Changing Password...
+                    {t('auth.changingPassword' as never)}
                   </>
                 ) : (
-                  'Change Password'
+                  t('auth.changePassword' as never)
                 )}
               </Button>
             </form>
