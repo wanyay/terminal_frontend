@@ -40,6 +40,13 @@ function buildColumns(t: (key: TranslationKey, params?: Record<string, string | 
     ),
   },
   {
+    accessorKey: 'code',
+    header: 'Code',
+    cell: ({ row }) => (
+      <span className='font-medium'>{row.getValue('code')}</span>
+    ),
+  },
+  {
     accessorKey: 'name',
     header: t('gates.name' as never),
     cell: ({ row }) => <span>{row.getValue('name')}</span>,
