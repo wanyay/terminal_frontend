@@ -20,105 +20,15 @@ import {
 } from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { StatusBadge } from '@/components/status-badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Input } from '@/components/ui/input'
 import { DataTablePagination } from '@/components/data-table/pagination'
 import { DataTableFacetedFilter } from '@/components/data-table/faceted-filter'
 import { useGates } from '@/features/gates/api/queries'
+import { useTranslation } from '@/context/language-provider'
 import { useActiveTrucks, type ActiveTruck } from '../api/queries'
 import { format } from 'date-fns'
-
-const columns: ColumnDef<ActiveTruck>[] = [
-  {
-    accessorKey: 'licensePlate',
-    header: 'License Plate',
-    cell: ({ row }) => (
-      <span className='font-medium'>{row.getValue('licensePlate')}</span>
-    ),
-  },
-  {
-    accessorKey: 'entryGateId',
-    header: 'Gate ID',
-    enableHiding: true,
-  },
-  {
-    accessorKey: 'driverName',
-    header: 'Driver Name',
-    cell: ({ row }) => {
-      const val = row.getValue('driverName') as string | null
-      return <span>{val || '—'}</span>
-    },
-  },
-  {
-    accessorKey: 'driverNrc',
-    header: 'Driver NRC',
-    cell: ({ row }) => {
-      const val = row.getValue('driverNrc') as string | null
-      return (
-        <span className='text-muted-foreground text-sm'>
-          {val || '—'}
-        </span>
-      )
-    },
-  },
-  {
-    id: 'entryGate',
-    header: 'Entry Gate',
-    cell: ({ row }) => {
-      const gate = row.original.entryGate
-      return gate ? (
-        <Badge variant='outline' className='text-xs'>
-          {gate.name}
-        </Badge>
-      ) : (
-        <span className='text-muted-foreground text-sm'>—</span>
-      )
-    },
-  },
-  {
-    accessorKey: 'entryTime',
-    header: 'Entry Time',
-    cell: ({ row }) => {
-      const val = row.getValue('entryTime') as string
-      return (
-        <span className='text-sm'>
-          {format(new Date(val), 'dd/MM/yyyy HH:mm')}
-        </span>
-      )
-    },
-  },
-  {
-    accessorKey: 'status',
-    header: 'Status',
-    cell: ({ row }) => {
-      const status = row.getValue('status') as string
-      return (
-        <Badge variant='outline' className='border-blue-500 text-blue-600 text-xs'>
-          {status}
-        </Badge>
-      )
-    },
-  },
-  {
-    id: 'actions',
-    header: 'Actions',
-    cell: function ActionCell({ row, table }) {
-      const meta = table.options.meta as { onRegisterExit?: (truckId: string) => void } | undefined
-      const onRegisterExit = meta?.onRegisterExit
-      return (
-        <Button
-          variant='outline'
-          size='sm'
-          className='h-8'
-          onClick={() => onRegisterExit?.(row.original.id)}
-        >
-          <LogOut className='mr-1 h-3.5 w-3.5' />
-          Register Exit
-        </Button>
-      )
-    },
-  },
-]
 
 interface ActiveTrucksTableProps {
   page: number
@@ -141,7 +51,103 @@ export function ActiveTrucksTable({
   onSearchChange,
   onGateChange,
 }: ActiveTrucksTableProps) {
+  const { t } = useTranslation()
   const navigate = useNavigate()
+
+  const columns: ColumnDef<ActiveTruck>[] = [
+    {
+      accessorKey: 'licensePlate',
+      header: t('exit.licensePlate' as never),
+      cell: ({ row }) => (
+        <span className='font-medium'>{row.getValue('licensePlate')}</span>
+      ),
+    },
+    {
+      accessorKey: 'entryGateId',
+      header: t('exit.gateId' as never),
+      enableHiding: true,
+    },
+    {
+      accessorKey: 'driverName',
+      header: t('exit.driverName' as never),
+      cell: ({ row }) => {
+        const val = row.getValue('driverName') as string | null
+        return <span>{val || '—'}</span>
+      },
+    },
+    {
+      accessorKey: 'driverNrc',
+      header: t('exit.driverNrc' as never),
+      cell: ({ row }) => {
+        const val = row.getValue('driverNrc') as string | null
+        return (
+          <span className='text-muted-foreground text-sm'>
+            {val || '—'}
+          </span>
+        )
+      },
+    },
+    {
+      id: 'entryGate',
+      header: t('exit.entryGate' as never),
+      cell: ({ row }) => {
+        const gate = row.original.entryGate
+        return gate ? (
+          <Badge variant='outline' className='text-xs'>
+            {gate.name}
+          </Badge>
+        ) : (
+          <span className='text-muted-foreground text-sm'>—</span>
+        )
+      },
+    },
+    {
+      accessorKey: 'entryTime',
+      header: t('exit.entryTime' as never),
+      cell: ({ row }) => {
+        const val = row.getValue('entryTime') as string
+        return (
+          <span className='text-sm'>
+            {format(new Date(val), 'dd/MM/yyyy HH:mm')}
+          </span>
+        )
+      },
+    },
+    {
+      accessorKey: 'status',
+      header: t('exit.status' as never),
+      cell: ({ row }) => {
+        const status = row.getValue('status') as string
+        return (
+          <StatusBadge
+            status={status}
+            label={t(`statusBadges.${status.toLowerCase()}` as never)}
+            className='text-xs'
+          />
+        )
+      },
+    },
+    {
+      id: 'actions',
+      header: t('common.actions' as never),
+      cell: function ActionCell({ row, table }) {
+        const meta = table.options.meta as { onRegisterExit?: (truckId: string) => void } | undefined
+        const onRegisterExit = meta?.onRegisterExit
+        return (
+          <Button
+            variant='outline'
+            size='sm'
+            className='h-8'
+            onClick={() => onRegisterExit?.(row.original.id)}
+          >
+            <LogOut className='mr-1 h-3.5 w-3.5' />
+            {t('exit.registerExit' as never)}
+          </Button>
+        )
+      },
+    },
+  ]
+
   const { data: gatesData } = useGates({ perPage: 100 })
   const allGates = gatesData?.data ?? []
 
@@ -240,7 +246,7 @@ export function ActiveTrucksTable({
     return (
       <div className='flex items-center justify-center py-12'>
         <p className='text-destructive text-sm'>
-          Failed to load active trucks. Please try again.
+          {t('exit.failedLoadActiveTrucks' as never)}
         </p>
       </div>
     )
@@ -251,7 +257,7 @@ export function ActiveTrucksTable({
       <div className='flex items-center justify-between'>
         <div className='flex items-center gap-2'>
           <Input
-            placeholder='Search license plate...'
+            placeholder={t('exit.searchLicensePlate' as never)}
             value={search}
             onChange={(e) => {
               onSearchChange(e.target.value)
@@ -262,7 +268,7 @@ export function ActiveTrucksTable({
           {gateOptions.length > 0 && (
             <DataTableFacetedFilter
               column={table.getColumn('entryGateId')}
-              title='Gate'
+              title={t('exit.gate' as never)}
               options={gateOptions}
             />
           )}
@@ -304,7 +310,7 @@ export function ActiveTrucksTable({
                   colSpan={columns.length}
                   className='h-24 text-center text-muted-foreground'
                 >
-                  No active trucks found.
+                  {t('exit.noActiveTrucks' as never)}
                 </TableCell>
               </TableRow>
             ) : (

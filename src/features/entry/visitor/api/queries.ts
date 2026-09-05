@@ -1,7 +1,8 @@
 import { useMutation } from '@tanstack/react-query'
-import { AxiosError } from 'axios'
+import type { AxiosError } from 'axios'
 import { toast } from 'sonner'
 import axiosClient from '@/lib/api/axiosClient'
+import { getT } from '@/lib/i18n'
 
 interface VisitorEntryPayload {
   visitorName: string
@@ -25,10 +26,10 @@ export function useCreateVisitorEntry() {
       return res.data
     },
     onSuccess: () => {
-      toast.success('Visitor Entry created successfully')
+      toast.success(getT('entry.visitorEntryCreated' as never))
     },
     onError: (error) => {
-      const errorMessage = error.response?.data?.message?.[0] || error.message || 'Failed to create visitor entry'
+      const errorMessage = error.response?.data?.message?.[0] || error.message || getT('entry.failedCreateVisitor' as never)
       toast.error(errorMessage)
     },
   })

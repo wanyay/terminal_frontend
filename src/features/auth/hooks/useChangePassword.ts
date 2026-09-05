@@ -1,6 +1,7 @@
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import axiosClient from '@/lib/api/axiosClient'
+import { getT } from '@/lib/i18n'
 import { useAuthStore } from '../stores/auth-store'
 
 interface ChangePasswordPayload {
@@ -22,10 +23,14 @@ export function useChangePassword() {
       if (auth.user && auth.user.mustChangePassword) {
         auth.setUser({ ...auth.user, mustChangePassword: false })
       }
-      toast.success(payload.targetUserId ? 'Password reset successfully' : 'Password changed successfully')
+      toast.success(
+        payload.targetUserId
+          ? getT('auth.passwordResetSuccess' as never)
+          : getT('auth.passwordChangedMessage' as never)
+      )
     },
     onError: (error) => {
-      toast.error(error.message || 'Failed to change password')
+      toast.error(error.message || getT('auth.passwordChangeFailed' as never))
     },
   })
 }

@@ -10,7 +10,7 @@ import {
   type LucideIcon,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { Badge } from '@/components/ui/badge'
+import { StatusBadge } from '@/components/status-badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Header } from '@/components/layout/header'
@@ -18,6 +18,8 @@ import { Main } from '@/components/layout/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ThemeSwitch } from '@/components/theme-switch'
+import { LanguageSwitch } from '@/components/language-switch'
+import { useTranslation } from '@/context/language-provider'
 import { useDashboard } from './api/queries'
 import { format } from 'date-fns'
 
@@ -40,29 +42,30 @@ const activityIcons: Record<string, LucideIcon> = {
 
 export function Dashboard() {
   const { data, isLoading, isError } = useDashboard()
+  const { t } = useTranslation()
 
   const summaryCards = useMemo(() => {
     const s = data?.summary
     if (!s) return []
     return [
-      { title: "Today's Truck Entries", value: s.todayTruckEntries, icon: Truck },
-      { title: "Today's Truck Exits", value: s.todayTruckExits, icon: Truck },
-      { title: "Today's Vehicle Entries", value: s.todayVehicleEntries, icon: Car },
-      { title: "Today's Vehicle Exits", value: s.todayVehicleExits, icon: Car },
-      { title: "Today's Visitor Entries", value: s.todayVisitorEntries, icon: UserRoundCheck },
-      { title: "Today's Visitor Exits", value: s.todayVisitorExits, icon: UserRoundCheck },
+      { title: t('dashboard.truckEntriesToday' as never), value: s.todayTruckEntries, icon: Truck },
+      { title: t('dashboard.truckExitsToday' as never), value: s.todayTruckExits, icon: Truck },
+      { title: t('dashboard.vehicleEntriesToday' as never), value: s.todayVehicleEntries, icon: Car },
+      { title: t('dashboard.vehicleExitsToday' as never), value: s.todayVehicleExits, icon: Car },
+      { title: t('dashboard.visitorEntriesToday' as never), value: s.todayVisitorEntries, icon: UserRoundCheck },
+      { title: t('dashboard.visitorExitsToday' as never), value: s.todayVisitorExits, icon: UserRoundCheck },
     ]
-  }, [data])
+  }, [data, t])
 
   const insideCards = useMemo(() => {
     const i = data?.inside
     if (!i) return []
     return [
-      { title: 'Active Trucks Inside', value: i.activeTrucks, description: 'Currently inside the terminal', icon: Truck },
-      { title: 'Active Vehicles Inside', value: i.activeVehicles, description: 'Currently inside the terminal', icon: Car },
-      { title: 'Active Visitors Inside', value: i.activeVisitors, description: 'Currently inside the terminal', icon: UsersRound },
+      { title: t('dashboard.activeTrucksInside' as never), value: i.activeTrucks, description: t('dashboard.currentlyInside' as never), icon: Truck },
+      { title: t('dashboard.activeVehiclesInside' as never), value: i.activeVehicles, description: t('dashboard.currentlyInside' as never), icon: Car },
+      { title: t('dashboard.activeVisitorsInside' as never), value: i.activeVisitors, description: t('dashboard.currentlyInside' as never), icon: UsersRound },
     ]
-  }, [data])
+  }, [data, t])
 
   const gates = useMemo(() => data?.gateUsage ?? [], [data])
   const recentActivities = data?.recentActivities ?? []
@@ -84,6 +87,7 @@ export function Dashboard() {
     <>
       <Header>
         <div className='ms-auto flex items-center space-x-4'>
+          <LanguageSwitch />
           <ThemeSwitch />
           <ProfileDropdown />
         </div>
@@ -93,16 +97,16 @@ export function Dashboard() {
         <div className='mb-5'>
           <div className='flex items-center gap-2'>
             <LayoutDashboard className='size-6' />
-            <h1 className='text-2xl font-bold tracking-normal'>Dashboard</h1>
+            <h1 className='text-2xl font-bold tracking-normal'>{t('dashboard.title' as never)}</h1>
           </div>
           <p className='text-muted-foreground mt-1 text-sm'>
-            Overview of today's terminal activities
+            {t('dashboard.subtitle' as never)}
           </p>
         </div>
 
         {isError ? (
           <div className='flex items-center justify-center py-12'>
-            <p className='text-destructive text-sm'>Failed to load dashboard data. Please try again.</p>
+            <p className='text-destructive text-sm'>{t('dashboard.loadFailed' as never)}</p>
           </div>
         ) : (
           <>
@@ -154,15 +158,15 @@ export function Dashboard() {
               <Card className='rounded-lg py-4'>
                 <CardHeader className='px-4 pb-1'>
                   <div className='flex items-center justify-between gap-3'>
-                    <CardTitle className='text-base'>Gate Usage Today</CardTitle>
+                    <CardTitle className='text-base'>{t('dashboard.gateUsageToday' as never)}</CardTitle>
                     <div className='text-muted-foreground flex items-center gap-5 text-xs font-medium'>
                       <span className='flex items-center gap-1.5'>
                         <span className='bg-foreground size-2.5 rounded-sm' />
-                        Entries
+                        {t('dashboard.entries' as never)}
                       </span>
                       <span className='flex items-center gap-1.5'>
                         <span className='bg-muted-foreground size-2.5 rounded-sm' />
-                        Exits
+                        {t('dashboard.exits' as never)}
                       </span>
                     </div>
                   </div>
@@ -178,14 +182,14 @@ export function Dashboard() {
                     <div className='overflow-x-auto'>
                       <div className='min-w-162.5'>
                         <div className='text-muted-foreground grid grid-cols-[120px_130px_130px_1fr] border-b py-2 text-xs font-semibold'>
-                          <span>Gate</span>
-                          <span>Today's Entries</span>
-                          <span>Today's Exits</span>
+                          <span>{t('dashboard.gate' as never)}</span>
+                          <span>{t('dashboard.todaysEntries' as never)}</span>
+                          <span>{t('dashboard.todaysExits' as never)}</span>
                           <span />
                         </div>
                         {gates.length === 0 ? (
                           <div className='py-8 text-center text-muted-foreground text-sm'>
-                            No gate data available.
+                            {t('dashboard.noGateData' as never)}
                           </div>
                         ) : (
                           gates.map((gate) => (
@@ -206,11 +210,11 @@ export function Dashboard() {
                         <div className='dark:bg-muted/40 grid grid-cols-[120px_130px_130px_1fr] rounded-b-md bg-slate-100 py-2 text-sm font-semibold'>
                           <span className='text-foreground/80 flex items-center gap-2'>
                             <DoorOpen className='size-4' />
-                            Total
+                            {t('dashboard.total' as never)}
                           </span>
                           <span className='text-foreground'>{totalEntries}</span>
                           <span className='text-muted-foreground'>{totalExits}</span>
-                          <span className='text-muted-foreground'>(All Gates)</span>
+                          <span className='text-muted-foreground'>{t('dashboard.allGates' as never)}</span>
                         </div>
                       </div>
                     </div>
@@ -223,9 +227,9 @@ export function Dashboard() {
               <Card className='rounded-lg py-4'>
                 <CardHeader className='px-4 pb-0'>
                   <div className='flex items-center justify-between'>
-                    <CardTitle className='text-base'>Recent Activities</CardTitle>
+                    <CardTitle className='text-base'>{t('dashboard.recentActivities' as never)}</CardTitle>
                     <Button variant='outline' size='sm' className='h-8'>
-                      View All
+                      {t('dashboard.viewAll' as never)}
                     </Button>
                   </div>
                 </CardHeader>
@@ -241,18 +245,18 @@ export function Dashboard() {
                       <table className='w-full min-w-115 text-sm'>
                         <thead>
                           <tr className='text-muted-foreground border-b text-left text-xs font-semibold'>
-                            <th className='py-2'>Time</th>
-                            <th>Type</th>
-                            <th>Number / Name</th>
-                            <th>Gate</th>
-                            <th>Status</th>
+                            <th className='py-2'>{t('dashboard.time' as never)}</th>
+                            <th>{t('dashboard.type' as never)}</th>
+                            <th>{t('dashboard.numberOrName' as never)}</th>
+                            <th>{t('dashboard.gate' as never)}</th>
+                            <th>{t('dashboard.status' as never)}</th>
                           </tr>
                         </thead>
                         <tbody>
                           {recentActivities.length === 0 ? (
                             <tr>
                               <td colSpan={5} className='py-8 text-center text-muted-foreground text-sm'>
-                                No recent activities.
+                                {t('dashboard.noRecentActivities' as never)}
                               </td>
                             </tr>
                           ) : (
@@ -263,7 +267,7 @@ export function Dashboard() {
                               return (
                                 <tr key={activity.id} className='border-b'>
                                   <td className='text-foreground/80 py-2'>
-                                    {format(new Date(activity.timestamp), 'hh:mm a')}
+                                    {format(new Date(activity.timestamp), 'dd/MM/yyyy h:mma')}
                                   </td>
                                   <td>
                                     <span className='flex items-center gap-1.5'>
@@ -279,16 +283,11 @@ export function Dashboard() {
                                   <td className='text-foreground font-medium'>{activity.name}</td>
                                   <td className='text-foreground/80'>{activity.gateName}</td>
                                   <td>
-                                    <Badge
-                                      className={cn(
-                                        'border-transparent text-[10px]',
-                                        entered
-                                          ? 'bg-foreground text-background'
-                                          : 'bg-muted text-muted-foreground'
-                                      )}
-                                    >
-                                      {activity.status}
-                                    </Badge>
+                                    <StatusBadge
+                                      status={activity.status}
+                                      label={t(`statusBadges.${activity.status.toLowerCase()}` as never)}
+                                      className='text-[10px]'
+                                    />
                                   </td>
                                 </tr>
                               )

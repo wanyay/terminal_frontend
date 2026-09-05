@@ -9,6 +9,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
+import { useTranslation } from '@/context/language-provider'
 import { useDeleteBlacklistEntry, type BlacklistEntry } from '../api/queries'
 
 interface BlacklistDeleteDialogProps {
@@ -22,6 +23,7 @@ export function BlacklistDeleteDialog({
   onOpenChange,
   entry,
 }: BlacklistDeleteDialogProps) {
+  const { t } = useTranslation()
   const { mutate: deleteEntry, isPending } = useDeleteBlacklistEntry()
 
   function handleDelete() {
@@ -37,14 +39,13 @@ export function BlacklistDeleteDialog({
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent className='sm:max-w-106.25'>
         <AlertDialogHeader>
-          <AlertDialogTitle>Delete Blacklist Entry</AlertDialogTitle>
+          <AlertDialogTitle>{t('blacklist.deleteEntry' as never)}</AlertDialogTitle>
           <AlertDialogDescription>
-            Are you sure you want to delete this blacklist entry for{' '}
-            <strong>{entry?.value}</strong>? This action cannot be undone.
+            {t('blacklist.deleteEntryConfirm' as never, { value: entry?.value ?? '' })}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
+          <AlertDialogCancel disabled={isPending}>{t('common.cancel' as never)}</AlertDialogCancel>
           <AlertDialogAction
             onClick={(e) => {
               e.preventDefault()
@@ -54,7 +55,7 @@ export function BlacklistDeleteDialog({
             className='bg-destructive text-destructive-foreground hover:bg-destructive/90'
           >
             {isPending && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
-            Delete
+            {t('common.delete' as never)}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

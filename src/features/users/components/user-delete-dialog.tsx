@@ -9,6 +9,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
+import { useTranslation } from '@/context/language-provider'
 import { useDeleteUser, type User } from '../api/queries'
 
 interface UserDeleteDialogProps {
@@ -22,6 +23,7 @@ export function UserDeleteDialog({
   onOpenChange,
   user,
 }: UserDeleteDialogProps) {
+  const { t } = useTranslation()
   const { mutate: deleteUser, isPending } = useDeleteUser()
 
   function handleDelete() {
@@ -42,15 +44,13 @@ export function UserDeleteDialog({
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent className='sm:max-w-[425px]'>
         <AlertDialogHeader>
-          <AlertDialogTitle>Delete User</AlertDialogTitle>
+          <AlertDialogTitle>{t('users.deleteUser' as never)}</AlertDialogTitle>
           <AlertDialogDescription>
-            Are you sure you want to delete user{' '}
-            <strong>{displayName}</strong> ({user?.username})? This action cannot
-            be undone.
+            {t('users.deleteUserConfirm' as never, { name: displayName, username: user?.username ?? '' })}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
+          <AlertDialogCancel disabled={isPending}>{t('common.cancel' as never)}</AlertDialogCancel>
           <AlertDialogAction
             onClick={(e) => {
               e.preventDefault()
@@ -62,7 +62,7 @@ export function UserDeleteDialog({
             {isPending && (
               <Loader2 className='mr-2 h-4 w-4 animate-spin' />
             )}
-            Delete
+            {t('common.delete' as never)}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

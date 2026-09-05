@@ -1,5 +1,6 @@
 import * as React from 'react'
 import { ChevronsUpDown, Plus } from 'lucide-react'
+import { useTranslation } from '@/context/language-provider'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,15 +19,18 @@ import {
 
 type TeamSwitcherProps = {
   teams: {
-    name: string
+    nameKey: string
     logo: React.ElementType
-    plan: string
+    planKey: string
   }[]
 }
 
 export function TeamSwitcher({ teams }: TeamSwitcherProps) {
   const { isMobile } = useSidebar()
+  const { t } = useTranslation()
   const [activeTeam, setActiveTeam] = React.useState(teams[0])
+  const activeName = t(activeTeam.nameKey as never)
+  const activePlan = t(activeTeam.planKey as never)
 
   return (
     <SidebarMenu>
@@ -41,10 +45,8 @@ export function TeamSwitcher({ teams }: TeamSwitcherProps) {
                 <activeTeam.logo className='size-4' />
               </div>
               <div className='grid flex-1 text-start text-sm leading-tight'>
-                <span className='truncate font-semibold'>
-                  {activeTeam.name}
-                </span>
-                <span className='truncate text-xs'>{activeTeam.plan}</span>
+                <span className='truncate font-semibold'>{activeName}</span>
+                <span className='truncate text-xs'>{activePlan}</span>
               </div>
               <ChevronsUpDown className='ms-auto' />
             </SidebarMenuButton>
@@ -56,18 +58,18 @@ export function TeamSwitcher({ teams }: TeamSwitcherProps) {
             sideOffset={4}
           >
             <DropdownMenuLabel className='text-muted-foreground text-xs'>
-              Teams
+              {t('teamSwitcher.teams')}
             </DropdownMenuLabel>
             {teams.map((team, index) => (
               <DropdownMenuItem
-                key={team.name}
+                key={team.nameKey}
                 onClick={() => setActiveTeam(team)}
                 className='gap-2 p-2'
               >
                 <div className='flex size-6 items-center justify-center rounded-sm border'>
                   <team.logo className='size-4 shrink-0' />
                 </div>
-                {team.name}
+                {t(team.nameKey as never)}
                 <DropdownMenuShortcut>⌘{index + 1}</DropdownMenuShortcut>
               </DropdownMenuItem>
             ))}
@@ -76,7 +78,9 @@ export function TeamSwitcher({ teams }: TeamSwitcherProps) {
               <div className='bg-background flex size-6 items-center justify-center rounded-md border'>
                 <Plus className='size-4' />
               </div>
-              <div className='text-muted-foreground font-medium'>Add team</div>
+              <div className='text-muted-foreground font-medium'>
+                {t('teamSwitcher.addTeam')}
+              </div>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

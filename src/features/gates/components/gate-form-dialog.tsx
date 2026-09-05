@@ -28,22 +28,8 @@ import {
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
+import { useTranslation } from '@/context/language-provider'
 import { useCreateGate, useUpdateGate, type Gate } from '../api/queries'
-
-const formSchema = z.object({
-  code: z
-    .string()
-    .min(1, 'Gate code is required')
-    .max(50, 'Gate code must be at most 50 characters'),
-  name: z
-    .string()
-    .min(1, 'Gate name is required')
-    .max(100, 'Gate name must be at most 100 characters'),
-  type: z.enum(['ENTRY', 'EXIT']),
-  description: z.string().max(255).optional().or(z.literal('')),
-})
-
-type FormValues = z.infer<typeof formSchema>
 
 interface GateFormDialogProps {
   open: boolean
@@ -56,7 +42,24 @@ export function GateFormDialog({
   onOpenChange,
   gate,
 }: GateFormDialogProps) {
+  const { t } = useTranslation()
   const isEditing = !!gate
+
+  const formSchema = z.object({
+    code: z
+      .string()
+      .min(1, t('gates.gateCodeRequired' as never))
+      .max(50, t('gates.gateCodeMax' as never)),
+    name: z
+      .string()
+      .min(1, t('gates.gateNameRequired' as never))
+      .max(100, t('gates.gateNameMax' as never)),
+    type: z.enum(['ENTRY', 'EXIT']),
+    description: z.string().max(255).optional().or(z.literal('')),
+  })
+
+  type FormValues = z.infer<typeof formSchema>
+
   const { mutate: createGate, isPending: isCreating } = useCreateGate()
   const { mutate: updateGate, isPending: isUpdating } = useUpdateGate(
     gate?.id ?? '',
@@ -122,11 +125,11 @@ export function GateFormDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className='sm:max-w-125'>
         <DialogHeader>
-          <DialogTitle>{isEditing ? 'Edit Gate' : 'Create Gate'}</DialogTitle>
+          <DialogTitle>{isEditing ? t('gates.editGate' as never) : t('gates.createGate' as never)}</DialogTitle>
           <DialogDescription>
             {isEditing
-              ? 'Update the gate details below.'
-              : 'Fill in the details to create a new gate.'}
+              ? t('gates.editGateDesc' as never)
+              : t('gates.createGateDesc' as never)}
           </DialogDescription>
         </DialogHeader>
 
@@ -137,9 +140,9 @@ export function GateFormDialog({
               name='code'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Gate Code</FormLabel>
+                  <FormLabel>{t('gates.gateCode' as never)}</FormLabel>
                   <FormControl>
-                    <Input placeholder='e.g. EG-01' {...field} />
+                    <Input placeholder={t('gates.codeExample' as never)} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -151,9 +154,9 @@ export function GateFormDialog({
               name='name'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Gate Name</FormLabel>
+                  <FormLabel>{t('gates.gateName' as never)}</FormLabel>
                   <FormControl>
-                    <Input placeholder='e.g. Entry Gate 1' {...field} />
+                    <Input placeholder={t('gates.nameExample' as never)} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -165,19 +168,19 @@ export function GateFormDialog({
               name='type'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Gate Type</FormLabel>
+                  <FormLabel>{t('gates.gateType' as never)}</FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     value={field.value}
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder='Select gate type' />
+                        <SelectValue placeholder={t('gates.selectGateType' as never)} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value='ENTRY'>Entry</SelectItem>
-                      <SelectItem value='EXIT'>Exit</SelectItem>
+                      <SelectItem value='ENTRY'>{t('gates.entry' as never)}</SelectItem>
+                      <SelectItem value='EXIT'>{t('gates.exit' as never)}</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -190,10 +193,10 @@ export function GateFormDialog({
               name='description'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Description</FormLabel>
+                  <FormLabel>{t('gates.description' as never)}</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder='Optional description...'
+                      placeholder={t('gates.descriptionExample' as never)}
                       className='resize-none'
                       {...field}
                     />
@@ -210,13 +213,13 @@ export function GateFormDialog({
                 onClick={() => onOpenChange(false)}
                 disabled={isPending}
               >
-                Cancel
+                {t('common.cancel' as never)}
               </Button>
               <Button type='submit' disabled={isPending}>
                 {isPending && (
                   <Loader2 className='mr-2 h-4 w-4 animate-spin' />
                 )}
-                {isEditing ? 'Update Gate' : 'Create Gate'}
+                {isEditing ? t('gates.updateGate' as never) : t('gates.createGate' as never)}
               </Button>
             </div>
           </form>

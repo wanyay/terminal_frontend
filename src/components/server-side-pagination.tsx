@@ -5,6 +5,7 @@ import {
   DoubleArrowRightIcon,
 } from '@radix-ui/react-icons'
 import { cn, getPageNumbers } from '@/lib/utils'
+import { useTranslation } from '@/context/language-provider'
 import { Button } from '@/components/ui/button'
 import {
   Select,
@@ -36,6 +37,7 @@ export default function ServerSidePagination({
   onPerPageChange,
   pageSizeOptions = [10, 20, 30, 50],
 }: ServerSidePaginationProps) {
+  const { t } = useTranslation()
   const {
     currentPage,
     hasNextPage,
@@ -71,7 +73,7 @@ export default function ServerSidePagination({
     >
       <div className='flex w-full items-center justify-between'>
         <div className='flex w-[100px] items-center justify-center text-sm font-medium @2xl/content:hidden'>
-          Page {currentPage} of {totalPages}
+          {t('common.pageOf' as never, { current: currentPage, total: totalPages })}
         </div>
         <div className='flex items-center gap-2 @max-2xl/content:flex-row-reverse'>
           <Select
@@ -89,13 +91,13 @@ export default function ServerSidePagination({
               ))}
             </SelectContent>
           </Select>
-          <p className='hidden text-sm font-medium sm:block'>Rows</p>
+          <p className='hidden text-sm font-medium sm:block'>{t('common.rows' as never)}</p>
         </div>
       </div>
 
       <div className='flex items-center sm:space-x-6 lg:space-x-8'>
         <div className='flex w-[100px] items-center justify-center text-sm font-medium @max-3xl/content:hidden'>
-          Page {currentPage} of {totalPages}
+          {t('common.pageOf' as never, { current: currentPage, total: totalPages })}
         </div>
         <div className='flex items-center space-x-2'>
           <Button
@@ -104,7 +106,7 @@ export default function ServerSidePagination({
             onClick={goToFirstPage}
             disabled={!hasPrevPage}
           >
-            <span className='sr-only'>Go to first page</span>
+            <span className='sr-only'>{t('common.goToFirstPage' as never)}</span>
             <DoubleArrowLeftIcon className='h-4 w-4' />
           </Button>
           <Button
@@ -113,7 +115,7 @@ export default function ServerSidePagination({
             onClick={goToPrevPage}
             disabled={!hasPrevPage}
           >
-            <span className='sr-only'>Go to previous page</span>
+            <span className='sr-only'>{t('common.goToPreviousPage' as never)}</span>
             <ChevronLeftIcon className='h-4 w-4' />
           </Button>
 
@@ -128,7 +130,7 @@ export default function ServerSidePagination({
                   className='h-8 min-w-8 px-2'
                   onClick={() => goToPage(pageNumber as number)}
                 >
-                  <span className='sr-only'>Go to page {pageNumber}</span>
+                  <span className='sr-only'>{t('common.goToPage' as never, { page: pageNumber as number })}</span>
                   {pageNumber}
                 </Button>
               )}
@@ -141,7 +143,7 @@ export default function ServerSidePagination({
             onClick={goToNextPage}
             disabled={!hasNextPage}
           >
-            <span className='sr-only'>Go to next page</span>
+            <span className='sr-only'>{t('common.goToNextPage' as never)}</span>
             <ChevronRightIcon className='h-4 w-4' />
           </Button>
           <Button
@@ -150,7 +152,7 @@ export default function ServerSidePagination({
             onClick={goToLastPage}
             disabled={!hasNextPage}
           >
-            <span className='sr-only'>Go to last page</span>
+            <span className='sr-only'>{t('common.goToLastPage' as never)}</span>
             <DoubleArrowRightIcon className='h-4 w-4' />
           </Button>
         </div>

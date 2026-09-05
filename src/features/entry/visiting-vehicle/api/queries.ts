@@ -2,6 +2,7 @@ import { useMutation } from '@tanstack/react-query'
 import type { AxiosError } from 'axios'
 import { toast } from 'sonner'
 import axiosClient from '@/lib/api/axiosClient'
+import { getT } from '@/lib/i18n'
 
 interface VisitingVehicleEntryPayload {
   plateNumber: string
@@ -26,10 +27,10 @@ export function useCreateVisitingVehicleEntry() {
       return res.data
     },
     onSuccess: () => {
-      toast.success('Visiting Vehicle Entry created successfully')
+      toast.success(getT('entry.vehicleEntryCreated' as never))
     },
     onError: (error) => {
-      const errorMessage = error.response?.data?.message?.[0] || error.message || 'Failed to create vehicle entry'
+      const errorMessage = error.response?.data?.message?.[0] || error.message || getT('entry.failedCreateVehicle' as never)
       toast.error(errorMessage)
     },
   })

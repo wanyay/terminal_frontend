@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import axiosClient from '@/lib/api/axiosClient'
+import { getT } from '@/lib/i18n'
 
 // --- Types ---
 
@@ -115,11 +116,11 @@ export function useRegisterVisitorExit() {
       await axiosClient.post(`/api/v1/visitors/${id}/exit`, payload)
     },
     onSuccess: () => {
-      toast.success('Visitor exit registered successfully')
+      toast.success(getT('exit.visitorExitRegistered' as never))
       queryClient.invalidateQueries({ queryKey: activeVisitorsKeys.all })
     },
     onError: (error) => {
-      toast.error(error.message || 'Failed to register visitor exit')
+      toast.error(error.message || getT('exit.failedRegisterVisitorExit' as never))
     },
   })
 }

@@ -31,99 +31,105 @@ import {
 import {
   useCreateUser,
   useUpdateUser,
-  ROLE_OPTIONS,
+  getRoleOptions,
   type User,
   type CreateUserPayload,
   type UpdateUserPayload,
 } from '../api/queries'
 import { useGates } from '@/features/gates/api/queries'
+import { useTranslation } from '@/context/language-provider'
+import type { TranslationKey } from '@/lib/i18n'
 
-const createSchema = z.object({
-  username: z
-    .string()
-    .min(3, 'Username must be at least 3 characters')
-    .max(50, 'Username must be at most 50 characters'),
-  password: z
-    .string()
-    .min(6, 'Password must be at least 6 characters')
-    .max(100),
-  fullName: z
-    .string()
-    .min(1, 'Full name is required')
-    .max(100),
-  email: z
-    .string()
-    .optional(),
-  role: z.string().min(1, 'Role is required'),
-  assignedGateId: z.string().optional(),
-  manageableGateIds: z.array(z.string()).optional(),
-}).refine(
-  (data) => {
-    if (data.role === 'SECURITY_OFFICER') {
-      return !!data.assignedGateId
-    }
-    return true
-  },
-  {
-    message: 'Assigned gate is required for Security Officer',
-    path: ['assignedGateId'],
-  }
-).refine(
-  (data) => {
-    if (data.role === 'SUPER_ADMIN' || data.role === 'SUPERVISOR') {
-      return data.manageableGateIds && data.manageableGateIds.length > 0
-    }
-    return true
-  },
-  {
-    message: 'At least one manageable gate is required',
-    path: ['manageableGateIds'],
-  }
-)
+type CreateFormValues = z.infer<ReturnType<typeof buildCreateSchema>>
+type EditFormValues = z.infer<ReturnType<typeof buildEditSchema>>
 
-const editSchema = z.object({
-  username: z
-    .string()
-    .min(3, 'Username must be at least 3 characters')
-    .max(50),
-  fullName: z
-    .string()
-    .min(1, 'Full name is required')
-    .max(100),
-  email: z
-    .string()
-    .optional()
-    .or(z.literal('')),
-  isActive: z.boolean().optional(),
-  role: z.string().min(1, 'Role is required'),
-  assignedGateId: z.string().optional(),
-  manageableGateIds: z.array(z.string()).optional(),
-}).refine(
-  (data) => {
-    if (data.role === 'SECURITY_OFFICER') {
-      return !!data.assignedGateId
+function buildCreateSchema(t: (key: TranslationKey, params?: Record<string, string | number>) => string) {
+  return z.object({
+    username: z
+      .string()
+      .min(3, t('users.usernameMin' as never))
+      .max(50, t('users.usernameMax' as never)),
+    password: z
+      .string()
+      .min(6, t('users.passwordMin6' as never))
+      .max(100),
+    fullName: z
+      .string()
+      .min(1, t('users.fullNameRequired' as never))
+      .max(100),
+    email: z
+      .string()
+      .optional(),
+    role: z.string().min(1, t('users.roleRequired' as never)),
+    assignedGateId: z.string().optional(),
+    manageableGateIds: z.array(z.string()).optional(),
+  }).refine(
+    (data) => {
+      if (data.role === 'SECURITY_OFFICER') {
+        return !!data.assignedGateId
+      }
+      return true
+    },
+    {
+      message: t('users.assignedGateRequiredSecurity' as never),
+      path: ['assignedGateId'],
     }
-    return true
-  },
-  {
-    message: 'Assigned gate is required for Security Officer',
-    path: ['assignedGateId'],
-  }
-).refine(
-  (data) => {
-    if (data.role === 'SUPER_ADMIN' || data.role === 'SUPERVISOR') {
-      return data.manageableGateIds && data.manageableGateIds.length > 0
+  ).refine(
+    (data) => {
+      if (data.role === 'SUPER_ADMIN' || data.role === 'SUPERVISOR') {
+        return data.manageableGateIds && data.manageableGateIds.length > 0
+      }
+      return true
+    },
+    {
+      message: t('users.manageableGatesRequired' as never),
+      path: ['manageableGateIds'],
     }
-    return true
-  },
-  {
-    message: 'At least one manageable gate is required',
-    path: ['manageableGateIds'],
-  }
-)
+  )
+}
 
-type CreateFormValues = z.infer<typeof createSchema>
-type EditFormValues = z.infer<typeof editSchema>
+function buildEditSchema(t: (key: TranslationKey, params?: Record<string, string | number>) => string) {
+  return z.object({
+    username: z
+      .string()
+      .min(3, t('users.usernameMin' as never))
+      .max(50),
+    fullName: z
+      .string()
+      .min(1, t('users.fullNameRequired' as never))
+      .max(100),
+    email: z
+      .string()
+      .optional()
+      .or(z.literal('')),
+    isActive: z.boolean().optional(),
+    role: z.string().min(1, t('users.roleRequired' as never)),
+    assignedGateId: z.string().optional(),
+    manageableGateIds: z.array(z.string()).optional(),
+  }).refine(
+    (data) => {
+      if (data.role === 'SECURITY_OFFICER') {
+        return !!data.assignedGateId
+      }
+      return true
+    },
+    {
+      message: t('users.assignedGateRequiredSecurity' as never),
+      path: ['assignedGateId'],
+    }
+  ).refine(
+    (data) => {
+      if (data.role === 'SUPER_ADMIN' || data.role === 'SUPERVISOR') {
+        return data.manageableGateIds && data.manageableGateIds.length > 0
+      }
+      return true
+    },
+    {
+      message: t('users.manageableGatesRequired' as never),
+      path: ['manageableGateIds'],
+    }
+  )
+}
 
 interface UserFormDialogProps {
   open: boolean
@@ -136,7 +142,11 @@ export function UserFormDialog({
   onOpenChange,
   user,
 }: UserFormDialogProps) {
+  const { t } = useTranslation()
   const isEditing = !!user
+  const createSchema = buildCreateSchema(t)
+  const editSchema = buildEditSchema(t)
+  const roleOptions = getRoleOptions(t)
   const { mutate: createUser, isPending: isCreating } = useCreateUser()
   const { mutate: updateUser, isPending: isUpdating } = useUpdateUser(
     user?.id ?? '',
@@ -255,11 +265,11 @@ export function UserFormDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className='sm:max-w-125'>
         <DialogHeader>
-          <DialogTitle>{isEditing ? 'Edit User' : 'Create User'}</DialogTitle>
+          <DialogTitle>{isEditing ? t('users.editUser' as never) : t('users.createUser' as never)}</DialogTitle>
           <DialogDescription>
             {isEditing
-              ? 'Update the user details below.'
-              : 'Fill in the details to create a new user.'}
+              ? t('users.editUserDesc' as never)
+              : t('users.createUserDesc' as never)}
           </DialogDescription>
         </DialogHeader>
 
@@ -274,9 +284,9 @@ export function UserFormDialog({
                 name='username'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Username</FormLabel>
+                    <FormLabel>{t('users.username' as never)}</FormLabel>
                     <FormControl>
-                      <Input placeholder='johndoe' {...field} />
+                      <Input placeholder={t('users.usernameExample' as never)} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -287,9 +297,9 @@ export function UserFormDialog({
                 name='fullName'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Full Name</FormLabel>
+                    <FormLabel>{t('users.fullName' as never)}</FormLabel>
                     <FormControl>
-                      <Input placeholder='John Doe' {...field} />
+                      <Input placeholder={t('users.fullNameExample' as never)} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -300,9 +310,9 @@ export function UserFormDialog({
                 name='email'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel>{t('users.email' as never)}</FormLabel>
                     <FormControl>
-                      <Input placeholder='john@example.com' {...field} />
+                      <Input placeholder={t('users.emailExample' as never)} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -313,7 +323,7 @@ export function UserFormDialog({
                 name='role'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Role</FormLabel>
+                    <FormLabel>{t('users.role' as never)}</FormLabel>
                     <Select
                       onValueChange={(value) => {
                         field.onChange(value)
@@ -325,11 +335,11 @@ export function UserFormDialog({
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder='Select a role' />
+                          <SelectValue placeholder={t('users.selectRole' as never)} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {ROLE_OPTIONS.map((role) => (
+                        {roleOptions.map((role) => (
                           <SelectItem key={role.value} value={role.value}>
                             {role.label}
                           </SelectItem>
@@ -347,14 +357,14 @@ export function UserFormDialog({
                   name='assignedGateId'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Assigned Gate</FormLabel>
+                      <FormLabel>{t('users.assignedGate' as never)}</FormLabel>
                       <Select
                         onValueChange={field.onChange}
                         value={field.value}
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder='Select a gate' />
+                            <SelectValue placeholder={t('users.selectGate' as never)} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -377,7 +387,7 @@ export function UserFormDialog({
                     name='manageableGateIds'
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Manageable Gates</FormLabel>
+                        <FormLabel>{t('users.manageableGates' as never)}</FormLabel>
                         <div className='space-y-2'>
                           {gates.map((gate) => (
                             <div key={gate.id} className='flex items-center space-x-2'>
@@ -415,13 +425,13 @@ export function UserFormDialog({
                   onClick={() => onOpenChange(false)}
                   disabled={isPending}
                 >
-                  Cancel
+                  {t('common.cancel' as never)}
                 </Button>
                 <Button type='submit' disabled={isPending}>
                   {isPending && (
                     <Loader2 className='mr-2 h-4 w-4 animate-spin' />
                   )}
-                  Update User
+                  {t('users.updateUser' as never)}
                 </Button>
               </div>
             </form>
@@ -437,9 +447,9 @@ export function UserFormDialog({
                 name='username'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Username</FormLabel>
+                    <FormLabel>{t('users.username' as never)}</FormLabel>
                     <FormControl>
-                      <Input placeholder='johndoe' {...field} />
+                      <Input placeholder={t('users.usernameExample' as never)} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -450,11 +460,11 @@ export function UserFormDialog({
                 name='password'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Password</FormLabel>
+                    <FormLabel>{t('users.password' as never)}</FormLabel>
                     <FormControl>
                       <Input
                         type='password'
-                        placeholder='Min. 6 characters'
+                        placeholder={t('users.passwordExample' as never)}
                         {...field}
                       />
                     </FormControl>
@@ -467,9 +477,9 @@ export function UserFormDialog({
                 name='fullName'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Full Name</FormLabel>
+                    <FormLabel>{t('users.fullName' as never)}</FormLabel>
                     <FormControl>
-                      <Input placeholder='John Doe' {...field} />
+                      <Input placeholder={t('users.fullNameExample' as never)} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -480,9 +490,9 @@ export function UserFormDialog({
                 name='email'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel>{t('users.email' as never)}</FormLabel>
                     <FormControl>
-                      <Input placeholder='john@example.com' {...field} />
+                      <Input placeholder={t('users.emailExample' as never)} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -493,7 +503,7 @@ export function UserFormDialog({
                 name='role'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Role</FormLabel>
+                    <FormLabel>{t('users.role' as never)}</FormLabel>
                     <Select
                       onValueChange={(value) => {
                         field.onChange(value)
@@ -505,11 +515,11 @@ export function UserFormDialog({
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder='Select a role' />
+                          <SelectValue placeholder={t('users.selectRole' as never)} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {ROLE_OPTIONS.map((role) => (
+                        {roleOptions.map((role) => (
                           <SelectItem key={role.value} value={role.value}>
                             {role.label}
                           </SelectItem>
@@ -527,14 +537,14 @@ export function UserFormDialog({
                   name='assignedGateId'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Assigned Gate</FormLabel>
+                      <FormLabel>{t('users.assignedGate' as never)}</FormLabel>
                       <Select
                         onValueChange={field.onChange}
                         value={field.value}
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder='Select a gate' />
+                            <SelectValue placeholder={t('users.selectGate' as never)} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -557,7 +567,7 @@ export function UserFormDialog({
                     name='manageableGateIds'
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Manageable Gates</FormLabel>
+                        <FormLabel>{t('users.manageableGates' as never)}</FormLabel>
                         <div className='space-y-2'>
                           {gates.map((gate) => (
                             <div key={gate.id} className='flex items-center space-x-2'>
@@ -595,13 +605,13 @@ export function UserFormDialog({
                   onClick={() => onOpenChange(false)}
                   disabled={isPending}
                 >
-                  Cancel
+                  {t('common.cancel' as never)}
                 </Button>
                 <Button type='submit' disabled={isPending}>
                   {isPending && (
                     <Loader2 className='mr-2 h-4 w-4 animate-spin' />
                   )}
-                  Create User
+                  {t('users.createUser' as never)}
                 </Button>
               </div>
             </form>

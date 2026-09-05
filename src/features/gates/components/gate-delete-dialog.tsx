@@ -9,6 +9,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
+import { useTranslation } from '@/context/language-provider'
 import { useDeleteGate, type Gate } from '../api/queries'
 
 interface GateDeleteDialogProps {
@@ -22,6 +23,7 @@ export function GateDeleteDialog({
   onOpenChange,
   gate,
 }: GateDeleteDialogProps) {
+  const { t } = useTranslation()
   const { mutate: deleteGate, isPending } = useDeleteGate()
 
   function handleDelete() {
@@ -37,15 +39,13 @@ export function GateDeleteDialog({
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent className='sm:max-w-[425px]'>
         <AlertDialogHeader>
-          <AlertDialogTitle>Delete Gate</AlertDialogTitle>
+          <AlertDialogTitle>{t('gates.deleteGate' as never)}</AlertDialogTitle>
           <AlertDialogDescription>
-            Are you sure you want to delete gate{' '}
-            <strong>{gate?.code}</strong> — {gate?.name}? This action cannot be
-            undone.
+            {t('gates.deleteGateConfirm' as never, { code: gate?.code ?? '', name: gate?.name ?? '' })}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
+          <AlertDialogCancel disabled={isPending}>{t('common.cancel' as never)}</AlertDialogCancel>
           <AlertDialogAction
             onClick={(e) => {
               e.preventDefault()
@@ -57,7 +57,7 @@ export function GateDeleteDialog({
             {isPending && (
               <Loader2 className='mr-2 h-4 w-4 animate-spin' />
             )}
-            Delete
+            {t('common.delete' as never)}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

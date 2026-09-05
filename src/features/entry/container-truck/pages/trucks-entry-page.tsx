@@ -22,13 +22,15 @@ import {
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { useAuthStore } from '@/features/auth/stores/auth-store'
+import { useTranslation } from '@/context/language-provider'
+import { getT } from '@/lib/i18n'
 import { useCreateContainerTruckEntry } from '../api/queries'
 
 const formSchema = z.object({
-  licensePlate: z.string().min(1, 'Car No is required'),
+  licensePlate: z.string().min(1, getT('entry.carNoRequired' as never)),
   driverName: z.string().optional(),
   driverNrc: z.string().optional(),
-  entryGateId: z.string().min(1, 'Entry gate is required'),
+  entryGateId: z.string().min(1, getT('entry.entryGateRequired' as never)),
   remarks: z.string().optional(),
 })
 
@@ -43,6 +45,7 @@ interface RelayState {
 }
 
 export function TrucksEntryPage() {
+  const { t } = useTranslation()
   const [stateDevice, setDeviceState] = useState<RelayState>({
     statuses: Array.from({ length: 2 }, (_, i) => ({
       channel: i + 1,
@@ -219,9 +222,9 @@ export function TrucksEntryPage() {
                 name='licensePlate'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Car No</FormLabel>
+                    <FormLabel>{t('entry.carNo' as never)}</FormLabel>
                     <FormControl>
-                      <Input placeholder='YGN-1234' {...field} />
+                      <Input placeholder={t('entry.licensePlateExample' as never)} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -232,9 +235,9 @@ export function TrucksEntryPage() {
                 name='driverName'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Driver Name</FormLabel>
+                    <FormLabel>{t('entry.driverName' as never)}</FormLabel>
                     <FormControl>
-                      <Input placeholder='John Doe' {...field} />
+                      <Input placeholder={t('entry.johnDoe' as never)} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -245,9 +248,9 @@ export function TrucksEntryPage() {
                 name='driverNrc'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Driver NRC</FormLabel>
+                    <FormLabel>{t('entry.driverNrc' as never)}</FormLabel>
                     <FormControl>
-                      <Input placeholder='12/ABC(N)123456' {...field} />
+                      <Input placeholder={t('entry.nrcExample' as never)} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -258,11 +261,11 @@ export function TrucksEntryPage() {
                 name='entryGateId'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Entry Gate</FormLabel>
+                    <FormLabel>{t('entry.entryGate' as never)}</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder='Select entry gate' />
+                          <SelectValue placeholder={t('entry.selectEntryGate' as never)} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -282,11 +285,11 @@ export function TrucksEntryPage() {
                 name='remarks'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Remarks</FormLabel>
+                    <FormLabel>{t('common.remarks' as never)}</FormLabel>
                     <FormControl>
                       <Textarea
                         rows={4}
-                        placeholder='Any remarks...'
+                        placeholder={t('entry.anyRemarks' as never)}
                         className='resize-none'
                         {...field}
                       />
@@ -301,8 +304,8 @@ export function TrucksEntryPage() {
                 disabled={createContainerTruckEntry.isPending}
               >
                 {createContainerTruckEntry.isPending
-                  ? 'Submitting...'
-                  : 'Submit Entry'}
+                  ? t('common.submitting' as never)
+                  : t('entry.submitEntry' as never)}
               </Button>
             </form>
           </Form>
@@ -323,7 +326,7 @@ export function TrucksEntryPage() {
               : 'bg-green-600 hover:bg-green-500 hover:shadow-lg active:scale-95'
               }`}
           >
-            OPEN GATE
+            {t('common.openGate' as never)}
           </button>
           <button
             type='button'
@@ -334,7 +337,7 @@ export function TrucksEntryPage() {
               : 'bg-red-700 hover:bg-red-600 hover:shadow-lg active:scale-95'
               }`}
           >
-            CLOSE GATE
+            {t('common.closeGate' as never)}
           </button>
         </div>
 

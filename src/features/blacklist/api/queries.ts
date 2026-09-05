@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import axiosClient from '@/lib/api/axiosClient'
+import { getT } from '@/lib/i18n'
 
 // --- Types ---
 
@@ -95,11 +96,11 @@ export function useCreateBlacklistEntry() {
       return res.data
     },
     onSuccess: () => {
-      toast.success('Added to blacklist successfully')
+      toast.success(getT('blacklist.createdSuccess' as never))
       queryClient.invalidateQueries({ queryKey: blacklistKeys.all })
     },
     onError: (error) => {
-      toast.error(error.message || 'Failed to add to blacklist')
+      toast.error(error.message || getT('blacklist.failedCreate' as never))
     },
   })
 }
@@ -115,11 +116,11 @@ export function useUpdateBlacklistEntry(id: string) {
       return res.data
     },
     onSuccess: () => {
-      toast.success('Blacklist entry updated successfully')
+      toast.success(getT('blacklist.updatedSuccess' as never))
       queryClient.invalidateQueries({ queryKey: blacklistKeys.all })
     },
     onError: (error) => {
-      toast.error(error.message || 'Failed to update blacklist entry')
+      toast.error(error.message || getT('blacklist.failedUpdate' as never))
     },
   })
 }
@@ -134,11 +135,11 @@ export function useDeleteBlacklistEntry() {
       await axiosClient.delete(`/api/v1/blacklist/${id}`)
     },
     onSuccess: () => {
-      toast.success('Blacklist entry deleted successfully')
+      toast.success(getT('blacklist.deletedSuccess' as never))
       queryClient.invalidateQueries({ queryKey: blacklistKeys.all })
     },
     onError: (error) => {
-      toast.error(error.message || 'Failed to delete blacklist entry')
+      toast.error(error.message || getT('blacklist.failedDelete' as never))
     },
   })
 }

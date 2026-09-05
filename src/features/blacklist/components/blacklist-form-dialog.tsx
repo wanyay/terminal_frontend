@@ -28,22 +28,12 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
+import { useTranslation } from '@/context/language-provider'
 import {
   useCreateBlacklistEntry,
   useUpdateBlacklistEntry,
   type BlacklistEntry,
 } from '../api/queries'
-
-const formSchema = z.object({
-  type: z.enum(['license_plate', 'nrc_passport']),
-  value: z
-    .string()
-    .min(1, 'Value is required')
-    .max(255, 'Value must be at most 255 characters'),
-  reason: z.string().max(500).optional().or(z.literal('')),
-})
-
-type FormValues = z.infer<typeof formSchema>
 
 interface BlacklistFormDialogProps {
   open: boolean
@@ -56,7 +46,20 @@ export function BlacklistFormDialog({
   onOpenChange,
   entry,
 }: BlacklistFormDialogProps) {
+  const { t } = useTranslation()
   const isEditing = !!entry
+
+  const formSchema = z.object({
+    type: z.enum(['license_plate', 'nrc_passport']),
+    value: z
+      .string()
+      .min(1, t('blacklist.valueRequired' as never))
+      .max(255, t('blacklist.valueMax' as never)),
+    reason: z.string().max(500).optional().or(z.literal('')),
+  })
+
+  type FormValues = z.infer<typeof formSchema>
+
   const { mutate: createEntry, isPending: isCreating } =
     useCreateBlacklistEntry()
   const { mutate: updateEntry, isPending: isUpdating } =
@@ -119,12 +122,12 @@ export function BlacklistFormDialog({
       <DialogContent className='sm:max-w-125'>
         <DialogHeader>
           <DialogTitle>
-            {isEditing ? 'Edit Blacklist Entry' : 'Add to Blacklist'}
+            {isEditing ? t('blacklist.editEntry' as never) : t('blacklist.addToBlacklist' as never)}
           </DialogTitle>
           <DialogDescription>
             {isEditing
-              ? 'Update the blacklist entry details below.'
-              : 'Fill in the details to add a new entry to the blacklist.'}
+              ? t('blacklist.editEntryDesc' as never)
+              : t('blacklist.addEntryDesc' as never)}
           </DialogDescription>
         </DialogHeader>
 
@@ -135,18 +138,18 @@ export function BlacklistFormDialog({
               name='type'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Type</FormLabel>
+                  <FormLabel>{t('blacklist.type' as never)}</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder='Select type' />
+                        <SelectValue placeholder={t('blacklist.selectType' as never)} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
                       <SelectItem value='license_plate'>
-                        License Plate
+                        {t('blacklist.licensePlate' as never)}
                       </SelectItem>
-                      <SelectItem value='nrc_passport'>NRC/Passport</SelectItem>
+                      <SelectItem value='nrc_passport'>{t('blacklist.nrcPassport' as never)}</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -159,13 +162,13 @@ export function BlacklistFormDialog({
               name='value'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Value</FormLabel>
+                  <FormLabel>{t('blacklist.value' as never)}</FormLabel>
                   <FormControl>
                     <Input
                       placeholder={
                         field.value === 'license_plate'
-                          ? 'e.g. ABC-1234'
-                          : 'e.g. NRC number or passport number'
+                          ? t('blacklist.licensePlateExample' as never)
+                          : t('blacklist.nrcPassportExample' as never)
                       }
                       {...field}
                     />
@@ -180,10 +183,10 @@ export function BlacklistFormDialog({
               name='reason'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Reason (Optional)</FormLabel>
+                  <FormLabel>{t('blacklist.reason' as never)}</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder='Reason for adding to blacklist...'
+                      placeholder={t('blacklist.reasonExample' as never)}
                       className='resize-none'
                       rows={4}
                       {...field}
@@ -201,11 +204,11 @@ export function BlacklistFormDialog({
                 onClick={() => onOpenChange(false)}
                 disabled={isPending}
               >
-                Cancel
+                {t('common.cancel' as never)}
               </Button>
               <Button type='submit' disabled={isPending}>
                 {isPending && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
-                {isEditing ? 'Update Entry' : 'Add Entry'}
+                {isEditing ? t('blacklist.updateEntry' as never) : t('blacklist.addEntry' as never)}
               </Button>
             </div>
           </form>

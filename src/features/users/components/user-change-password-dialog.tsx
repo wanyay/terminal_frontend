@@ -21,23 +21,9 @@ import {
 } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
 import { PasswordInput } from '@/components/password-input'
+import { useTranslation } from '@/context/language-provider'
 import { useChangePassword } from '@/features/auth/hooks/useChangePassword'
 import type { User } from '../api/queries'
-
-const formSchema = z
-  .object({
-    newPassword: z
-      .string()
-      .min(8, 'Password must be at least 8 characters')
-      .max(100, 'Password must be at most 100 characters'),
-    confirmPassword: z.string().min(1, 'Please confirm your new password'),
-  })
-  .refine((data) => data.newPassword === data.confirmPassword, {
-    message: 'Passwords do not match',
-    path: ['confirmPassword'],
-  })
-
-type FormValues = z.infer<typeof formSchema>
 
 interface UserChangePasswordDialogProps {
   open: boolean
@@ -50,6 +36,21 @@ export function UserChangePasswordDialog({
   onOpenChange,
   user,
 }: UserChangePasswordDialogProps) {
+  const { t } = useTranslation()
+  const formSchema = z
+    .object({
+      newPassword: z
+        .string()
+        .min(8, t('auth.passwordMinChars' as never))
+        .max(100, t('auth.passwordMaxChars' as never)),
+      confirmPassword: z.string().min(1, t('auth.confirmPasswordRequired' as never)),
+    })
+    .refine((data) => data.newPassword === data.confirmPassword, {
+      message: t('auth.passwordsDoNotMatch' as never),
+      path: ['confirmPassword'],
+    })
+
+  type FormValues = z.infer<typeof formSchema>
   const { mutate: changePassword, isPending } = useChangePassword()
 
   const form = useForm<FormValues>({
@@ -94,10 +95,10 @@ export function UserChangePasswordDialog({
         <DialogHeader>
           <DialogTitle className='flex items-center gap-2'>
             <KeyRound className='h-5 w-5 text-amber-500' />
-            Reset Password
+            {t('users.resetPassword' as never)}
           </DialogTitle>
           <DialogDescription>
-            Reset password for <span className='font-medium'>{user.username}</span>. The user will be required to change their password on next login.
+            {t('users.resetPasswordDesc' as never, { username: user.username })}
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -107,7 +108,7 @@ export function UserChangePasswordDialog({
               name='newPassword'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>New Password</FormLabel>
+                  <FormLabel>{t('auth.newPassword' as never)}</FormLabel>
                   <FormControl>
                     <PasswordInput placeholder='••••••••' {...field} />
                   </FormControl>
@@ -120,7 +121,7 @@ export function UserChangePasswordDialog({
               name='confirmPassword'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Confirm New Password</FormLabel>
+                  <FormLabel>{t('auth.confirmNewPassword' as never)}</FormLabel>
                   <FormControl>
                     <PasswordInput placeholder='••••••••' {...field} />
                   </FormControl>
@@ -135,10 +136,10 @@ export function UserChangePasswordDialog({
                 onClick={() => onOpenChange(false)}
                 disabled={isPending}
               >
-                Cancel
+                {t('common.cancel' as never)}
               </Button>
               <Button type='submit' disabled={isPending}>
-                {isPending ? 'Resetting...' : 'Reset Password'}
+                {isPending ? t('users.resetting' as never) : t('users.resetPassword' as never)}
               </Button>
             </DialogFooter>
           </form>

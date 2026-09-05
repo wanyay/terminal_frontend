@@ -22,34 +22,39 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { DataTablePagination } from '@/components/data-table/pagination'
+import { useTranslation } from '@/context/language-provider'
+import type { TranslationKey } from '@/lib/i18n'
 import { useAuthStore } from '@/features/auth/stores/auth-store'
 import { useBlacklist, type BlacklistEntry } from '../api/queries'
 import { BlacklistDeleteDialog } from './blacklist-delete-dialog'
 import { BlacklistFormDialog } from './blacklist-form-dialog'
 
-const columns: ColumnDef<BlacklistEntry>[] = [
+type ColumnType = ColumnDef<BlacklistEntry>[]
+
+function buildColumns(t: (key: TranslationKey, params?: Record<string, string | number>) => string): ColumnType {
+  return [
   {
     accessorKey: 'type',
-    header: 'Type',
+    header: t('blacklist.type' as never),
     cell: ({ row }) => {
       const type = row.getValue('type') as string
       return (
         <Badge variant={type === 'license_plate' ? 'default' : 'secondary'}>
-          {type === 'license_plate' ? 'License Plate' : 'NRC/Passport'}
+          {type === 'license_plate' ? t('blacklist.licensePlate' as never) : t('blacklist.nrcPassport' as never)}
         </Badge>
       )
     },
   },
   {
     accessorKey: 'value',
-    header: 'Value',
+    header: t('blacklist.value' as never),
     cell: ({ row }) => (
       <span className='font-medium'>{row.getValue('value')}</span>
     ),
   },
   {
     accessorKey: 'reason',
-    header: 'Reason',
+    header: t('blacklist.reasonCol' as never),
     cell: ({ row }) => {
       const reason = row.getValue('reason') as string | null
       return (
@@ -59,7 +64,7 @@ const columns: ColumnDef<BlacklistEntry>[] = [
   },
   {
     accessorKey: 'isActive',
-    header: 'Status',
+    header: t('common.status' as never),
     cell: ({ row }) => {
       const active = row.getValue('isActive') as boolean
       return (
@@ -67,14 +72,14 @@ const columns: ColumnDef<BlacklistEntry>[] = [
           variant={active ? 'outline' : 'secondary'}
           className={active ? 'border-green-500 text-green-600' : ''}
         >
-          {active ? 'Active' : 'Inactive'}
+          {active ? t('common.active' as never) : t('common.inactive' as never)}
         </Badge>
       )
     },
   },
   {
     id: 'actions',
-    header: 'Actions',
+    header: t('common.actions' as never),
     cell: function ActionCell({ row }) {
       const entry = row.original
       const { auth } = useAuthStore()
@@ -92,7 +97,7 @@ const columns: ColumnDef<BlacklistEntry>[] = [
               onClick={() => setFormOpen(true)}
             >
               <Pencil className='h-4 w-4' />
-              <span className='sr-only'>Edit {entry.value}</span>
+              <span className='sr-only'>{t('blacklist.editAccessible' as never, { value: entry.value })}</span>
             </Button>
             {canDelete && (
               <Button
@@ -102,7 +107,7 @@ const columns: ColumnDef<BlacklistEntry>[] = [
                 onClick={() => setDeleteOpen(true)}
               >
                 <Trash2 className='h-4 w-4' />
-                <span className='sr-only'>Delete {entry.value}</span>
+                <span className='sr-only'>{t('blacklist.deleteAccessible' as never, { value: entry.value })}</span>
               </Button>
             )}
           </div>
@@ -125,6 +130,7 @@ const columns: ColumnDef<BlacklistEntry>[] = [
     },
   },
 ]
+}
 
 interface BlacklistTableProps {
   page: number
@@ -145,6 +151,8 @@ export function BlacklistTable({
   onSearchChange,
   onAddEntry,
 }: BlacklistTableProps) {
+  const { t } = useTranslation()
+  const columns = buildColumns(t)
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const { data, isLoading, isError } = useBlacklist({
     page,
@@ -186,7 +194,7 @@ export function BlacklistTable({
     return (
       <div className='flex items-center justify-center py-12'>
         <p className='text-destructive text-sm'>
-          Failed to load blocklist. Please try again.
+          {t('blacklist.failedLoad' as never)}
         </p>
       </div>
     )
@@ -196,7 +204,7 @@ export function BlacklistTable({
     <div className='space-y-4'>
       <div className='flex items-center justify-between'>
         <Input
-          placeholder='Search blocklist...'
+          placeholder={t('blacklist.search' as never)}
           value={search}
           onChange={(e) => {
             onSearchChange(e.target.value)
@@ -206,7 +214,7 @@ export function BlacklistTable({
         />
         <Button onClick={onAddEntry}>
           <Plus className='mr-2 h-4 w-4' />
-          Add Entry
+          {t('blacklist.addEntry' as never)}
         </Button>
       </div>
 
@@ -245,7 +253,7 @@ export function BlacklistTable({
                   colSpan={columns.length}
                   className='text-muted-foreground h-24 text-center'
                 >
-                  No blocklist entries found.
+                  {t('blacklist.noEntries' as never)}
                 </TableCell>
               </TableRow>
             ) : (

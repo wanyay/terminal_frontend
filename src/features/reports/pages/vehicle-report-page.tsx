@@ -6,12 +6,16 @@ import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { ThemeSwitch } from '@/components/theme-switch'
+import { LanguageSwitch } from '@/components/language-switch'
 import { handleServerError } from '@/lib/handle-server-error'
+import { useTranslation } from '@/context/language-provider'
+import { getT } from '@/lib/i18n'
 import { exportVehicleReports, useVehicleReports } from '../api/queries'
 import { TruckReportFilters, type TruckReportFiltersFormValues } from '../components/truck-report-filters'
 import { VehicleReportTable } from '../components/vehicle-report-table'
 
 export function VehicleReportPage() {
+  const { t } = useTranslation()
   const today = useMemo(() => new Date(), [])
   const oneMonthAgo = useMemo(() => subMonths(new Date(), 1), [])
 
@@ -82,7 +86,7 @@ export function VehicleReportPage() {
       })
 
       if (!result.canceled) {
-        toast.success('Report exported successfully')
+        toast.success(getT('reports.exportsSuccess' as never))
       }
     } catch (error) {
       handleServerError(error)
@@ -95,6 +99,7 @@ export function VehicleReportPage() {
     <>
       <Header>
         <div className='ms-auto flex items-center space-x-4'>
+          <LanguageSwitch />
           <ThemeSwitch />
           <ProfileDropdown />
         </div>
@@ -103,10 +108,10 @@ export function VehicleReportPage() {
       <Main>
         <div className='mb-6 space-y-2'>
           <h1 className='text-2xl font-bold tracking-tight'>
-            Visiting Vehicle Report
+            {t('reports.vehicleReport' as never)}
           </h1>
           <p className='text-muted-foreground text-sm'>
-            Review visiting vehicle movements with filters, sorting, and pagination.
+            {t('reports.vehicleReportDesc' as never)}
           </p>
         </div>
 

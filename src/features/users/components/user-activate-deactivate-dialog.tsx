@@ -9,6 +9,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
+import { useTranslation } from '@/context/language-provider'
 import { useActivateUser, useDeactivateUser, type User } from '../api/queries'
 
 interface UserActivateDeactivateDialogProps {
@@ -24,6 +25,7 @@ export function UserActivateDeactivateDialog({
   user,
   action,
 }: UserActivateDeactivateDialogProps) {
+  const { t } = useTranslation()
   const { mutate: activateUser, isPending: isActivating } = useActivateUser()
   const { mutate: deactivateUser, isPending: isDeactivating } = useDeactivateUser()
   const isPending = isActivating || isDeactivating
@@ -39,8 +41,9 @@ export function UserActivateDeactivateDialog({
   }
 
   const displayName = user?.fullName || user?.username || ''
-  const title = action === 'activate' ? 'Activate User' : 'Deactivate User'
-  const buttonText = action === 'activate' ? 'Activate' : 'Deactivate'
+  const title = action === 'activate' ? t('users.activateUser' as never) : t('users.deactivateUser' as never)
+  const actionLabel = action === 'activate' ? t('users.activate' as never) : t('users.deactivate' as never)
+  const buttonText = actionLabel
   const buttonClass = action === 'activate' 
     ? 'bg-green-600 text-white hover:bg-green-700' 
     : 'bg-destructive text-destructive-foreground hover:bg-destructive/90'
@@ -51,11 +54,11 @@ export function UserActivateDeactivateDialog({
         <AlertDialogHeader>
           <AlertDialogTitle>{title}</AlertDialogTitle>
           <AlertDialogDescription>
-            Are you sure you want to {action} user <strong>{displayName}</strong> ({user?.username})?
+            {t('users.activateDeactivateConfirm' as never, { action: actionLabel, name: displayName, username: user?.username ?? '' })}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
+          <AlertDialogCancel disabled={isPending}>{t('common.cancel' as never)}</AlertDialogCancel>
           <AlertDialogAction
             onClick={(e) => {
               e.preventDefault()

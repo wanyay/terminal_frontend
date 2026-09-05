@@ -2,13 +2,16 @@ import { type LinkProps } from '@tanstack/react-router'
 import type { UserGate } from '@/features/auth/stores/auth-store'
 
 type Team = {
-  name: string
+  nameKey: string
   logo: React.ElementType
-  plan: string
+  planKey: string
 }
 
 type BaseNavItem = {
-  title: string
+  /**
+   * Key into the i18n translation dictionary (resolved via useTranslation)
+   */
+  titleKey: string
   badge?: string
   icon?: React.ElementType
   /**
@@ -32,7 +35,7 @@ type NavCollapsible = BaseNavItem & {
 type NavItem = NavCollapsible | NavLink
 
 type NavGroup = {
-  title: string
+  titleKey: string
   items: NavItem[]
 }
 

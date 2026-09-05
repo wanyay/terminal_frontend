@@ -20,129 +20,15 @@ import {
 } from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { StatusBadge } from '@/components/status-badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Input } from '@/components/ui/input'
 import { DataTablePagination } from '@/components/data-table/pagination'
 import { DataTableFacetedFilter } from '@/components/data-table/faceted-filter'
 import { useGates } from '@/features/gates/api/queries'
+import { useTranslation } from '@/context/language-provider'
 import { useActiveVisitors, type ActiveVisitor } from '../api/queries'
 import { format } from 'date-fns'
-
-const columns: ColumnDef<ActiveVisitor>[] = [
-  {
-    accessorKey: 'visitorName',
-    header: 'Visitor Name',
-    cell: ({ row }) => (
-      <span className='font-medium'>{row.getValue('visitorName')}</span>
-    ),
-  },
-  {
-    accessorKey: 'entryGateId',
-    header: 'Gate ID',
-    enableHiding: true,
-  },
-  {
-    accessorKey: 'nrcOrPassport',
-    header: 'NRC / Passport',
-    cell: ({ row }) => {
-      const val = row.getValue('nrcOrPassport') as string | null
-      return (
-        <span className='text-muted-foreground text-sm'>
-          {val || '—'}
-        </span>
-      )
-    },
-  },
-  {
-    accessorKey: 'phoneNumber',
-    header: 'Phone',
-    cell: ({ row }) => {
-      const val = row.getValue('phoneNumber') as string | null
-      return (
-        <span className='text-muted-foreground text-sm'>
-          {val || '—'}
-        </span>
-      )
-    },
-  },
-  {
-    accessorKey: 'companyName',
-    header: 'Company',
-    cell: ({ row }) => {
-      const val = row.getValue('companyName') as string | null
-      return (
-        <span className='text-muted-foreground text-sm'>
-          {val || '—'}
-        </span>
-      )
-    },
-  },
-  {
-    accessorKey: 'hostEmployee',
-    header: 'Host',
-    cell: ({ row }) => {
-      const val = row.getValue('hostEmployee') as string | null
-      return <span>{val || '—'}</span>
-    },
-  },
-  {
-    id: 'entryGate',
-    header: 'Entry Gate',
-    cell: ({ row }) => {
-      const gate = row.original.entryGate
-      return gate ? (
-        <Badge variant='outline' className='text-xs'>
-          {gate.name}
-        </Badge>
-      ) : (
-        <span className='text-muted-foreground text-sm'>—</span>
-      )
-    },
-  },
-  {
-    accessorKey: 'entryTime',
-    header: 'Entry Time',
-    cell: ({ row }) => {
-      const val = row.getValue('entryTime') as string
-      return (
-        <span className='text-sm'>
-          {format(new Date(val), 'dd/MM/yyyy HH:mm')}
-        </span>
-      )
-    },
-  },
-  {
-    accessorKey: 'status',
-    header: 'Status',
-    cell: ({ row }) => {
-      const status = row.getValue('status') as string
-      return (
-        <Badge variant='outline' className='border-blue-500 text-blue-600 text-xs'>
-          {status}
-        </Badge>
-      )
-    },
-  },
-  {
-    id: 'actions',
-    header: 'Actions',
-    cell: function ActionCell({ row, table }) {
-      const meta = table.options.meta as { onRegisterExit?: (visitorId: string) => void } | undefined
-      const onRegisterExit = meta?.onRegisterExit
-      return (
-        <Button
-          variant='outline'
-          size='sm'
-          className='h-8'
-          onClick={() => onRegisterExit?.(row.original.id)}
-        >
-          <LogOut className='mr-1 h-3.5 w-3.5' />
-          Register Exit
-        </Button>
-      )
-    },
-  },
-]
 
 interface ActiveVisitorsTableProps {
   page: number
@@ -165,7 +51,127 @@ export function ActiveVisitorsTable({
   onSearchChange,
   onGateChange,
 }: ActiveVisitorsTableProps) {
+  const { t } = useTranslation()
   const navigate = useNavigate()
+
+  const columns: ColumnDef<ActiveVisitor>[] = [
+    {
+      accessorKey: 'visitorName',
+      header: t('exit.visitorName' as never),
+      cell: ({ row }) => (
+        <span className='font-medium'>{row.getValue('visitorName')}</span>
+      ),
+    },
+    {
+      accessorKey: 'entryGateId',
+      header: t('exit.gateId' as never),
+      enableHiding: true,
+    },
+    {
+      accessorKey: 'nrcOrPassport',
+      header: t('exit.nrcOrPassport' as never),
+      cell: ({ row }) => {
+        const val = row.getValue('nrcOrPassport') as string | null
+        return (
+          <span className='text-muted-foreground text-sm'>
+            {val || '—'}
+          </span>
+        )
+      },
+    },
+    {
+      accessorKey: 'phoneNumber',
+      header: t('exit.phone' as never),
+      cell: ({ row }) => {
+        const val = row.getValue('phoneNumber') as string | null
+        return (
+          <span className='text-muted-foreground text-sm'>
+            {val || '—'}
+          </span>
+        )
+      },
+    },
+    {
+      accessorKey: 'companyName',
+      header: t('exit.company' as never),
+      cell: ({ row }) => {
+        const val = row.getValue('companyName') as string | null
+        return (
+          <span className='text-muted-foreground text-sm'>
+            {val || '—'}
+          </span>
+        )
+      },
+    },
+    {
+      accessorKey: 'hostEmployee',
+      header: t('exit.host' as never),
+      cell: ({ row }) => {
+        const val = row.getValue('hostEmployee') as string | null
+        return <span>{val || '—'}</span>
+      },
+    },
+    {
+      id: 'entryGate',
+      header: t('exit.entryGate' as never),
+      cell: ({ row }) => {
+        const gate = row.original.entryGate
+        return gate ? (
+          <Badge variant='outline' className='text-xs'>
+            {gate.name}
+          </Badge>
+        ) : (
+          <span className='text-muted-foreground text-sm'>—</span>
+        )
+      },
+    },
+    {
+      accessorKey: 'entryTime',
+      header: t('exit.entryTime' as never),
+      cell: ({ row }) => {
+        const val = row.getValue('entryTime') as string
+        return (
+          <span className='text-sm'>
+            {format(new Date(val), 'dd/MM/yyyy HH:mm')}
+          </span>
+        )
+      },
+    },
+    {
+      accessorKey: 'status',
+      header: t('exit.status' as never),
+      cell: ({ row }) => {
+        const status = row.getValue('status') as string
+        return (
+          <StatusBadge
+            status={status}
+            label={t(`statusBadges.${status.toLowerCase()}` as never)}
+            className='text-xs'
+          />
+        )
+      },
+    },
+    {
+      id: 'actions',
+      header: t('common.actions' as never),
+      cell: function ActionCell({ row, table }) {
+        const meta = table.options.meta as { onRegisterExit?: (visitorId: string) => void } | undefined
+        const onRegisterExit = meta?.onRegisterExit
+        return (
+          <Button
+            variant='outline'
+            size='sm'
+            className='h-8'
+            onClick={() => onRegisterExit?.(row.original.id)}
+          >
+            <LogOut className='mr-1 h-3.5 w-3.5' />
+            {t('exit.registerExit' as never)}
+          </Button>
+        )
+      },
+    },
+  ]
+
   const { data: gatesData } = useGates({ perPage: 100 })
   const allGates = gatesData?.data ?? []
 
@@ -261,7 +267,7 @@ export function ActiveVisitorsTable({
     return (
       <div className='flex items-center justify-center py-12'>
         <p className='text-destructive text-sm'>
-          Failed to load active visitors. Please try again.
+          {t('exit.failedLoadActiveVisitors' as never)}
         </p>
       </div>
     )
@@ -272,7 +278,7 @@ export function ActiveVisitorsTable({
       <div className='flex items-center justify-between'>
         <div className='flex items-center gap-2'>
           <Input
-            placeholder='Search visitor name...'
+            placeholder={t('exit.searchVisitorName' as never)}
             value={search}
             onChange={(e) => {
               onSearchChange(e.target.value)
@@ -283,7 +289,7 @@ export function ActiveVisitorsTable({
           {gateOptions.length > 0 && (
             <DataTableFacetedFilter
               column={table.getColumn('entryGateId')}
-              title='Gate'
+              title={t('exit.gate' as never)}
               options={gateOptions}
             />
           )}
@@ -325,7 +331,7 @@ export function ActiveVisitorsTable({
                   colSpan={columns.length}
                   className='h-24 text-center text-muted-foreground'
                 >
-                  No active visitors found.
+                  {t('exit.noActiveVisitors' as never)}
                 </TableCell>
               </TableRow>
             ) : (

@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import axiosClient from '@/lib/api/axiosClient'
+import { getT } from '@/lib/i18n'
 
 // --- Types ---
 
@@ -126,11 +127,11 @@ export function useCreateVisitor() {
       return res.data
     },
     onSuccess: () => {
-      toast.success('Visitor record created')
+      toast.success(getT('visitors.created' as never))
       queryClient.invalidateQueries({ queryKey: visitorsKeys.all })
     },
     onError: (error) => {
-      toast.error(error.message || 'Failed to create visitor')
+      toast.error(error.message || getT('visitors.failedCreate' as never))
     },
   })
 }
@@ -149,11 +150,11 @@ export function useRegisterEntry() {
       return res.data
     },
     onSuccess: (data) => {
-      toast.success(`${data.visitorName} has been registered as entered`)
+      toast.success(getT('visitors.registeredEntered' as never, { name: data.visitorName }))
       queryClient.invalidateQueries({ queryKey: visitorsKeys.all })
     },
     onError: (error) => {
-      toast.error(error.message || 'Failed to register entry')
+      toast.error(error.message || getT('visitors.failedRegisterEntry' as never))
     },
   })
 }
@@ -172,11 +173,11 @@ export function useRegisterExit() {
       return res.data
     },
     onSuccess: (data) => {
-      toast.success(`${data.visitorName} has been registered as exited`)
+      toast.success(getT('visitors.registeredExited' as never, { name: data.visitorName }))
       queryClient.invalidateQueries({ queryKey: visitorsKeys.all })
     },
     onError: (error) => {
-      toast.error(error.message || 'Failed to register exit')
+      toast.error(error.message || getT('visitors.failedRegisterExit' as never))
     },
   })
 }
@@ -194,11 +195,11 @@ export function useCancelVisitor() {
       return res.data
     },
     onSuccess: (data) => {
-      toast.success(`${data.visitorName} has been cancelled`)
+      toast.success(getT('visitors.cancelled' as never, { name: data.visitorName }))
       queryClient.invalidateQueries({ queryKey: visitorsKeys.all })
     },
     onError: (error) => {
-      toast.error(error.message || 'Failed to cancel visitor')
+      toast.error(error.message || getT('visitors.failedCancel' as never))
     },
   })
 }
@@ -217,11 +218,11 @@ export function useUpdateVisitor(id: string) {
       return res.data
     },
     onSuccess: () => {
-      toast.success('Visitor updated')
+      toast.success(getT('visitors.updated' as never))
       queryClient.invalidateQueries({ queryKey: visitorsKeys.all })
     },
     onError: (error) => {
-      toast.error(error.message || 'Failed to update visitor')
+      toast.error(error.message || getT('visitors.failedUpdate' as never))
     },
   })
 }
@@ -236,11 +237,11 @@ export function useDeleteVisitor() {
       await axiosClient.delete(`/api/v1/visitors/${id}`)
     },
     onSuccess: () => {
-      toast.success('Visitor deleted')
+      toast.success(getT('visitors.deleted' as never))
       queryClient.invalidateQueries({ queryKey: visitorsKeys.all })
     },
     onError: (error) => {
-      toast.error(error.message || 'Failed to delete visitor')
+      toast.error(error.message || getT('visitors.failedDelete' as never))
     },
   })
 }

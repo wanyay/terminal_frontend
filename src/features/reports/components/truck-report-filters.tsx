@@ -22,6 +22,7 @@ import {
 } from '@/components/ui/select'
 import { DatePicker } from '@/components/date-picker'
 import { useGates, type Gate } from '@/features/gates/api/queries'
+import { useTranslation } from '@/context/language-provider'
 
 const filterSchema = z.object({
   search: z.string().optional(),
@@ -54,6 +55,7 @@ export function TruckReportFilters({
   onExport,
   isExporting = false,
 }: TruckReportFiltersProps) {
+  const { t } = useTranslation()
   const { data: gatesData } = useGates({ perPage: 100 })
   const gates = (gatesData?.data ?? []).filter((gate: Gate) => gate.isActive)
 
@@ -94,12 +96,12 @@ export function TruckReportFilters({
           name='search'
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Search</FormLabel>
+              <FormLabel>{t('reports.search' as never)}</FormLabel>
               <FormControl>
                 <div className='relative'>
                   <Search className='text-muted-foreground absolute top-3.5 left-3 h-5 w-5' />
                   <Input
-                    placeholder='License plate, container, driver...'
+                    placeholder={t('reports.searchTruckPlaceholder' as never)}
                     className='pl-10 h-11 text-base'
                     {...field}
                   />
@@ -115,12 +117,12 @@ export function TruckReportFilters({
           name='startDate'
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Start Date</FormLabel>
+              <FormLabel>{t('reports.startDate' as never)}</FormLabel>
               <FormControl>
                 <DatePicker
                   selected={field.value}
                   onSelect={field.onChange}
-                  placeholder='Start date'
+                  placeholder={t('reports.startDatePlaceholder' as never)}
                   className='h-11 text-base'
                 />
               </FormControl>
@@ -134,12 +136,12 @@ export function TruckReportFilters({
           name='endDate'
           render={({ field }) => (
             <FormItem>
-              <FormLabel>End Date</FormLabel>
+              <FormLabel>{t('reports.endDate' as never)}</FormLabel>
               <FormControl>
                 <DatePicker
                   selected={field.value}
                   onSelect={field.onChange}
-                  placeholder='End date'
+                  placeholder={t('reports.endDatePlaceholder' as never)}
                   className='h-11 text-base'
                 />
               </FormControl>
@@ -153,7 +155,7 @@ export function TruckReportFilters({
           name='entryGateId'
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Entry Gate</FormLabel>
+              <FormLabel>{t('reports.entryGate' as never)}</FormLabel>
               <Select
                 onValueChange={(value) =>
                   field.onChange(value === '__all__' ? undefined : value)
@@ -162,11 +164,11 @@ export function TruckReportFilters({
               >
                 <FormControl>
                   <SelectTrigger className='h-11 text-base w-full'>
-                    <SelectValue placeholder='All entry gates' />
+                    <SelectValue placeholder={t('reports.allEntryGates' as never)} />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value='__all__'>All entry gates</SelectItem>
+                  <SelectItem value='__all__'>{t('reports.allEntryGates' as never)}</SelectItem>
                   {gates
                     .filter((gate: Gate) => gate.type === 'ENTRY')
                     .map((gate: Gate) => (
@@ -186,7 +188,7 @@ export function TruckReportFilters({
           name='exitGateId'
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Exit Gate</FormLabel>
+              <FormLabel>{t('reports.exitGate' as never)}</FormLabel>
               <Select
                 onValueChange={(value) =>
                   field.onChange(value === '__all__' ? undefined : value)
@@ -195,11 +197,11 @@ export function TruckReportFilters({
               >
                 <FormControl>
                   <SelectTrigger className='h-11 text-base w-full'>
-                    <SelectValue placeholder='All exit gates' />
+                    <SelectValue placeholder={t('reports.allExitGates' as never)} />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value='__all__'>All exit gates</SelectItem>
+                  <SelectItem value='__all__'>{t('reports.allExitGates' as never)}</SelectItem>
                   {gates
                     .filter((gate: Gate) => gate.type === 'EXIT')
                     .map((gate: Gate) => (
@@ -216,7 +218,7 @@ export function TruckReportFilters({
         </div>
 
         <div className='flex flex-wrap items-center justify-start gap-2'>
-          <Button type='submit'>Apply</Button>
+          <Button type='submit'>{t('common.apply' as never)}</Button>
           <Button
             type='button'
             variant='outline'
@@ -232,7 +234,7 @@ export function TruckReportFilters({
             }}
           >
             <RotateCcw className='mr-2 h-4 w-4' />
-            Reset
+            {t('common.reset' as never)}
           </Button>
           {onExport && (
             <Button
@@ -242,7 +244,7 @@ export function TruckReportFilters({
               disabled={isExporting}
             >
               <Download className='mr-2 h-4 w-4' />
-              {isExporting ? 'Exporting...' : 'Export'}
+              {isExporting ? t('common.exporting' as never) : t('common.export' as never)}
             </Button>
           )}
         </div>
