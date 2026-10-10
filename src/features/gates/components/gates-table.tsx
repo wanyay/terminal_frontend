@@ -32,108 +32,101 @@ type ColumnType = ColumnDef<Gate>[]
 
 function buildColumns(t: (key: TranslationKey, params?: Record<string, string | number>) => string): ColumnType {
   return [
-  {
-    accessorKey: 'code',
-    header: t('gates.code' as never),
-    cell: ({ row }) => (
-      <span className='font-medium'>{row.getValue('code')}</span>
-    ),
-  },
-  {
-    accessorKey: 'code',
-    header: 'Code',
-    cell: ({ row }) => (
-      <span className='font-medium'>{row.getValue('code')}</span>
-    ),
-  },
-  {
-    accessorKey: 'name',
-    header: t('gates.name' as never),
-    cell: ({ row }) => <span>{row.getValue('name')}</span>,
-  },
-  {
-    accessorKey: 'type',
-    header: t('gates.type' as never),
-    cell: ({ row }) => {
-      const type = row.getValue('type') as string
-      return (
-        <Badge variant={type === 'ENTRY' ? 'default' : 'secondary'}>
-          {type === 'ENTRY' ? t('gates.entry' as never) : t('gates.exit' as never)}
-        </Badge>
-      )
+    {
+      accessorKey: 'code',
+      header: t('gates.code' as never),
+      cell: ({ row }) => (
+        <span className='font-medium'>{row.getValue('code')}</span>
+      ),
     },
-  },
-  {
-    accessorKey: 'description',
-    header: t('gates.description' as never),
-    cell: ({ row }) => {
-      const desc = row.getValue('description') as string | null
-      return (
-        <span className='text-muted-foreground text-sm'>
-          {desc || '—'}
-        </span>
-      )
+    {
+      accessorKey: 'name',
+      header: t('gates.name' as never),
+      cell: ({ row }) => <span>{row.getValue('name')}</span>,
     },
-  },
-  {
-    accessorKey: 'isActive',
-    header: t('common.status' as never),
-    cell: ({ row }) => {
-      const active = row.getValue('isActive') as boolean
-      return (
-        <Badge variant={active ? 'outline' : 'secondary'} className={active ? 'border-green-500 text-green-600' : ''}>
-          {active ? t('common.active' as never) : t('common.inactive' as never)}
-        </Badge>
-      )
+    {
+      accessorKey: 'type',
+      header: t('gates.type' as never),
+      cell: ({ row }) => {
+        const type = row.getValue('type') as string
+        return (
+          <Badge variant={type === 'ENTRY' ? 'default' : 'secondary'}>
+            {type === 'ENTRY' ? t('gates.entry' as never) : t('gates.exit' as never)}
+          </Badge>
+        )
+      },
     },
-  },
-  {
-    id: 'actions',
-    header: t('common.actions' as never),
-    cell: function ActionCell({ row }) {
-      const gate = row.original
-      const [formOpen, setFormOpen] = useState(false)
-      const [deleteOpen, setDeleteOpen] = useState(false)
+    {
+      accessorKey: 'description',
+      header: t('gates.description' as never),
+      cell: ({ row }) => {
+        const desc = row.getValue('description') as string | null
+        return (
+          <span className='text-muted-foreground text-sm'>
+            {desc || '—'}
+          </span>
+        )
+      },
+    },
+    {
+      accessorKey: 'isActive',
+      header: t('common.status' as never),
+      cell: ({ row }) => {
+        const active = row.getValue('isActive') as boolean
+        return (
+          <Badge variant={active ? 'outline' : 'secondary'} className={active ? 'border-green-500 text-green-600' : ''}>
+            {active ? t('common.active' as never) : t('common.inactive' as never)}
+          </Badge>
+        )
+      },
+    },
+    {
+      id: 'actions',
+      header: t('common.actions' as never),
+      cell: function ActionCell({ row }) {
+        const gate = row.original
+        const [formOpen, setFormOpen] = useState(false)
+        const [deleteOpen, setDeleteOpen] = useState(false)
 
-      return (
-        <>
-          <div className='flex items-center gap-1'>
-            <Button
-              variant='ghost'
-              size='icon'
-              className='h-8 w-8'
-              onClick={() => setFormOpen(true)}
-            >
-              <Pencil className='h-4 w-4' />
-              <span className='sr-only'>{t('gates.editAccessible' as never, { name: gate.name })}</span>
-            </Button>
-            <Button
-              variant='ghost'
-              size='icon'
-              className='h-8 w-8 text-destructive hover:text-destructive'
-              onClick={() => setDeleteOpen(true)}
-            >
-              <Trash2 className='h-4 w-4' />
-              <span className='sr-only'>{t('gates.deleteAccessible' as never, { name: gate.name })}</span>
-            </Button>
-          </div>
+        return (
+          <>
+            <div className='flex items-center gap-1'>
+              <Button
+                variant='ghost'
+                size='icon'
+                className='h-8 w-8'
+                onClick={() => setFormOpen(true)}
+              >
+                <Pencil className='h-4 w-4' />
+                <span className='sr-only'>{t('gates.editAccessible' as never, { name: gate.name })}</span>
+              </Button>
+              <Button
+                variant='ghost'
+                size='icon'
+                className='h-8 w-8 text-destructive hover:text-destructive'
+                onClick={() => setDeleteOpen(true)}
+              >
+                <Trash2 className='h-4 w-4' />
+                <span className='sr-only'>{t('gates.deleteAccessible' as never, { name: gate.name })}</span>
+              </Button>
+            </div>
 
-          <GateFormDialog
-            open={formOpen}
-            onOpenChange={setFormOpen}
-            gate={gate}
-          />
+            <GateFormDialog
+              open={formOpen}
+              onOpenChange={setFormOpen}
+              gate={gate}
+            />
 
-          <GateDeleteDialog
-            open={deleteOpen}
-            onOpenChange={setDeleteOpen}
-            gate={gate}
-          />
-        </>
-      )
+            <GateDeleteDialog
+              open={deleteOpen}
+              onOpenChange={setDeleteOpen}
+              gate={gate}
+            />
+          </>
+        )
+      },
     },
-  },
-]
+  ]
 }
 
 interface GatesTableProps {
